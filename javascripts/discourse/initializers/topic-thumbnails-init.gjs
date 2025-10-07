@@ -17,6 +17,8 @@ export default apiInitializer("0.8", (api) => {
       value.push("topic-thumbnails-masonry");
     } else if (ttService.displayBlogStyle) {
       value.push("topic-thumbnails-blog-style-grid");
+    } else if (ttService.displayFeed) {
+      value.push("topic-thumbnails-feed");
     }
     return value;
   });
@@ -70,12 +72,14 @@ export default apiInitializer("0.8", (api) => {
         "isThumbnailList:topic-thumbnails-list",
         "isMasonryList:topic-thumbnails-masonry",
         "isBlogStyleGrid:topic-thumbnails-blog-style-grid",
+        "isFeedGrid:topic-thumbnails-feed",
       ],
       isMinimalGrid: readOnly("topicThumbnailsService.displayMinimalGrid"),
       isThumbnailGrid: readOnly("topicThumbnailsService.displayGrid"),
       isThumbnailList: readOnly("topicThumbnailsService.displayList"),
       isMasonryList: readOnly("topicThumbnailsService.displayMasonry"),
       isBlogStyleGrid: readOnly("topicThumbnailsService.displayBlogStyle"),
+      isFeedGrid: readOnly("topicThumbnailsService.displayFeed"),
     });
   }
 });

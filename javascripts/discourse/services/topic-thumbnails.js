@@ -29,6 +29,10 @@ const listTags = settings.list_tags.split("|");
 const gridTags = settings.grid_tags.split("|");
 const masonryTags = settings.masonry_tags.split("|");
 const blogStyleTags = settings.blog_style_tags.split("|");
+const feedCategories = settings.feed_categories
+  .split("|")
+  .map((id) => parseInt(id, 10));
+const feedTags = settings.feed_tags.split("|");
 
 export default class TopicThumbnailService extends Service {
   @service router;
@@ -84,6 +88,8 @@ export default class TopicThumbnailService extends Service {
       return "minimal-grid";
     } else if (blogStyleCategories.includes(viewingCategoryId)) {
       return "blog-style";
+    } else if (feedCategories.includes(viewingCategoryId)) {
+      return "feed";
     } else if (masonryCategories.includes(viewingCategoryId)) {
       return "masonry";
     } else if (gridCategories.includes(viewingCategoryId)) {
@@ -96,6 +102,8 @@ export default class TopicThumbnailService extends Service {
       return "minimal-grid";
     } else if (blogStyleTags.includes(viewingTagId)) {
       return "blog-style";
+    } else if (feedTags.includes(viewingTagId)) {
+      return "feed";
     } else if (gridTags.includes(viewingTagId)) {
       return "grid";
     } else if (listTags.includes(viewingTagId)) {
@@ -149,6 +157,11 @@ export default class TopicThumbnailService extends Service {
   @discourseComputed("shouldDisplay", "displayMode")
   displayBlogStyle(shouldDisplay, displayMode) {
     return shouldDisplay && displayMode === "blog-style";
+  }
+
+  @discourseComputed("shouldDisplay", "displayMode")
+  displayFeed(shouldDisplay, displayMode) {
+    return shouldDisplay && displayMode === "feed";
   }
 
   @discourseComputed("displayMinimalGrid", "displayBlogStyle")

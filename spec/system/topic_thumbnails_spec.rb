@@ -12,6 +12,7 @@ RSpec.describe "Topic Thumbnails", type: :system do
     "minimal-grid" => "minimal",
     "list" => "list",
     "blog-style" => "blog-style-grid",
+    "feed" => "feed",
   }.each do |style, class_name|
     it "renders topic thumbnails in #{style} style" do
       theme.update_setting(:default_thumbnail_mode, style)

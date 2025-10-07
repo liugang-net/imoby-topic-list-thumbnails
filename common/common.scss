@@ -6,7 +6,8 @@
 .topic-thumbnails-grid,
 .topic-thumbnails-masonry,
 .topic-thumbnails-minimal,
-.topic-thumbnails-blog-style-grid {
+.topic-thumbnails-blog-style-grid,
+.topic-thumbnails-feed {
   .topic-list-thumbnail {
     background: var(--primary-low);
     position: relative;
@@ -446,10 +447,384 @@
     position: absolute;
     height: var(--masonry-height);
     width: var(--masonry-column-width);
-    left: calc(
-      (var(--masonry-column-width) + var(--masonry-grid-spacing)) *
-        var(--masonry-column-index)
-    );
+    left: calc((var(--masonry-column-width) + var(--masonry-grid-spacing)) * var(--masonry-column-index));
     top: var(--masonry-height-above);
+  }
+}
+
+.topic-thumbnails-feed {
+  margin-top: 5px;
+
+  .topic-list-header,
+  .topic-list-item-separator {
+    display: none;
+  }
+
+  .topic-list-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    border: 0;
+  }
+
+  .topic-list-item {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    min-width: 0;
+    background-color: var(--secondary);
+    border: 1px solid var(--primary-low);
+    border-radius: 12px;
+    padding: 1em;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+    // 隐藏默认的td元素
+    &>.main-link.topic-list-data,
+    &>.posters.topic-list-data,
+    &>.num.posts.map.posts.topic-list-data,
+    &>.num.views.topic-list-data,
+    &>.activity.num.topic-list-data.age {
+      display: none;
+    }
+
+    &:hover {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+      transform: translateY(-2px);
+    }
+
+    &.selected,
+    &.last-visit.selected {
+      border: 1px solid var(--quaternary);
+      box-shadow: 0 0 0 2px var(--quaternary);
+    }
+  }
+
+  // 用户信息头部
+  .topic-user-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1em;
+    padding-bottom: 0.75em;
+    border-bottom: 1px solid var(--primary-low);
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 0.75em;
+      flex-shrink: 0;
+      background-color: var(--primary-low);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .avatar-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--primary-low);
+        color: var(--primary-medium);
+        font-size: 1.2em;
+        font-weight: 600;
+      }
+    }
+
+    .user-info {
+      flex: 1;
+      min-width: 0;
+
+      .user-name {
+        font-weight: 600;
+        color: var(--primary);
+        margin-bottom: 0.25em;
+        font-size: 0.95em;
+      }
+
+      .user-title {
+        color: var(--primary-medium);
+        font-size: 0.85em;
+        margin-bottom: 0.25em;
+      }
+
+      .post-time {
+        color: var(--primary-low-mid);
+        font-size: 0.8em;
+      }
+    }
+
+    .post-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+
+      .action-button {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: transparent;
+        border: none;
+        color: var(--primary-low-mid);
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+          background-color: var(--primary-low);
+          color: var(--primary);
+        }
+      }
+    }
+  }
+
+  // 主题内容区域
+  .topic-content {
+    margin-bottom: 1em;
+
+    .topic-title {
+      font-size: 1.1em;
+      font-weight: 600;
+      line-height: 1.4;
+      color: var(--primary);
+      margin-bottom: 0.75em;
+
+      a.title {
+        color: var(--primary);
+        text-decoration: none;
+
+        &:hover {
+          color: var(--tertiary);
+        }
+      }
+    }
+
+    .topic-excerpt {
+      color: var(--primary-medium);
+      line-height: 1.5;
+      margin-bottom: 1em;
+      text-decoration: none;
+      max-width: 100%;
+      white-space: normal;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  }
+
+  // 图片展示区域
+  .topic-images {
+    margin-bottom: 1em;
+    position: relative;
+
+    .images-total-badge {
+      position: absolute;
+      right: 8px;
+      bottom: 8px;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.8em;
+      font-weight: 600;
+      backdrop-filter: blur(4px);
+      z-index: 3;
+    }
+
+    &.single-image {
+      .image-container {
+        width: 100%;
+        max-width: 500px;
+        border-radius: 8px;
+        overflow: hidden;
+        background-color: var(--primary-low);
+
+        img {
+          width: 100%;
+          height: auto;
+          display: block;
+        }
+      }
+    }
+
+    &.multiple-images {
+      display: grid;
+      gap: 0.5em;
+      border-radius: 8px;
+      overflow: hidden;
+      grid-template-columns: repeat(3, 1fr);
+
+      &.two-images {
+
+        // 两张图片时，每张占一个位置，留一个空位（第三列为空）
+        .image-container:first-child {
+          grid-column: 1;
+        }
+
+        .image-container:last-child {
+          grid-column: 2;
+        }
+      }
+
+      &.three-images {
+        // 三张图片：一行三列
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .image-container {
+        background-color: var(--primary-low);
+        position: relative;
+        overflow: hidden;
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+      }
+    }
+  }
+}
+
+// 底部统计信息
+.topic-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.75em;
+  border-top: 1px solid var(--primary-low);
+
+  .topic-tags {
+    display: flex;
+    gap: 0.5em;
+    flex-wrap: wrap;
+
+    .discourse-tag {
+      background-color: var(--primary-low);
+      color: var(--primary-medium);
+      padding: 0.25em 0.5em;
+      border-radius: 4px;
+      font-size: 0.8em;
+      text-decoration: none;
+
+      &:hover {
+        background-color: var(--primary-low-mid);
+        color: var(--primary);
+      }
+    }
+  }
+
+  .topic-stats {
+    display: flex;
+    gap: 1.5em;
+    align-items: center;
+    color: var(--primary-low-mid);
+    font-size: 0.9em;
+
+    .stat {
+      display: flex;
+      align-items: center;
+      gap: 0.25em;
+      cursor: pointer;
+      transition: color 0.2s ease;
+
+      &:hover {
+        color: var(--primary);
+      }
+
+      .d-icon {
+        font-size: 1em;
+      }
+
+      .number {
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+// 隐藏不需要的元素
+.posts-map,
+.views,
+.posters,
+.num.activity,
+.link-bottom-line,
+.topic-list-thumbnail {
+  display: none;
+}
+
+// 移动端适配
+@media (max-width: 768px) {
+  .topic-list-item {
+    padding: 0.75em;
+  }
+
+  .topic-user-header {
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+    }
+
+    .user-info {
+      .user-name {
+        font-size: 0.9em;
+      }
+
+      .user-title,
+      .post-time {
+        font-size: 0.8em;
+      }
+    }
+  }
+
+  .topic-images {
+    &.multiple-images {
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5em;
+
+      &.two-images {
+
+        // 移动端两张图片并排显示
+        .image-container:first-child {
+          grid-column: 1;
+        }
+
+        .image-container:last-child {
+          grid-column: 2;
+        }
+      }
+
+      &.three-images {
+        // 移动端三张图片保持一行三列不换行
+        grid-template-columns: repeat(3, 1fr);
+        grid-auto-rows: auto;
+        // 使用默认的自动流布局即可，无需指定每个元素的位置
+      }
+    }
+  }
+
+  .topic-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75em;
+
+    .topic-stats {
+      gap: 1em;
+    }
   }
 }

@@ -21,7 +21,7 @@ acceptance("topic list thumbnails | suggested topics", function () {
       "uses the default view"
     );
 
-    settings.suggested_topics_mode = "masonry";
+    settings.suggested_topics_mode = "feed";
 
     await visit("/t/280");
     assert.true(
@@ -31,6 +31,6 @@ acceptance("topic list thumbnails | suggested topics", function () {
     const newClassNames = Array.from(
       query("#suggested-topics .topic-list").classList
     );
-    assert.true(newClassNames.includes("topic-thumbnails-masonry"));
+    assert.true(newClassNames.includes("topic-thumbnails-feed"));
   });
 });

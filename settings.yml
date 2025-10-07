@@ -7,6 +7,7 @@ default_thumbnail_mode:
     - masonry
     - list
     - blog-style
+    - feed
     - none
 
 docs_thumbnail_mode:
@@ -17,6 +18,7 @@ docs_thumbnail_mode:
     - grid
     - list
     - blog-style
+    - feed
     - none
 
 blog_style_categories:
@@ -45,6 +47,16 @@ list_categories:
   default: ""
 
 blog_style_tags:
+  type: list
+  list_type: tag
+  default: ""
+
+feed_categories:
+  type: list
+  list_type: category
+  default: ""
+
+feed_tags:
   type: list
   list_type: tag
   default: ""
@@ -79,6 +91,7 @@ suggested_topics_mode:
     - masonry
     - list
     - blog-style
+    - feed
     - none
 
 enable_outside_topic_lists: false
