@@ -81,11 +81,17 @@
   right: 0;
   z-index: 100;
   margin: 0;
-  padding: 0.5em;
+  padding: 0.75em 1em;
   background: var(--secondary);
   border-bottom: 1px solid var(--primary-low);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-radius: 0; // 移动端去掉圆角
+
+  // 确保在discovery-list-container-top位置时仍然固定
+  &.discovery-list-container-top {
+    position: fixed !important;
+    top: 3.66em !important;
+  }
 
   .scroll-button {
     width: 28px;
@@ -111,15 +117,21 @@
 
   .nav-items {
     display: flex;
-    gap: 0.5em;
+    gap: 0.6em;
     min-width: max-content;
     padding: 0.25em 0;
   }
 
   .nav-item {
-    padding: 0.4em 0.8em;
+    padding: 0.6em 1em;
     font-size: 0.85em;
-    border-radius: 16px;
+    border-radius: 20px;
+    background: var(--primary-very-low);
+    border: 1px solid var(--primary-low);
+    color: var(--primary);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.2s ease;
 
     // 去掉移动端点击时的蓝色系统颜色
     -webkit-tap-highlight-color: transparent;
@@ -129,13 +141,30 @@
     -ms-user-select: none;
     user-select: none;
 
+    &:hover {
+      background: var(--primary-low);
+      border-color: var(--primary-medium);
+    }
+
+    &.active {
+      background: var(--quaternary);
+      color: var(--secondary);
+      border-color: var(--quaternary);
+      font-weight: 600;
+    }
+
     .count {
       font-size: 0.75em;
+      background: var(--primary-low);
+      padding: 0.15em 0.4em;
+      border-radius: 10px;
+      margin-left: 0.3em;
     }
   }
 }
 
 // 为移动端固定导航添加内容偏移
 .list-controls {
-  margin-top: 3em; // 为固定导航留出空间
+  margin-top: 4em; // 为固定导航留出更多空间
+  padding-top: 1em; // 额外增加顶部内边距
 }
