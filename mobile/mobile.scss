@@ -72,3 +72,70 @@
     max-width: unset;
   }
 }
+
+// 移动端可滑动分类导航样式
+.scrolling-category-nav {
+  position: fixed;
+  top: 3.66em; // 浮动header的高度
+  left: 0;
+  right: 0;
+  z-index: 100;
+  margin: 0;
+  padding: 0.5em;
+  background: var(--secondary);
+  border-bottom: 1px solid var(--primary-low);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 0; // 移动端去掉圆角
+
+  .scroll-button {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8em;
+
+    &.scroll-left {
+      left: 2px;
+    }
+
+    &.scroll-right {
+      right: 2px;
+    }
+  }
+
+  .nav-container {
+    // 确保移动端可以滑动
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .nav-items {
+    display: flex;
+    gap: 0.5em;
+    min-width: max-content;
+    padding: 0.25em 0;
+  }
+
+  .nav-item {
+    padding: 0.4em 0.8em;
+    font-size: 0.85em;
+    border-radius: 16px;
+
+    // 去掉移动端点击时的蓝色系统颜色
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    .count {
+      font-size: 0.75em;
+    }
+  }
+}
+
+// 为移动端固定导航添加内容偏移
+.list-controls {
+  margin-top: 3em; // 为固定导航留出空间
+}

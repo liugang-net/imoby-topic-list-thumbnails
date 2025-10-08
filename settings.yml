@@ -109,3 +109,21 @@ list_thumbnail_size:
   choices:
     - 200
     - 400
+
+# 可滑动分类导航设置
+show_scrolling_category_nav:
+  default: true
+  type: bool
+
+scrolling_nav_categories:
+  type: list
+  list_type: category
+  default: ""
+
+scrolling_nav_show_counts:
+  default: true
+  type: bool
+
+scrolling_nav_show_on_mobile:
+  default: true
+  type: bool
