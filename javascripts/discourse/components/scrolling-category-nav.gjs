@@ -18,11 +18,25 @@ export default class ScrollingCategoryNav extends Component {
       this.updateActiveState();
     }, 500);
     
-    // 监听页面导航事件
-    this.setupNavigationListener();
-    
-    // 定期检查URL变化（作为备用方案）
+    // 只使用URL变化检测，移除其他监听器避免重复
     this.setupUrlWatcher();
+  }
+
+  get shouldShowNav() {
+    return settings.show_scrolling_category_nav;
+  }
+
+  get allowedCategories() {
+    if (!settings.scrolling_nav_categories) return [];
+    return settings.scrolling_nav_categories.split('|').map(id => parseInt(id));
+  }
+
+  get showCounts() {
+    return settings.scrolling_nav_show_counts;
+  }
+
+  get showOnMobile() {
+    return settings.scrolling_nav_show_on_mobile;
   }
 
   setupUrlWatcher() {
@@ -33,42 +47,24 @@ export default class ScrollingCategoryNav extends Component {
       if (currentUrl !== lastUrl) {
         console.log('URL changed from', lastUrl, 'to', currentUrl);
         lastUrl = currentUrl;
-        this.updateActiveState();
+        // 使用防抖，避免重复执行
+        this.debouncedUpdateActiveState();
       }
     }, 500);
   }
 
-  setupNavigationListener() {
-    // 监听popstate事件（浏览器前进后退）
-    window.addEventListener('popstate', () => {
-      setTimeout(() => {
-        this.updateActiveState();
-      }, 100);
-    });
-    
-    // 监听所有导航链接的点击事件
-    document.addEventListener('click', (event) => {
-      const target = event.target.closest('a');
-      if (target && target.classList.contains('nav-item')) {
-        // 延迟更新，等待页面导航完成
-        setTimeout(() => {
-          this.updateActiveState();
-        }, 200);
-      }
-    });
-    
-    // 监听Discourse的路由变化
-    if (typeof Discourse !== 'undefined' && Discourse.__container__) {
-      const router = Discourse.__container__.lookup('router:main');
-      if (router) {
-        router.on('routeDidChange', () => {
-          setTimeout(() => {
-            this.updateActiveState();
-          }, 100);
-        });
-      }
+  debouncedUpdateActiveState() {
+    // 清除之前的定时器
+    if (this.updateTimer) {
+      clearTimeout(this.updateTimer);
     }
+    
+    // 设置新的定时器
+    this.updateTimer = setTimeout(() => {
+      this.updateActiveState();
+    }, 100);
   }
+
 
   get categories() {
     if (!this.site?.categories) {
@@ -76,11 +72,15 @@ export default class ScrollingCategoryNav extends Component {
     }
     
     const allCategories = this.site.categories;
+    const allowedIds = this.allowedCategories;
     
-    // 过滤掉未读分类和隐藏分类
+    // 过滤分类：公开、顶级分类，并且如果在设置中指定了分类ID，则只显示指定的分类
     const filtered = allCategories.filter(category => {
-      return category.read_restricted === false && 
-             (category.parent_category_id === null || category.parent_category_id === undefined);
+      const isPublic = category.read_restricted === false;
+      const isTopLevel = (category.parent_category_id === null || category.parent_category_id === undefined);
+      const isAllowed = allowedIds.length === 0 || allowedIds.includes(category.id);
+      
+      return isPublic && isTopLevel && isAllowed;
     }).sort((a, b) => a.position - b.position);
     
     return filtered;
@@ -93,21 +93,14 @@ export default class ScrollingCategoryNav extends Component {
     };
   }
 
-  getItemClass(itemType, category = null) {
-    return 'nav-item';
-  }
 
 
   updateActiveState() {
     const currentPath = window.location.pathname;
-    console.log('Current path:', currentPath);
     const navItems = document.querySelectorAll('.scrolling-category-nav .nav-item');
-    console.log('Found nav items:', navItems.length);
     
     navItems.forEach(item => {
       const href = item.getAttribute('href');
-      console.log('Checking item:', href, 'against path:', currentPath);
-      
       let isActive = false;
       
       // 检查"最新"页面
@@ -118,12 +111,10 @@ export default class ScrollingCategoryNav extends Component {
       else if (href && href.startsWith('/c/')) {
         // 提取分类ID进行匹配
         const hrefParts = href.split('/');
-        const hrefCategoryId = hrefParts[hrefParts.length - 1]; // 获取最后一个部分作为ID
+        const hrefCategoryId = hrefParts[hrefParts.length - 1];
         
         const currentParts = currentPath.split('/');
-        const currentCategoryId = currentParts[currentParts.length - 1]; // 获取当前路径的最后一个部分作为ID
-        
-        console.log('Comparing category IDs:', hrefCategoryId, 'vs', currentCategoryId);
+        const currentCategoryId = currentParts[currentParts.length - 1];
         
         if (hrefCategoryId === currentCategoryId) {
           isActive = true;
@@ -132,7 +123,6 @@ export default class ScrollingCategoryNav extends Component {
       
       if (isActive) {
         item.classList.add('active');
-        console.log('Activated item:', href);
       } else {
         item.classList.remove('active');
       }
@@ -140,17 +130,19 @@ export default class ScrollingCategoryNav extends Component {
   }
 
   <template>
-    <div class="scrolling-category-nav">
-      <div class="nav-container">
-        <div class="nav-items">
-          <a href="/latest" class={{this.getItemClass "latest"}}>最新</a>
-          {{#each this.categories as |category|}}
-            <a href={{this.categoryUrl category}} class={{this.getItemClass "category" category}}>
-              {{category.name}}
-            </a>
-          {{/each}}
+    {{#if this.shouldShowNav}}
+      <div class="scrolling-category-nav">
+        <div class="nav-container">
+          <div class="nav-items">
+            <a href="/latest" class="nav-item">最新</a>
+            {{#each this.categories as |category|}}
+              <a href={{this.categoryUrl category}} class="nav-item">
+                {{category.name}}
+              </a>
+            {{/each}}
+          </div>
         </div>
       </div>
-    </div>
+    {{/if}}
   </template>
 }

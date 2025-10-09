@@ -1,3 +1,13 @@
+body {
+  background-color: #f7f8fa;
+}
+
+
+.wrap {
+  padding: 0;
+}
+
+
 .topic-thumbnails-list .topic-list-thumbnail {
   width: 45px;
   height: 45px;
@@ -75,7 +85,7 @@
 
 // 移动端可滑动分类导航样式
 .scrolling-category-nav {
-  position: fixed;
+  position: sticky;
   top: 3.66em; // 浮动header的高度
   left: 0;
   right: 0;
@@ -87,9 +97,9 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-radius: 0; // 移动端去掉圆角
 
-  // 确保在discovery-list-container-top位置时仍然固定
+  // 确保在discovery-list-container-top位置时仍然粘性定位
   &.discovery-list-container-top {
-    position: fixed !important;
+    position: sticky !important;
     top: 3.66em !important;
   }
 
@@ -147,9 +157,9 @@
     }
 
     &.active {
-      background: var(--quaternary);
+      background-color: var(--d-button-primary-bg-color);
       color: var(--secondary);
-      border-color: var(--quaternary);
+      border-color: var(--d-button-primary-bg-color);
       font-weight: 600;
     }
 
@@ -163,8 +173,7 @@
   }
 }
 
-// 为移动端固定导航添加内容偏移
-.list-controls {
-  margin-top: 4em; // 为固定导航留出更多空间
-  padding-top: 1em; // 额外增加顶部内边距
-}
+// // 为移动端固定导航添加内容偏移
+// .list-controls {
+//   padding-top: 1em; // 额外增加顶部内边距
+// }

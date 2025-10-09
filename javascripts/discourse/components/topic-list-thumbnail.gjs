@@ -249,10 +249,10 @@ export default class TopicListThumbnail extends Component {
             <div class="user-name">
               <a href={{this.url}} class="user-link">{{this.userName}}</a>
             </div>
+            <div class="post-time">{{this.postTimeFormatted}}</div>
             {{#if this.userTitle}}
               <div class="user-title">{{this.userTitle}}</div>
             {{/if}}
-            <div class="post-time">{{this.postTimeFormatted}}</div>
           </div>
           <div class="post-actions">
             <button class="action-button" title="更多选项">
@@ -269,23 +269,22 @@ export default class TopicListThumbnail extends Component {
           {{#if this.topic.excerpt}}
             <a href={{this.url}} class="topic-excerpt">{{this.topic.excerpt}}</a>
           {{/if}}
+          {{! 图片展示 }}
+          {{#if this.images.length}}
+            <a href={{this.url}} class={{concatClass "topic-images" this.imageLayoutClass}} aria-label={{this.topic.title}}>
+              {{#each this.images as |imageUrl index|}}
+                <div class="image-container">
+                  <img src={{imageUrl}} alt="主题图片" loading="lazy" />
+                </div>
+              {{/each}}
+              {{#if this.showImageCount}}
+                <div class="images-total-badge">
+                  {{this.totalImageCount}}张
+                </div>
+              {{/if}}
+            </a>
+          {{/if}}
         </div>
-
-        {{! 图片展示 }}
-        {{#if this.images.length}}
-          <a href={{this.url}} class={{concatClass "topic-images" this.imageLayoutClass}} aria-label={{this.topic.title}}>
-            {{#each this.images as |imageUrl index|}}
-              <div class="image-container">
-                <img src={{imageUrl}} alt="主题图片" loading="lazy" />
-              </div>
-            {{/each}}
-            {{#if this.showImageCount}}
-              <div class="images-total-badge">
-                {{this.totalImageCount}}张
-              </div>
-            {{/if}}
-          </a>
-        {{/if}}
 
         {{! 底部统计信息 }}
         <div class="topic-footer">
