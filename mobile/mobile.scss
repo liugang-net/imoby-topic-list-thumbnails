@@ -1,5 +1,62 @@
-body {
-  background-color: #f7f8fa;
+.topic-list-item {
+  padding: 0.75em;
+}
+
+.topic-user-header {
+  .user-avatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  .user-info {
+    gap: 0.5em;
+
+    .user-name {
+      font-size: 0.9em;
+      color: #201e22;
+    }
+
+    .user-title,
+    .post-time {
+      font-size: 0.8em;
+      color: #757377;
+    }
+  }
+}
+
+.topic-images {
+  &.multiple-images {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5em;
+
+    &.two-images {
+
+      // 移动端两张图片并排显示
+      .image-container:first-child {
+        grid-column: 1;
+      }
+
+      .image-container:last-child {
+        grid-column: 2;
+      }
+    }
+
+    &.three-images {
+      // 移动端三张图片保持一行三列不换行
+      grid-template-columns: repeat(3, 1fr);
+      grid-auto-rows: auto;
+      // 使用默认的自动流布局即可，无需指定每个元素的位置
+    }
+  }
+}
+
+.topic-footer {
+  align-items: flex-start;
+  gap: 0.75em;
+
+  .topic-stats {
+    gap: 1em;
+  }
 }
 
 
@@ -12,6 +69,16 @@ body {
   width: 45px;
   height: 45px;
 }
+
+.navigation-container,
+.topic-list-bottom {
+  padding: 0 1em;
+}
+
+#main-outlet>.regular {
+  padding: 0 1em;
+}
+
 
 .topic-thumbnails-list {
   .topic-list-body .topic-list-item {
@@ -83,6 +150,19 @@ body {
   }
 }
 
+.topic-thumbnails-feed {
+  .topic-user-header {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .topic-footer {
+    border-top: none;
+    padding-top: 0
+  }
+}
+
+
 // 移动端可滑动分类导航样式
 .scrolling-category-nav {
   position: sticky;
@@ -91,11 +171,14 @@ body {
   right: 0;
   z-index: 100;
   margin: 0;
-  padding: 0.75em 1em;
+  margin-bottom: 1em;
+  padding: 0;
   background: var(--secondary);
   border-bottom: 1px solid var(--primary-low);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
   border-radius: 0; // 移动端去掉圆角
+  border-left: none;
+  border-right: none;
 
   // 确保在discovery-list-container-top位置时仍然粘性定位
   &.discovery-list-container-top {
@@ -134,14 +217,15 @@ body {
 
   .nav-item {
     padding: 0.6em 1em;
-    font-size: 0.85em;
-    border-radius: 20px;
-    background: var(--primary-very-low);
-    border: 1px solid var(--primary-low);
-    color: var(--primary);
+    font-size: 0.9em;
+    border-radius: 0;
+    background: transparent;
+    border: none;
+    color: var(--primary-medium);
     text-decoration: none;
     white-space: nowrap;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
+    position: relative;
 
     // 去掉移动端点击时的蓝色系统颜色
     -webkit-tap-highlight-color: transparent;
@@ -152,15 +236,30 @@ body {
     user-select: none;
 
     &:hover {
-      background: var(--primary-low);
-      border-color: var(--primary-medium);
+      color: var(--primary);
+      background: transparent;
     }
 
     &.active {
-      background-color: var(--d-button-primary-bg-color);
-      color: var(--secondary);
-      border-color: var(--d-button-primary-bg-color);
+      background: transparent;
+      color: var(--primary);
+      border: none;
       font-weight: 600;
+
+      // 添加蓝色下划线指示条
+      &::after {
+        content: '';
+        display: block;
+        position: absolute;
+        bottom: -0.3em;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 1em;
+        height: 5px;
+        background-color: #0ca0ff;
+        border-radius: 9999px;
+        transition: all 0.3s ease;
+      }
     }
 
     .count {

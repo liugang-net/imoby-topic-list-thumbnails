@@ -545,16 +545,23 @@
       justify-content: center;
       margin-bottom: 0;
 
+      a,
+      a:visited,
+      a:hover,
+      a:active {
+        color: #201e22;
+      }
+
       .user-name {
-        font-weight: 600;
-        color: var(--primary);
+        font-weight: 400;
+        color: #201e22;
         font-size: 0.95em;
         display: block;
         line-height: 1;
       }
 
       .post-time {
-        color: var(--primary-low-mid);
+        color: #757377;
         font-size: 0.8em;
         display: block;
         line-height: 1;
@@ -599,14 +606,14 @@
     margin-bottom: 1em;
 
     .topic-title {
-      font-size: 1.1em;
-      font-weight: 600;
+      font-size: 1em;
+      font-weight: 400;
       line-height: 1.4;
-      color: var(--primary);
+      color: var(--title-color);
       margin-bottom: 0.75em;
 
       a.title {
-        color: var(--primary);
+        color: var(--title-color);
         text-decoration: none;
 
         &:hover {
@@ -761,6 +768,15 @@
         font-weight: 500;
       }
     }
+
+    a,
+    a:visited,
+    a:hover,
+    a:active {
+      color: #8d8d8d;
+      text-decoration: none;
+      cursor: pointer;
+    }
   }
 }
 
@@ -769,70 +785,11 @@
 .views,
 .posters,
 .num.activity,
-.link-bottom-line,
-.topic-list-thumbnail {
+.link-bottom-line {
   display: none;
 }
 
-// 移动端适配
-@media (max-width: 768px) {
-  .topic-list-item {
-    padding: 0.75em;
-  }
 
-  .topic-user-header {
-    .user-avatar {
-      width: 36px;
-      height: 36px;
-    }
-
-    .user-info {
-      .user-name {
-        font-size: 0.9em;
-      }
-
-      .user-title,
-      .post-time {
-        font-size: 0.8em;
-      }
-    }
-  }
-
-  .topic-images {
-    &.multiple-images {
-      grid-template-columns: 1fr 1fr;
-      gap: 0.5em;
-
-      &.two-images {
-
-        // 移动端两张图片并排显示
-        .image-container:first-child {
-          grid-column: 1;
-        }
-
-        .image-container:last-child {
-          grid-column: 2;
-        }
-      }
-
-      &.three-images {
-        // 移动端三张图片保持一行三列不换行
-        grid-template-columns: repeat(3, 1fr);
-        grid-auto-rows: auto;
-        // 使用默认的自动流布局即可，无需指定每个元素的位置
-      }
-    }
-  }
-
-  .topic-footer {
-    align-items: flex-start;
-    gap: 0.75em;
-
-    .topic-stats {
-      gap: 1em;
-    }
-  }
-}
 
 // 可滑动分类导航样式
 .scrolling-category-nav {
@@ -841,8 +798,9 @@
   background: var(--secondary);
   border: 1px solid var(--primary-low);
   border-radius: 12px;
-  padding: 0.75em;
-  margin: 1em auto;
+  padding: 0.5em;
+  margin: 0 auto 1em auto;
+
   max-width: calc(var(--d-sidebar-width) + var(--d-max-width));
   position: relative;
   overflow: hidden;
@@ -899,26 +857,25 @@
 
   .nav-items {
     display: flex;
-    gap: 0.75em;
     min-width: max-content;
-    padding: 0.25em 0;
   }
 
   .nav-item {
     display: flex;
     align-items: center;
     gap: 0.5em;
-    padding: 0.75em 1.25em;
-    background: var(--primary-very-low);
-    border: 1px solid var(--primary-low);
-    border-radius: 24px;
-    color: var(--primary);
+    padding: 0.75em 1em;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    color: var(--primary-medium);
     text-decoration: none;
-    font-size: 0.9em;
-    font-weight: 500;
+    font-size: 0.95em;
+    font-weight: 400;
     white-space: nowrap;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
     min-width: fit-content;
+    position: relative;
 
     // 去掉移动端点击时的蓝色系统颜色
     -webkit-tap-highlight-color: transparent;
@@ -929,42 +886,85 @@
     user-select: none;
 
     &:hover {
-      background: var(--primary-low);
-      border-color: var(--primary-medium);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      color: var(--primary);
+      background: transparent;
+      transform: none;
+      box-shadow: none;
     }
 
     &.active {
-      background-color: var(--d-button-primary-bg-color);
-      color: var(--secondary);
-      border-color: var(--d-button-primary-bg-color);
+      background: transparent;
+      color: var(--primary);
+      border: none;
       font-weight: 600;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+      transform: none;
+      box-shadow: none;
+
+      // 添加蓝色下划线指示条
+      &::after {
+        content: '';
+        display: block;
+        position: absolute;
+        bottom: -0.5em;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 2em;
+        height: 3px;
+        background-color: var(--d-button-primary-bg-color);
+        border-radius: 2px;
+        transition: all 0.3s ease;
+      }
     }
   }
 
   // 使用CSS选择器实现选中状态，避免JavaScript错误
   .nav-item[href="/latest"] {
     &:target {
-      background-color: var(--d-button-primary-bg-color);
-      color: var(--secondary);
-      border-color: var(--d-button-primary-bg-color);
+      background: transparent;
+      color: var(--primary);
+      border: none;
       font-weight: 600;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+      transform: none;
+      box-shadow: none;
+
+      &::after {
+        content: '';
+        display: block;
+        position: absolute;
+        bottom: -0.5em;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 2em;
+        height: 3px;
+        background-color: var(--d-button-primary-bg-color);
+        border-radius: 2px;
+        transition: all 0.3s ease;
+      }
     }
   }
 
   .nav-item[href^="/c/"] {
     &:target {
-      background-color: var(--d-button-primary-bg-color);
-      color: var(--secondary);
-      border-color: var(--d-button-primary-bg-color);
+      background: transparent;
+      color: var(--primary);
+      border: none;
       font-weight: 600;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+      transform: none;
+      box-shadow: none;
+
+      &::after {
+        content: '';
+        display: block;
+        position: absolute;
+        bottom: -0.5em;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 2em;
+        height: 3px;
+        background-color: var(--d-button-primary-bg-color);
+        border-radius: 2px;
+        transition: all 0.3s ease;
+      }
     }
 
     .count {
@@ -975,21 +975,5 @@
       border-radius: 12px;
       font-weight: 500;
     }
-  }
-}
-
-// 响应式设计
-@media (max-width: 1400px) {
-  .scrolling-category-nav {
-    max-width: 100%;
-    margin: 1em;
-  }
-}
-
-@media (max-width: 768px) {
-  .scrolling-category-nav {
-    margin: 0;
-    border-radius: 0;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 }

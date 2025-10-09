@@ -123,6 +123,7 @@ export default class ScrollingCategoryNav extends Component {
       
       if (isActive) {
         item.classList.add('active');
+        console.log('Activated item:', href);
       } else {
         item.classList.remove('active');
       }

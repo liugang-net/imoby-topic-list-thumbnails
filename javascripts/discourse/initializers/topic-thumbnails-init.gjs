@@ -48,7 +48,7 @@ export default apiInitializer("0.8", (api) => {
   console.log("Navigation setting:", settings.show_scrolling_category_nav);
   if (settings.show_scrolling_category_nav) {
     api.renderInOutlet(
-      "below-site-header",
+      "discovery-list-controls-above",
       <template>
         <ScrollingCategoryNav />
       </template>
