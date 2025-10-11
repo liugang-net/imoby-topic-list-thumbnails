@@ -24,14 +24,33 @@
   }
 }
 
-.topic-images {
+.topic-thumbnails-feed .topic-images {
+  &.single-image {
+    .image-container {
+      border-radius: 8px;
+      overflow: hidden;
+
+      img {
+        max-width: 300px !important;
+        max-height: 250px !important;
+        width: auto !important;
+        height: auto !important;
+        object-fit: contain !important;
+        display: block !important;
+      }
+    }
+  }
+
   &.multiple-images {
-    grid-template-columns: 1fr 1fr;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 0.5em;
+    border-radius: 8px;
+    overflow: hidden;
 
     &.two-images {
 
-      // 移动端两张图片并排显示
+      // 移动端两张图片使用三列布局，第三个位置留空
       .image-container:first-child {
         grid-column: 1;
       }
@@ -42,10 +61,22 @@
     }
 
     &.three-images {
-      // 移动端三张图片保持一行三列不换行
+      // 移动端三张图片使用三列布局
       grid-template-columns: repeat(3, 1fr);
       grid-auto-rows: auto;
-      // 使用默认的自动流布局即可，无需指定每个元素的位置
+    }
+
+    .image-container {
+      background-color: var(--primary-low);
+      position: relative;
+      overflow: hidden;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
     }
   }
 }
@@ -83,30 +114,18 @@
 .topic-thumbnails-list {
   .topic-list-body .topic-list-item {
     .right {
-      display: grid;
-      grid-template-columns: 15% auto 15%;
-      grid-template-areas: "thumbnail title replies" "thumbnail data data";
-      gap: 0 0.5em;
+      // 移除Grid布局，使用Flexbox布局
+      display: flex;
+      flex-direction: column;
+      gap: 0.5em;
+      margin-left: 0 !important; // 覆盖Discourse默认的margin-left: 55px
 
       .num {
         text-align: right;
       }
 
-      .topic-list-thumbnail {
-        grid-area: thumbnail;
-      }
-
       .main-link {
-        grid-area: title;
         width: unset;
-      }
-
-      .topic-item-stats {
-        grid-area: data;
-      }
-
-      .pull-right {
-        grid-area: replies;
       }
     }
   }
@@ -268,6 +287,140 @@
       padding: 0.15em 0.4em;
       border-radius: 10px;
       margin-left: 0.3em;
+    }
+  }
+}
+
+// 移动端公告滚动组件样式
+.announcement-scroll {
+  padding: 8px 0;
+
+  .announcement-scroll-container {
+    height: 36px;
+    margin-right: 50px;
+  }
+
+  .announcement-item {
+    padding: 7px 15px;
+    line-height: 22px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+
+    .announcement-title {
+      font-size: 13px;
+    }
+  }
+
+  .announcement-more {
+    right: 10px;
+
+    .more-link {
+      font-size: 13px;
+    }
+  }
+}
+
+.topic-thumbnails-list {
+  .topic-list-item {
+
+    .posters,
+    .posts-map,
+    .views,
+    .num.activity {
+      display: none !important;
+    }
+  }
+
+  // 隐藏发帖人头像
+  .pull-left {
+    display: none !important;
+  }
+
+  // 移动端特殊处理：隐藏重复的Discourse原生元素
+  .topic-item-metadata {
+
+    .main-link,
+    .pull-right,
+    .topic-item-stats {
+      display: none !important;
+    }
+  }
+}
+
+// 移动端List模式样式
+.topic-list-simple {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1em;
+  padding: 1em 0.75em;
+  min-height: 80px;
+
+  .topic-content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    .topic-title {
+      margin-bottom: 0.4em;
+
+      .title-link {
+        font-size: 0.95em;
+        line-height: 1.3;
+        font-weight: 400;
+        color: var(--primary);
+        text-decoration: none;
+        display: block;
+        word-break: break-word;
+
+        &:hover {
+          color: var(--primary-high);
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .topic-meta {
+      .post-time {
+        font-size: 0.85em;
+        font-weight: 500;
+        color: var(--primary-medium);
+      }
+    }
+  }
+
+  .topic-thumbnail {
+    flex-shrink: 0;
+    width: 80px;
+    height: 60px;
+    border-radius: 8px;
+    overflow: hidden;
+
+    a {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    &:hover img {
+      transform: scale(1.05);
+    }
+  }
+
+  // 没有图片时的样式
+  &:not(:has(.topic-thumbnail)) {
+    .topic-content {
+      width: 100%;
     }
   }
 }

@@ -306,38 +306,66 @@ export default class TopicListThumbnail extends Component {
         </div>
       </div>
     {{else}}
-      {{! 其他模式的原有布局 }}
-      <div
-        class={{concatClass
-          "topic-list-thumbnail"
-          (if this.hasThumbnail "has-thumbnail" "no-thumbnail")
-        }}
-      >
-        <a href={{this.url}} aria-label={{this.topic.title}}>
+      {{! List模式的简化布局 }}
+      {{#if this.topicThumbnails.displayList}}
+        <div class="topic-list-simple">
+          <div class="topic-content">
+            <div class="topic-title">
+              <a href={{this.url}} class="title-link">{{this.topic.title}}</a>
+            </div>
+            <div class="topic-meta">
+              <span class="post-time">{{this.postTimeFormatted}}</span>
+            </div>
+          </div>
           {{#if this.hasThumbnail}}
-            <img
-              class="background-thumbnail"
-              src={{this.fallbackSrc}}
-              srcset={{this.srcSet}}
-              width={{this.width}}
-              height={{this.height}}
-              loading="lazy"
-            />
-            <img
-              class="main-thumbnail"
-              src={{this.fallbackSrc}}
-              srcset={{this.srcSet}}
-              width={{this.width}}
-              height={{this.height}}
-              loading="lazy"
-            />
-          {{else}}
-            <div class="thumbnail-placeholder">
-              {{dIcon settings.placeholder_icon}}
+            <div class="topic-thumbnail">
+              <a href={{this.url}} aria-label={{this.topic.title}}>
+                <img
+                  src={{this.fallbackSrc}}
+                  srcset={{this.srcSet}}
+                  width={{this.width}}
+                  height={{this.height}}
+                  loading="lazy"
+                  alt="主题缩略图"
+                />
+              </a>
             </div>
           {{/if}}
-        </a>
-      </div>
+        </div>
+      {{else}}
+        {{! 其他模式的原有布局 }}
+        <div
+          class={{concatClass
+            "topic-list-thumbnail"
+            (if this.hasThumbnail "has-thumbnail" "no-thumbnail")
+          }}
+        >
+          <a href={{this.url}} aria-label={{this.topic.title}}>
+            {{#if this.hasThumbnail}}
+              <img
+                class="background-thumbnail"
+                src={{this.fallbackSrc}}
+                srcset={{this.srcSet}}
+                width={{this.width}}
+                height={{this.height}}
+                loading="lazy"
+              />
+              <img
+                class="main-thumbnail"
+                src={{this.fallbackSrc}}
+                srcset={{this.srcSet}}
+                width={{this.width}}
+                height={{this.height}}
+                loading="lazy"
+              />
+            {{else}}
+              <div class="thumbnail-placeholder">
+                {{dIcon settings.placeholder_icon}}
+              </div>
+            {{/if}}
+          </a>
+        </div>
+      {{/if}}
 
       {{#if this.topicThumbnails.showLikes}}
         <div class="topic-thumbnail-likes">

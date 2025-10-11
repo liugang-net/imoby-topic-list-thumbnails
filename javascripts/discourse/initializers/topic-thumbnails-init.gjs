@@ -3,9 +3,11 @@ import { service } from "@ember/service";
 import { apiInitializer } from "discourse/lib/api";
 import TopicListThumbnail from "../components/topic-list-thumbnail";
 import ScrollingCategoryNav from "../components/scrolling-category-nav";
+import AnnouncementScroll from "../components/announcement-scroll";
 
 export default apiInitializer("0.8", (api) => {
   const ttService = api.container.lookup("service:topic-thumbnails");
+  
 
   api.registerValueTransformer("topic-list-class", ({ value }) => {
     if (ttService.displayMinimalGrid) {
@@ -54,6 +56,14 @@ export default apiInitializer("0.8", (api) => {
       </template>
     );
   }
+
+  // 注册公告滚动组件到top-notices（在首页、最新页、话题列表页显示）
+  api.renderInOutlet(
+    "top-notices",
+    <template>
+      <AnnouncementScroll />
+    </template>
+  );
 
   api.registerValueTransformer("topic-list-item-mobile-layout", ({ value }) => {
     if (ttService.enabledForRoute && !ttService.displayList) {
