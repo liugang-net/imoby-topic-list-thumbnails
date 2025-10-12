@@ -312,11 +312,13 @@ export default class AnnouncementScroll extends Component {
         <div class="announcement-content">
           {{#each this.announcements as |announcement|}}
             <a href={{this.topicUrl announcement}} class="announcement-item">
+              <span class="announcement-badge">公告</span>
               <span class="announcement-title">{{announcement.title}}</span>
             </a>
           {{/each}}
           {{#each this.announcements as |announcement|}}
             <a href={{this.topicUrl announcement}} class="announcement-item">
+              <span class="announcement-badge">公告</span>
               <span class="announcement-title">{{announcement.title}}</span>
             </a>
           {{/each}}
