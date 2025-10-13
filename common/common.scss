@@ -1,3 +1,5 @@
+@charset "utf-8";
+
 .topic-thumbnail-likes {
   display: none;
 }
@@ -693,7 +695,7 @@
         .topic-title {
           a.title {
             &::before {
-              content: "PINNED";
+              content: "置顶";
               display: inline-block;
               background-color: #007bff;
               color: white;
