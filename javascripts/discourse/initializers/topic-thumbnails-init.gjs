@@ -8,6 +8,8 @@ import AnnouncementScroll from "../components/announcement-scroll";
 export default apiInitializer("0.8", (api) => {
   const ttService = api.container.lookup("service:topic-thumbnails");
   
+  // 分享按钮图标通过CSS替换，无需JavaScript处理
+  
 
   api.registerValueTransformer("topic-list-class", ({ value }) => {
     if (ttService.displayMinimalGrid) {

@@ -1,5 +1,26 @@
 @charset "utf-8";
 
+:root {
+  --bm-body-bg-color: #f5f7f8;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bm-body-bg-color: #313131;
+    /* 浅色模式颜色 */
+  }
+}
+
+html {
+  body {
+    overscroll-behavior: none;
+  }
+}
+
+.topic-list-body {
+  background-color: var(--bm-body-bg-color);
+}
+
 .topic-thumbnail-likes {
   display: none;
 }
@@ -12,7 +33,6 @@
   overflow: hidden;
   border-radius: 8px;
   margin: 10px 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
   position: relative;
@@ -101,9 +121,7 @@
   }
 
   .topic-list-header {
-    .posts {
-      display: none;
-    }
+    display: none;
   }
 
   .topic-list-item {
@@ -115,6 +133,33 @@
       display: none !important;
     }
   }
+
+  .topic-list-data {
+    padding: 0;
+
+    &:first-of-type {
+      padding-inline-start: 0;
+    }
+  }
+
+  tbody {
+    &.topic-list-body {
+      border-top: 0.5em solid var(--bm-body-bg-color);
+
+    }
+
+    tr {
+      background-color: transparent;
+      border-bottom: none;
+
+      &.visited {
+        background-color: transparent;
+
+      }
+    }
+  }
+
+
 }
 
 // List模式的简化布局样式
@@ -123,9 +168,12 @@
   align-items: center;
   justify-content: space-between;
   gap: 1em;
+  background-color: var(--topic-list-item-background-color);
   // padding: 1em 0.75em;
   // border-bottom: 1px solid var(--primary-low);
   // min-height: 80px;
+  padding: var(--d-topic-list-data-padding-y) var(--d-topic-list-data-padding-x);
+  margin-bottom: 0.5em;
 
 
   .topic-content {
@@ -166,9 +214,8 @@
 
   .topic-thumbnail {
     flex-shrink: 0;
-    width: 100px;
-    height: 75px;
-    border-radius: 8px;
+    width: 120px;
+    height: 90px;
     overflow: hidden;
 
     a {
@@ -203,6 +250,12 @@
 .topic-thumbnails-minimal,
 .topic-thumbnails-blog-style-grid,
 .topic-thumbnails-feed {
+  tbody {
+    tr {
+      border-bottom: none
+    }
+  }
+
   .topic-list-thumbnail {
     background: var(--primary-low);
     position: relative;
@@ -211,6 +264,7 @@
     width: 140px;
     height: 100px;
     overflow: hidden;
+
 
     &.landscape {
       .background-thumbnail {
@@ -666,7 +720,7 @@
   .topic-list-body {
     display: flex;
     flex-direction: column;
-    gap: 1em;
+    padding-top: 0.5em;
     border: 0;
   }
 
@@ -678,21 +732,29 @@
     background-color: var(--secondary);
     padding: 1em;
     transition: box-shadow 0.2s ease, transform 0.2s ease;
+    cursor: pointer; // 添加指针样式，表明可点击
     // border-bottom: none;
+    margin-bottom: 0.5em;
 
     &.pinned {
       padding: 0 1em;
+      margin-bottom: 0;
 
       .topic-user-header {
         display: none;
       }
 
       .topic-content {
+        margin-bottom: 0;
+        padding: 0.5em;
+
         .topic-excerpt {
           display: none;
         }
 
         .topic-title {
+          margin-bottom: 0;
+
           a.title {
             &::before {
               content: "置顶";
@@ -713,6 +775,10 @@
       .topic-footer {
         display: none;
       }
+    }
+
+    &.pinned:not(:has(+ .pinned)) {
+      margin-bottom: 0.5em;
     }
 
     // 隐藏默认的td元素
@@ -861,6 +927,7 @@
     }
 
     .topic-excerpt {
+      font-size: var(--font-0);
       color: var(--primary-medium);
       line-height: 1.5;
       margin-bottom: 1em;
@@ -934,6 +1001,10 @@
     &.single-image {
       .image-container {
         overflow: hidden;
+        position: relative;
+        display: inline-block; // 让容器适应图片尺寸
+        max-width: 500px;
+        max-height: 400px;
 
         img {
           max-width: 500px;
@@ -1085,7 +1156,6 @@
   max-width: calc(var(--d-sidebar-width) + var(--d-max-width));
   position: relative;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 
   .scroll-button {
     position: absolute;
@@ -1258,3 +1328,118 @@
     }
   }
 }
+
+.more-topics__container {
+  display: none;
+}
+
+// 视频播放按钮样式 - 只在视频时显示
+.topic-images .image-container .video-play-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 24px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(4px);
+  z-index: 2;
+
+  .d-icon {
+    margin-left: 4px; // 微调播放图标位置，使其看起来更居中
+  }
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+}
+
+// 单张图片/视频的播放按钮稍大一些
+.topic-images.single-image .image-container .video-play-button {
+  width: 80px;
+  height: 80px;
+  font-size: 32px;
+
+  .d-icon {
+    margin-left: 6px;
+  }
+}
+
+// 内容页标题行数限制
+
+#topic-title {
+  .title-wrapper {
+    h1 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  }
+}
+
+// 草稿按钮图标替换 - 使用更符合中文用户习惯的图标
+.list-controls {
+  .topic-drafts-menu-trigger {
+    svg {
+      display: none;
+      /* 隐藏原 svg */
+    }
+
+    &::before {
+      content: "";
+      display: block;
+      width: 1.5em;
+      height: 1.5em;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'><path d='M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z'/><path d='M8 12H16V14H8V12Z'/><path d='M8 16H14V18H8V16Z'/></svg>");
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+  }
+}
+
+// 编辑器尺寸
+
+:root {
+  --new-topic-composer-height: 800px;
+}
+
+#reply-control:not(.fullscreen).hide-preview {
+  max-width: var(--d-max-width);
+}
+
+// // 分享按钮图标替换 - 使用CSS覆盖方式
+// #topic-footer-buttons {
+//   #topic-footer-button-share-and-invite {
+//     .d-icon {
+//       display: none;
+//     }
+
+//     &::before {
+//       content: "";
+//       display: block;
+//       width: 1em;
+//       height: 1em;
+//       background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'><path d='M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92 0-1.61-1.31-2.92-2.92-2.92z'/></svg>");
+//       background-size: contain;
+//       background-repeat: no-repeat;
+//       background-position: center;
+//       transition: all 0.2s ease;
+//     }
+
+//     &:hover::before {
+//       // 悬停时保持相同图标，但可以通过filter调整颜色
+//       filter: brightness(1.2);
+//     }
+//   }
+// }

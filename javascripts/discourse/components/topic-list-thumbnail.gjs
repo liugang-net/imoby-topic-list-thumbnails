@@ -1,5 +1,7 @@
 import Component from "@glimmer/component";
 import { service } from "@ember/service";
+import { action } from "@ember/object";
+import { on } from "@ember/modifier";
 import coldAgeClass from "discourse/helpers/cold-age-class";
 import concatClass from "discourse/helpers/concat-class";
 import dIcon from "discourse/helpers/d-icon";
@@ -84,7 +86,11 @@ export default class TopicListThumbnail extends Component {
   get url() {
     return this.topic.get("linked_post_number")
       ? this.topic.urlForPostNumber(this.topic.get("linked_post_number"))
-      : this.topic.get("lastUnreadUrl");
+      : this.topic.get("url");
+  }
+
+  get lastPostUrl() {
+    return this.topic.get("lastPostUrl");
   }
 
   get user() {
@@ -144,8 +150,34 @@ export default class TopicListThumbnail extends Component {
     return formatDate(this.postTime, { format: "tiny", noTitle: true });
   }
 
+  get isVideo() {
+    // 检查是否有视频URL
+    return !!(this.topic.video_url && this.topic.video_url.trim());
+  }
+
+  get videoThumbnail() {
+    // 获取视频缩略图
+    return this.topic.video_thumbnail;
+  }
+
   get images() {
-    // 优先使用新的images数组，如果没有则使用thumbnails
+    // 在信息流模式下，只使用新的images数组，不回退到thumbnails
+    if (this.topicThumbnails.displayFeed) {
+      // 如果是视频，返回视频缩略图
+      if (this.isVideo && this.videoThumbnail) {
+        return [this.videoThumbnail];
+      }
+      
+      if (this.topic.images && this.topic.images.length > 0) {
+        return this.topic.images
+          .filter(img => img.url)
+          .slice(0, 3)
+          .map(img => img.url);
+      }
+      return [];
+    }
+    
+    // 其他模式：优先使用新的images数组，如果没有则使用thumbnails
     if (this.topic.images && this.topic.images.length > 0) {
       return this.topic.images
         .filter(img => img.url)
@@ -169,7 +201,15 @@ export default class TopicListThumbnail extends Component {
   }
 
   get totalImageCount() {
-    // 获取实际的总图片数量
+    // 在信息流模式下，只使用新的images数组
+    if (this.topicThumbnails.displayFeed) {
+      if (this.topic.images && this.topic.images.length > 0) {
+        return this.topic.images.filter(img => img.url).length;
+      }
+      return 0;
+    }
+    
+    // 其他模式：获取实际的总图片数量
     if (this.topic.images && this.topic.images.length > 0) {
       return this.topic.images.filter(img => img.url).length;
     }
@@ -212,6 +252,30 @@ export default class TopicListThumbnail extends Component {
     return `/tags/${encodeURIComponent(tag)}`;
   }
 
+  @action
+  handleTopicClick(event) {
+    // 检查点击的元素是否已经是链接或按钮
+    const target = event.target;
+    const isLink = target.closest('a, button, [role="button"]');
+    
+    if (isLink) {
+      return; // 如果点击的是链接或按钮，不处理
+    }
+    
+    // 检查是否点击在可交互元素上
+    const interactiveElements = target.closest('.user-link, .discourse-tag, .stat, .action-button, .video-play-button');
+    if (interactiveElements) {
+      return; // 如果点击在可交互元素上，不处理
+    }
+    
+    // 阻止默认行为并跳转到主题
+    event.preventDefault();
+    event.stopPropagation();
+    
+    // 跳转到主题URL
+    window.location.href = this.url;
+  }
+
   get replyCount() {
     // 优先使用 posts_count - 1，因为这是Discourse的标准逻辑
     const posts = this.topic.posts_count;
@@ -245,7 +309,7 @@ export default class TopicListThumbnail extends Component {
   <template>
     {{#if this.topicThumbnails.displayFeed}}
       {{! 信息流模式 - 完整的社交媒体风格布局 }}
-      <div class="topic-feed-item">
+      <div class="topic-feed-item" {{on "click" this.handleTopicClick}}>
         {{! 用户信息头部 }}
         <div class="topic-user-header">
           <div class="user-avatar">
@@ -283,12 +347,17 @@ export default class TopicListThumbnail extends Component {
           {{#if this.topic.excerpt}}
             <a href={{this.url}} class="topic-excerpt">{{this.topic.excerpt}}</a>
           {{/if}}
-          {{! 图片展示 }}
+          {{! 图片/视频展示 }}
           {{#if this.images.length}}
             <a href={{this.url}} class={{concatClass "topic-images" this.imageLayoutClass}} aria-label={{this.topic.title}}>
               {{#each this.images as |imageUrl index|}}
                 <div class="image-container">
                   <img src={{imageUrl}} alt="主题图片" loading="lazy" />
+                  {{#if this.isVideo}}
+                    <div class="video-play-button">
+                      {{dIcon "play"}}
+                    </div>
+                  {{/if}}
                 </div>
               {{/each}}
               {{#if this.showImageCount}}
@@ -308,7 +377,7 @@ export default class TopicListThumbnail extends Component {
             {{/each}}
           </div>
           <div class="topic-stats">
-            <a href={{this.url}} class="stat" aria-label="查看回复">
+            <a href={{this.lastPostUrl}} class="stat" aria-label="查看回复">
               {{dIcon "comment"}}
               <span class="number">{{this.replyCount}}</span>
             </a>

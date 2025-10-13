@@ -28,6 +28,10 @@
   &.single-image {
     .image-container {
       overflow: hidden;
+      position: relative;
+      display: inline-block; // 让容器适应图片尺寸
+      max-width: 300px;
+      max-height: 250px;
 
       img {
         max-width: 300px !important;
@@ -234,7 +238,7 @@
   }
 
   .nav-item {
-    padding: 0.6em 1em;
+    padding: 0.6em;
     font-size: 0.9em;
     border-radius: 0;
     background: transparent;
@@ -393,9 +397,9 @@
 
   .topic-thumbnail {
     flex-shrink: 0;
-    width: 80px;
-    height: 60px;
-    border-radius: 8px;
+    width: 120px;
+    height: 90px;
+
     overflow: hidden;
 
     a {
@@ -428,3 +432,74 @@
 // .list-controls {
 //   padding-top: 1em; // 额外增加顶部内边距
 // }
+
+// 移动端视频播放按钮样式 - 只在视频时显示
+.topic-images .image-container .video-play-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50px;
+  height: 50px;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 20px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(4px);
+  z-index: 2;
+
+  .d-icon {
+    margin-left: 3px;
+  }
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+}
+
+// 移动端单张图片/视频的播放按钮稍大一些
+.topic-images.single-image .image-container .video-play-button {
+  width: 60px;
+  height: 60px;
+  font-size: 24px;
+
+  .d-icon {
+    margin-left: 4px;
+  }
+}
+
+// 移动端多图片模式视频播放按钮稍小一些
+.topic-images.multiple-images .image-container .video-play-button {
+  width: 40px;
+  height: 40px;
+  font-size: 16px;
+
+  .d-icon {
+    margin-left: 2px;
+  }
+}
+
+// 创建帖子按钮右下方悬浮
+.list-controls {
+  #create-topic {
+    position: fixed;
+    z-index: 299;
+    bottom: 60px;
+    right: 30px;
+    transform: scale(1.5);
+    color: var(--d-button-primary-text-color);
+    background-color: var(--d-button-primary-bg-color);
+    transition: var(--d-button-transition);
+    border: var(--d-button-border);
+    border-radius: var(--d-button-border-radius);
+
+    .d-icon {
+      color: var(--d-button-primary-text-color);
+    }
+  }
+}
