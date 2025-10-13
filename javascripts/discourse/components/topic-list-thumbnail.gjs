@@ -228,6 +228,20 @@ export default class TopicListThumbnail extends Component {
     return 0;
   }
 
+  get likeCount() {
+    // 获取点赞数
+    const likes = this.topic.like_count;
+    if (typeof likes === "number") {
+      return likes;
+    }
+    return 0;
+  }
+
+  get isLiked() {
+    // 检查是否已点赞
+    return !!this.topic.liked;
+  }
+
   <template>
     {{#if this.topicThumbnails.displayFeed}}
       {{! 信息流模式 - 完整的社交媒体风格布局 }}
@@ -297,6 +311,10 @@ export default class TopicListThumbnail extends Component {
             <a href={{this.url}} class="stat" aria-label="查看回复">
               {{dIcon "comment"}}
               <span class="number">{{this.replyCount}}</span>
+            </a>
+            <a href={{this.url}} class="stat" aria-label="查看点赞">
+              {{dIcon "heart"}}
+              <span class="number">{{this.likeCount}}</span>
             </a>
             <a href={{this.url}} class="stat" aria-label="查看浏览">
               {{dIcon "eye"}}

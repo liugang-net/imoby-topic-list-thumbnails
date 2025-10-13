@@ -679,7 +679,7 @@
     // border-bottom: none;
 
     &.pinned {
-      padding: 0;
+      padding: 0 1em;
 
       .topic-user-header {
         display: none;
@@ -693,7 +693,7 @@
         .topic-title {
           a.title {
             &::before {
-              content: "置顶";
+              content: "PINNED";
               display: inline-block;
               background-color: #007bff;
               color: white;
@@ -931,15 +931,15 @@
 
     &.single-image {
       .image-container {
-        border-radius: 8px;
         overflow: hidden;
 
         img {
           max-width: 500px;
           max-height: 400px;
+          min-height: 200px;
           width: auto;
           height: auto;
-          object-fit: contain;
+          object-fit: cover;
           display: block;
         }
       }

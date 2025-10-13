@@ -27,15 +27,15 @@
 .topic-thumbnails-feed .topic-images {
   &.single-image {
     .image-container {
-      border-radius: 8px;
       overflow: hidden;
 
       img {
         max-width: 300px !important;
         max-height: 250px !important;
+        min-height: 200px !important;
         width: auto !important;
         height: auto !important;
-        object-fit: contain !important;
+        object-fit: cover !important;
         display: block !important;
       }
     }
@@ -45,7 +45,6 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 0.5em;
-    border-radius: 8px;
     overflow: hidden;
 
     &.two-images {
