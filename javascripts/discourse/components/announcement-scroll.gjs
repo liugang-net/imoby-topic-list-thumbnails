@@ -216,6 +216,10 @@ export default class AnnouncementScroll extends Component {
     return true;
   }
 
+  get backgroundColor() {
+    return settings.announcement_background_color;
+  }
+
 
   get topicUrl() {
     return (announcement) => {
@@ -231,7 +235,7 @@ export default class AnnouncementScroll extends Component {
     const shouldShow = this.shouldShow;
     
     if (shouldShow) {
-      return 'display: block;';
+      return `display: block; background-color: ${this.backgroundColor};`;
     } else {
       return 'display: none;';
     }
@@ -307,26 +311,28 @@ export default class AnnouncementScroll extends Component {
   }
 
   <template>
-    <div class="announcement-scroll" style={{this.announcementStyle}}>
-      <div class="announcement-scroll-container">
-        <div class="announcement-content">
-          {{#each this.announcements as |announcement|}}
-            <a href={{this.topicUrl announcement}} class="announcement-item">
-              <span class="announcement-badge">公告</span>
-              <span class="announcement-title">{{announcement.title}}</span>
-            </a>
-          {{/each}}
-          {{#each this.announcements as |announcement|}}
-            <a href={{this.topicUrl announcement}} class="announcement-item">
-              <span class="announcement-badge">公告</span>
-              <span class="announcement-title">{{announcement.title}}</span>
-            </a>
-          {{/each}}
+    {{#if this.announcements.length}}
+      <div class="announcement-scroll" style={{this.announcementStyle}}>
+        <div class="announcement-scroll-container">
+          <div class="announcement-content">
+            {{#each this.announcements as |announcement|}}
+              <a href={{this.topicUrl announcement}} class="announcement-item">
+                <span class="announcement-badge">公告</span>
+                <span class="announcement-title">{{announcement.title}}</span>
+              </a>
+            {{/each}}
+            {{#each this.announcements as |announcement|}}
+              <a href={{this.topicUrl announcement}} class="announcement-item">
+                <span class="announcement-badge">公告</span>
+                <span class="announcement-title">{{announcement.title}}</span>
+              </a>
+            {{/each}}
+          </div>
+        </div>
+        <div class="announcement-more">
+          <a href="/c/10/10" class="more-link">更多</a>
         </div>
       </div>
-      <div class="announcement-more">
-        <a href="/c/10/10" class="more-link">更多</a>
-      </div>
-    </div>
+    {{/if}}
   </template>
 }

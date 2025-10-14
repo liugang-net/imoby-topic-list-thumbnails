@@ -63,6 +63,14 @@ export default class ScrollingCategoryNav extends Component {
     return settings.scrolling_nav_show_on_mobile;
   }
 
+  get backgroundColor() {
+    return settings.scrolling_nav_background_color;
+  }
+
+  get navStyle() {
+    return `background-color: ${this.backgroundColor};`;
+  }
+
   setupClickHandlers() {
     // 为每个导航项添加点击事件监听器
     if (this.navItems && this.navItems.length > 0) {
@@ -213,7 +221,7 @@ export default class ScrollingCategoryNav extends Component {
 
   <template>
     {{#if this.shouldShowNav}}
-      <div class="scrolling-category-nav">
+      <div class="scrolling-category-nav" style={{this.navStyle}}>
         <div class="nav-container">
           <div class="nav-items">
             <a href="/latest" class="nav-item">最新</a>

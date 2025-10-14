@@ -1,5 +1,15 @@
-.topic-list-item {
-  padding: 0.75em;
+@charset "utf-8";
+
+html {
+  body {
+    overscroll-behavior: none;
+    overscroll-behavior-y: contain;
+  }
+}
+
+.d-header-wrap {
+  top: env(safe-area-inset-top);
+  padding-top: env(safe-area-inset-top);
 }
 
 .topic-user-header {
@@ -24,61 +34,67 @@
   }
 }
 
-.topic-thumbnails-feed .topic-images {
-  &.single-image {
-    .image-container {
-      overflow: hidden;
-      position: relative;
-      display: inline-block; // 让容器适应图片尺寸
-      max-width: 300px;
-      max-height: 250px;
-
-      img {
-        max-width: 300px !important;
-        max-height: 250px !important;
-        min-height: 200px !important;
-        width: auto !important;
-        height: auto !important;
-        object-fit: cover !important;
-        display: block !important;
-      }
-    }
+.topic-thumbnails-feed {
+  .topic-list-item {
+    padding: 1em 0;
   }
 
-  &.multiple-images {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.5em;
-    overflow: hidden;
+  .topic-images {
+    &.single-image {
+      .image-container {
+        overflow: hidden;
+        position: relative;
+        display: inline-block; // 让容器适应图片尺寸
+        max-width: 300px;
+        max-height: 250px;
 
-    &.two-images {
-
-      // 移动端两张图片使用三列布局，第三个位置留空
-      .image-container:first-child {
-        grid-column: 1;
-      }
-
-      .image-container:last-child {
-        grid-column: 2;
+        img {
+          max-width: 300px !important;
+          max-height: 250px !important;
+          min-height: 200px !important;
+          width: auto !important;
+          height: auto !important;
+          object-fit: cover !important;
+          display: block !important;
+        }
       }
     }
 
-    &.three-images {
-      // 移动端三张图片使用三列布局
+    &.multiple-images {
+      display: grid;
       grid-template-columns: repeat(3, 1fr);
-      grid-auto-rows: auto;
-    }
-
-    .image-container {
-      background-color: var(--primary-low);
-      position: relative;
+      gap: 0.5em;
       overflow: hidden;
 
-      img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
+      &.two-images {
+
+        // 移动端两张图片使用三列布局，第三个位置留空
+        .image-container:first-child {
+          grid-column: 1;
+        }
+
+        .image-container:last-child {
+          grid-column: 2;
+        }
+      }
+
+      &.three-images {
+        // 移动端三张图片使用三列布局
+        grid-template-columns: repeat(3, 1fr);
+        grid-auto-rows: auto;
+      }
+
+      .image-container {
+        background-color: var(--primary-low);
+        position: relative;
+        overflow: hidden;
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
       }
     }
   }
@@ -98,24 +114,27 @@
   padding: 0;
 }
 
+#main-outlet {
+  padding: 1em;
+}
+
 
 .topic-thumbnails-list .topic-list-thumbnail {
   width: 45px;
   height: 45px;
 }
 
-.navigation-container,
-.topic-list-bottom {
-  padding: 0 1em;
-}
 
-#main-outlet>.regular {
-  padding: 0 1em;
-}
+
+// #main-outlet>.regular {
+//   padding: 0 1em;
+// }
 
 
 .topic-thumbnails-list {
   .topic-list-body .topic-list-item {
+    padding: 1em 0;
+
     .right {
       // 移除Grid布局，使用Flexbox布局
       display: flex;
@@ -192,7 +211,7 @@
   left: 0;
   right: 0;
   z-index: 100;
-  margin: 0;
+  margin: 0 -1em 0 -1em;
   margin-bottom: 1em;
   padding: 0;
   background: var(--secondary);
@@ -202,11 +221,11 @@
   border-left: none;
   border-right: none;
 
-  // 确保在discovery-list-container-top位置时仍然粘性定位
-  &.discovery-list-container-top {
-    position: sticky !important;
-    top: 3.66em !important;
-  }
+  // // 确保在discovery-list-container-top位置时仍然粘性定位
+  // &.discovery-list-container-top {
+  //   position: sticky !important;
+  //   top: 3.66em !important;
+  // }
 
   .scroll-button {
     width: 28px;
@@ -296,7 +315,9 @@
 
 // 移动端公告滚动组件样式
 .announcement-scroll {
-  padding: 8px 0;
+  padding: 8px 0 8px 0;
+  // margin-top: 2.5em;
+
 
   .announcement-scroll-container {
     height: 36px;
@@ -500,6 +521,17 @@
 
     .d-icon {
       color: var(--d-button-primary-text-color);
+    }
+  }
+}
+
+// 移动端回复按钮样式
+.post-controls {
+  .post-action-menu__reply {
+    &::after {
+      content: "回复";
+      margin-left: 0.2em;
+      color: var(--primary-high);
     }
   }
 }

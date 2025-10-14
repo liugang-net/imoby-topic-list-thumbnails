@@ -127,3 +127,8 @@ scrolling_nav_show_counts:
 scrolling_nav_show_on_mobile:
   default: true
   type: bool
+
+announcement_background_color:
+  default: "#e3f2fd"
+  type: string
+  client: true
