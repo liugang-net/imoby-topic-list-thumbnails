@@ -1,10 +1,13 @@
 @charset "utf-8";
 
-html {
-  body {
-    overscroll-behavior: none;
-    overscroll-behavior-y: contain;
-  }
+html,
+body {
+  height: 100%;
+  overscroll-behavior: none;
+  /* 禁止回弹 */
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .d-header-wrap {
@@ -85,15 +88,24 @@ html {
       }
 
       .image-container {
-        background-color: var(--primary-low);
-        position: relative;
+        // background-color: var(--primary-low);
         overflow: hidden;
+        position: relative;
+        aspect-ratio: 1;
+        width: 100%;
+        display: block;
 
         img {
           width: 100%;
           height: 100%;
           object-fit: cover;
+          object-position: center center;
           display: block;
+          inset: 0;
+          position: absolute;
+          // iOS Safari 兼容性优化
+          -webkit-object-fit: cover;
+          -webkit-object-position: center center;
         }
       }
     }
@@ -533,5 +545,13 @@ html {
       margin-left: 0.2em;
       color: var(--primary-high);
     }
+  }
+}
+
+.mobile-file-upload {
+  &::after {
+    content: "上传附件";
+    margin-left: 0.45em;
+    font-size: var(--font-down-2);
   }
 }

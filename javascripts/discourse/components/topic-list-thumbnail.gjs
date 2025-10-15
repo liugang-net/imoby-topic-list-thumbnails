@@ -6,9 +6,11 @@ import coldAgeClass from "discourse/helpers/cold-age-class";
 import concatClass from "discourse/helpers/concat-class";
 import dIcon from "discourse/helpers/d-icon";
 import formatDate from "discourse/helpers/format-date";
+import { getURL } from "discourse-common/lib/get-url";
 
 export default class TopicListThumbnail extends Component {
   @service topicThumbnails;
+  @service router;
 
   responsiveRatios = [1, 1.5, 2];
 
@@ -254,16 +256,9 @@ export default class TopicListThumbnail extends Component {
 
   @action
   handleTopicClick(event) {
-    // 检查点击的元素是否已经是链接或按钮
+    // 检查是否点击在可交互元素上（这些元素有自己的点击处理）
     const target = event.target;
-    const isLink = target.closest('a, button, [role="button"]');
-    
-    if (isLink) {
-      return; // 如果点击的是链接或按钮，不处理
-    }
-    
-    // 检查是否点击在可交互元素上
-    const interactiveElements = target.closest('.user-link, .discourse-tag, .stat, .action-button, .video-play-button');
+    const interactiveElements = target.closest('.user-link, .discourse-tag, .stat, .action-button, .video-play-button, .title, .topic-excerpt');
     if (interactiveElements) {
       return; // 如果点击在可交互元素上，不处理
     }
@@ -272,8 +267,27 @@ export default class TopicListThumbnail extends Component {
     event.preventDefault();
     event.stopPropagation();
     
-    // 跳转到主题URL
-    window.location.href = this.url;
+    // 使用SPA跳转，避免页面刷新
+    // 方法1：尝试使用router.transitionTo
+    if (this.router && typeof this.router.transitionTo === 'function') {
+      try {
+        this.router.transitionTo('topic', this.topic.slug, this.topic.id);
+        return;
+      } catch (error) {
+        console.warn('Router transitionTo failed:', error);
+      }
+    }
+    
+    // 方法2：使用history.pushState保持SPA行为
+    try {
+      history.pushState(null, '', this.url);
+      // 触发popstate事件，让Discourse处理路由
+      window.dispatchEvent(new PopStateEvent('popstate'));
+    } catch (error) {
+      console.warn('History pushState failed:', error);
+      // 最终回退到直接跳转
+      window.location.href = this.url;
+    }
   }
 
   get replyCount() {
@@ -349,13 +363,15 @@ export default class TopicListThumbnail extends Component {
           {{/if}}
           {{! 图片/视频展示 }}
           {{#if this.images.length}}
-            <a href={{this.url}} class={{concatClass "topic-images" this.imageLayoutClass}} aria-label={{this.topic.title}}>
+            <div class={{concatClass "topic-images" this.imageLayoutClass}} {{on "click" this.handleTopicClick}} aria-label={{this.topic.title}}>
               {{#each this.images as |imageUrl index|}}
                 <div class="image-container">
                   <img src={{imageUrl}} alt="主题图片" loading="lazy" />
                   {{#if this.isVideo}}
-                    <div class="video-play-button">
-                      {{dIcon "play"}}
+                    <div class="video-placeholder-overlay">
+                      <svg class="fa d-icon d-icon-play svg-icon svg-string" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+                        <use href="#play"></use>
+                      </svg>
                     </div>
                   {{/if}}
                 </div>
@@ -365,7 +381,7 @@ export default class TopicListThumbnail extends Component {
                   {{this.totalImageCount}}张
                 </div>
               {{/if}}
-            </a>
+            </div>
           {{/if}}
         </div>
 
@@ -385,7 +401,7 @@ export default class TopicListThumbnail extends Component {
               {{dIcon "heart"}}
               <span class="number">{{this.likeCount}}</span>
             </a>
-            <a href={{this.url}} class="stat" aria-label="查看浏览">
+            <a href={{this.url}} class="stat stat-views" aria-label="查看浏览">
               {{dIcon "eye"}}
               <span class="number">{{this.topic.views}}</span>
             </a>
