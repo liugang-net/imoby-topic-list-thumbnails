@@ -2,21 +2,79 @@
 
 :root {
   --bm-body-bg-color: #f5f7f8;
+  --bm-card-bg-color: #ffffff;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --bm-body-bg-color: #313131;
-    /* 浅色模式颜色 */
+    --bm-card-bg-color: #222222;
   }
 }
 
+
+
+body {
+  background-color: var(--bm-body-bg-color);
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Segoe UI, Arial, Roboto, "PingFang SC", "miui", "Hiragino Sans GB", "Microsoft Yahei", sans-serif;
+}
+
+.container {
+  background-color: var(--bm-card-bg-color);
+  padding: 1em;
+
+  &.list-container {
+    background-color: var(--bm-body-bg-color);
+    padding: 0;
+  }
+
+  &.container.badges {
+    background-color: var(--bm-card-bg-color);
+    padding: 1em;
+  }
+
+}
+
+
+#main-container.container {
+  background-color: transparent;
+  padding: 0;
+
+}
+
+
+.list-controls {
+  .container {
+    background-color: transparent;
+    padding: 0;
+  }
+}
+
+#main-outlet {
+  padding: 1em 0;
+  margin-bottom: 1em;
+
+  &>.regular,
+  .reviewable {
+    padding: 1em;
+    background-color: var(--bm-card-bg-color);
+
+    .container {
+      padding: 0;
+    }
+  }
+}
+
+
+.admin-content {
+  padding: 1em;
+}
 
 .topic-drafts-menu-trigger {
   font-size: var(--font-0);
 
   &::after {
-    content: "草稿";
+    content: "\8349\7a3f";
     display: inline-block;
     font-size: var(--font-0);
     top: 0;
@@ -27,9 +85,16 @@
 
 
 .navigation-container {
-  .category-drop {
-    display: none;
+  .category-breadcrumb {
+    .category-drop {
+      display: none;
+    }
+
+    &>li:has(.category-drop) {
+      margin-right: 0;
+    }
   }
+
 }
 
 .topic-list-body {
@@ -47,7 +112,7 @@
   padding: 12px 0;
   overflow: hidden;
   border-radius: 8px;
-  margin: 10px 0;
+  margin-bottom: 1em;
   display: flex;
   align-items: center;
   position: relative;
@@ -183,12 +248,13 @@
   align-items: center;
   justify-content: space-between;
   gap: 1em;
+  padding: 1em 1.5em;
   background-color: var(--topic-list-item-background-color);
   // padding: 1em 0.75em;
   // border-bottom: 1px solid var(--primary-low);
   // min-height: 80px;
-  padding: var(--d-topic-list-data-padding-y) var(--d-topic-list-data-padding-x);
-  margin-bottom: 0.5em;
+  // padding: var(--d-topic-list-data-padding-y) var(--d-topic-list-data-padding-x);
+  margin-bottom: 1px;
 
 
   .topic-content {
@@ -229,9 +295,11 @@
 
   .topic-thumbnail {
     flex-shrink: 0;
-    width: 120px;
-    height: 90px;
+    width: 220px;
+    height: 100px;
+    border-radius: 8px;
     overflow: hidden;
+    background-color: var(--primary-low);
 
     a {
       display: block;
@@ -718,7 +786,6 @@
 
 
 .topic-thumbnails-feed {
-  margin-top: 5px;
 
   &.topic-list>.topic-list-body>.topic-list-item.last-visit {
     border-bottom: var(--table-border-width) solid var(--table-border-color);
@@ -745,7 +812,7 @@
     position: relative;
     min-width: 0;
     background-color: var(--secondary);
-    padding: 1em;
+    padding: 2em;
     transition: box-shadow 0.2s ease, transform 0.2s ease;
     cursor: pointer; // 添加指针样式，表明可点击
     // border-bottom: none;
@@ -1282,7 +1349,7 @@ body.category {
     border-radius: 0;
     color: var(--primary-medium);
     text-decoration: none;
-    font-size: 0.95em;
+    font-size: 1em;
     font-weight: 400;
     white-space: nowrap;
     transition: all 0.3s ease;
@@ -1518,8 +1585,9 @@ body.category {
 // 分类页推荐活动轮播
 .category-featured-carousel {
   position: relative;
-  margin: 0.75em 0 0.5em 0;
+  padding: 1em 1em 0 1em;
   min-height: 150px; // 预设最小高度，避免抖动
+  background-color: var(--bm-card-bg-color);
 
   .cfc-nav {
     position: absolute;
@@ -1595,8 +1663,8 @@ body.category {
     display: flex;
     flex-direction: column;
     background: var(--secondary);
-    border: 1px solid var(--primary-low);
-    border-radius: 16px;
+    // border: 1px solid var(--primary-low);
+
     overflow: hidden;
     scroll-snap-align: start;
     text-decoration: none;
@@ -1616,9 +1684,10 @@ body.category {
   .cfc-thumb-container {
     position: relative;
     width: 100%;
-    aspect-ratio: 16/9;
+    aspect-ratio: 535/247;
     overflow: hidden;
     background: var(--primary-low);
+    border-radius: 16px;
   }
 
   .cfc-thumb {
@@ -1626,7 +1695,7 @@ body.category {
     height: 100%;
     object-fit: cover;
     display: block;
-    border-bottom: 1px solid var(--primary-low);
+    // border-bottom: 1px solid var(--primary-low);
   }
 
   .cfc-thumb-placeholder {
@@ -1667,17 +1736,16 @@ body.category {
   }
 
   .cfc-content {
-    padding: 12px;
+    padding: 12px 12px 0 12px;
     flex: 1;
     display: flex;
     flex-direction: column;
   }
 
   .cfc-title {
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 1em;
     line-height: 1.4;
-    margin-bottom: 8px;
+    // margin-bottom: 8px;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     line-clamp: 2;
@@ -1725,19 +1793,19 @@ body.category {
 
   // 响应式设计
   @media (max-width: 767px) {
-    margin: 0.5em 0;
+    margin: 0.5em 0 0 0;
 
     .cfc-nav {
       display: none;
     }
 
     .cfc-content {
-      padding: 10px;
+      padding: 10px 10px 0 10px;
     }
 
-    .cfc-title {
-      font-size: 13px;
-    }
+    // .cfc-title {
+    //   font-size: 13px;
+    // }
   }
 }
 
