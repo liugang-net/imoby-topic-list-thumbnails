@@ -1,19 +1,27 @@
 @charset "utf-8";
 
-html,
-body {
-  height: 100%;
-  overscroll-behavior: none;
-  /* 禁止回弹 */
-  overflow-x: hidden;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
+// html,
+// body {
+//   height: 100%;
+//   overflow: hidden;
+//   /* 避免双层滚动 */
+// }
+
+// #main-outlet-wrapper {
+//   height: 100%;
+//   overflow-y: auto;
+//   -webkit-overflow-scrolling: touch;
+//   overscroll-behavior: contain;
+//   /* 阻止内容内部 overscroll */
+// }
 
 .d-header-wrap {
-  top: env(safe-area-inset-top);
+  // top: env(safe-area-inset-top);
+  transform: translateZ(0);
+  padding-top: constant(safe-area-inset-top);
   padding-top: env(safe-area-inset-top);
 }
+
 
 .topic-user-header {
   .user-avatar {

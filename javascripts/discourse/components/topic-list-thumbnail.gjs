@@ -1,6 +1,7 @@
 import Component from "@glimmer/component";
 import { service } from "@ember/service";
 import { action } from "@ember/object";
+import { tracked } from "@glimmer/tracking";
 import { on } from "@ember/modifier";
 import coldAgeClass from "discourse/helpers/cold-age-class";
 import concatClass from "discourse/helpers/concat-class";
@@ -11,6 +12,10 @@ import { getURL } from "discourse-common/lib/get-url";
 export default class TopicListThumbnail extends Component {
   @service topicThumbnails;
   @service router;
+
+  @tracked _forceUpdate = 0;
+  @tracked _isLiked = null;
+  @tracked _likeCount = null;
 
   responsiveRatios = [1, 1.5, 2];
 
@@ -306,8 +311,31 @@ export default class TopicListThumbnail extends Component {
     return 0;
   }
 
+  get likeActionSummary() {
+    // 获取点赞的actions_summary数据
+    if (this.topic.first_post && this.topic.first_post.actions_summary) {
+      return this.topic.first_post.actions_summary.find(action => action.id === 2);
+    }
+    return null;
+  }
+
   get likeCount() {
-    // 获取点赞数
+    // 如果_tracked属性有值，优先使用
+    if (this._likeCount !== null) {
+      return this._likeCount;
+    }
+    
+    // 优先使用actions_summary中的count
+    // 直接从topic获取最新数据，避免缓存问题
+    const firstPost = this.topic.first_post;
+    const actionsSummary = firstPost && firstPost.actions_summary;
+    const actionSummary = actionsSummary ? actionsSummary.find(action => action.id === 2) : null;
+    
+    if (actionSummary && typeof actionSummary.count === "number") {
+      return actionSummary.count;
+    }
+    
+    // 回退到原来的like_count
     const likes = this.topic.like_count;
     if (typeof likes === "number") {
       return likes;
@@ -316,8 +344,155 @@ export default class TopicListThumbnail extends Component {
   }
 
   get isLiked() {
-    // 检查是否已点赞
+    // 如果_tracked属性有值，优先使用
+    if (this._isLiked !== null) {
+      return this._isLiked;
+    }
+    
+    // 使用actions_summary中的acted字段
+    // 直接从topic获取最新数据，避免缓存问题
+    const firstPost = this.topic.first_post;
+    const actionsSummary = firstPost && firstPost.actions_summary;
+    const actionSummary = actionsSummary ? actionsSummary.find(action => action.id === 2) : null;
+    
+    if (actionSummary && typeof actionSummary.acted === "boolean") {
+      return actionSummary.acted;
+    }
+    
+    // 回退到原来的liked字段
     return !!this.topic.liked;
+  }
+
+  get canLike() {
+    // 检查是否可以点赞
+    // 直接从topic获取最新数据，避免缓存问题
+    const firstPost = this.topic.first_post;
+    const actionsSummary = firstPost && firstPost.actions_summary;
+    const actionSummary = actionsSummary ? actionsSummary.find(action => action.id === 2) : null;
+    
+    if (actionSummary) {
+      // 如果已经点赞，检查是否可以取消点赞
+      if (actionSummary.acted && typeof actionSummary.can_undo === "boolean") {
+        return actionSummary.can_undo;
+      }
+      // 如果没有点赞，检查是否可以点赞
+      if (!actionSummary.acted && typeof actionSummary.can_act === "boolean") {
+        return actionSummary.can_act;
+      }
+    }
+    return true; // 默认允许操作
+  }
+
+  @action
+  async handleLikeClick(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    // 检查是否可以点赞
+    if (!this.canLike) {
+      return;
+    }
+    
+    try {
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+      const postId = this.topic.first_post?.id;
+      
+      if (!postId) {
+        return;
+      }
+      
+      if (this.isLiked) {
+        // 取消点赞
+        await fetch(`/post_actions/${postId}`, {
+          method: 'DELETE',
+          headers: {
+            'accept': '*/*',
+            'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'x-csrf-token': csrfToken,
+            'x-requested-with': 'XMLHttpRequest'
+          },
+          body: 'post_action_type_id=2',
+          mode: 'cors',
+          credentials: 'include'
+        });
+        // 更新本地状态
+        this.updateLikeState(false);
+      } else {
+        // 点赞
+        await fetch('/post_actions', {
+          method: 'POST',
+          headers: {
+            'accept': '*/*',
+            'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'x-csrf-token': csrfToken,
+            'x-requested-with': 'XMLHttpRequest'
+          },
+          body: `id=${postId}&post_action_type_id=2&flag_topic=false`,
+          mode: 'cors',
+          credentials: 'include'
+        });
+        // 更新本地状态
+        this.updateLikeState(true);
+      }
+    } catch (error) {
+      console.error('点赞操作失败:', error);
+    }
+  }
+
+  updateLikeState(liked) {
+    // 更新actions_summary中的状态
+    const actionSummary = this.likeActionSummary;
+    if (actionSummary) {
+      // 创建新的actions_summary数组
+      const newActionsSummary = this.topic.first_post.actions_summary.map(action => {
+        if (action.id === 2) {
+          const newAction = {
+            ...action,
+            acted: liked,
+            count: Math.max(0, action.count + (liked ? 1 : -1)),
+            // 更新can_act和can_undo状态
+            can_act: liked ? false : true, // 点赞后不能再次点赞，取消点赞后可以重新点赞
+            can_undo: liked ? true : false  // 点赞后可以取消，取消点赞后不能取消
+          };
+          return newAction;
+        }
+        return action;
+      });
+      
+      // 使用 Ember 的 set 方法来确保响应式更新
+      this.topic.set('first_post.actions_summary', newActionsSummary);
+      
+      // 强制触发重新计算
+      this.topic.notifyPropertyChange('first_post.actions_summary');
+      
+      // 尝试另一种方法：直接设置整个first_post对象
+      const newFirstPost = {
+        ...this.topic.first_post,
+        actions_summary: newActionsSummary
+      };
+      this.topic.set('first_post', newFirstPost);
+    }
+    
+    // 同时更新原来的字段以保持兼容性
+    this.topic.set('liked', liked);
+    this.topic.set('like_count', Math.max(0, (this.topic.like_count || 0) + (liked ? 1 : -1)));
+    
+    // 强制触发重新计算
+    this.topic.notifyPropertyChange('liked');
+    this.topic.notifyPropertyChange('like_count');
+    
+    // 更新tracked属性
+    this._isLiked = liked;
+    // 使用更新后的actions_summary中的count值
+    const updatedActionSummary = this.likeActionSummary;
+    if (updatedActionSummary && typeof updatedActionSummary.count === "number") {
+      this._likeCount = updatedActionSummary.count;
+    } else {
+      this._likeCount = Math.max(0, (this.topic.like_count || 0));
+    }
+    
+    // 强制重新渲染组件
+    this._forceUpdate++;
   }
 
   <template>
@@ -389,7 +564,7 @@ export default class TopicListThumbnail extends Component {
         <div class="topic-footer">
           <div class="topic-tags">
             {{#each this.topic.tags as |tag|}}
-              <a href={{this.tagHref tag}} class="discourse-tag">{{tag}}</a>
+              <a href={{this.tagHref tag}} data-tag-name="{{tag}}" class="discourse-tag">{{tag}}</a>
             {{/each}}
           </div>
           <div class="topic-stats">
@@ -397,10 +572,22 @@ export default class TopicListThumbnail extends Component {
               {{dIcon "comment"}}
               <span class="number">{{this.replyCount}}</span>
             </a>
-            <a href={{this.url}} class="stat" aria-label="查看点赞">
-              {{dIcon "heart"}}
-              <span class="number">{{this.likeCount}}</span>
-            </a>
+            {{#if this.canLike}}
+              <button 
+                class="stat stat-like {{if this.isLiked 'liked'}}" 
+                {{on "click" this.handleLikeClick}} 
+                aria-label="{{if this.isLiked '取消点赞' '点赞'}}"
+                title="{{if this.isLiked '点击取消点赞' '点击点赞'}}"
+              >
+                {{dIcon "heart"}}
+                <span class="number">{{this.likeCount}}</span>
+              </button>
+            {{else}}
+              <div class="stat stat-like disabled {{if this.isLiked 'liked'}}" aria-label="无法操作" title="无法进行点赞操作">
+                {{dIcon "heart"}}
+                <span class="number">{{this.likeCount}}</span>
+              </div>
+            {{/if}}
             <a href={{this.url}} class="stat stat-views" aria-label="查看浏览">
               {{dIcon "eye"}}
               <span class="number">{{this.topic.views}}</span>

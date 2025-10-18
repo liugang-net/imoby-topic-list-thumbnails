@@ -11,11 +11,6 @@
   }
 }
 
-html {
-  body {
-    overscroll-behavior: none;
-  }
-}
 
 .topic-drafts-menu-trigger {
   font-size: var(--font-0);
@@ -1148,6 +1143,36 @@ body.category {
       &.stat-views {
         display: none;
       }
+
+      // 点赞按钮特殊样式
+      &.stat-like {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        margin: 0;
+
+        &:hover {
+          color: var(--primary);
+        }
+
+        &.liked {
+          color: #e74c3c !important;
+
+          .d-icon {
+            color: #e74c3c !important;
+          }
+
+          &:hover {
+            color: #c0392b !important;
+            opacity: 0.8;
+
+            .d-icon {
+              color: #c0392b !important;
+            }
+          }
+        }
+      }
     }
 
     a,
@@ -1713,5 +1738,29 @@ body.category {
     .cfc-title {
       font-size: 13px;
     }
+  }
+}
+
+// 确保点赞按钮样式能够正确应用
+.stat.stat-like.liked {
+  color: #e74c3c !important;
+
+  .d-icon {
+    color: #e74c3c !important;
+  }
+
+  &:hover {
+    color: #c0392b !important;
+
+    .d-icon {
+      color: #c0392b !important;
+    }
+  }
+}
+
+.topic-footer .topic-tags .discourse-tag {
+  &[data-tag-name="十万粉丝"] {
+    color: #cc9966;
+    border-color: #cc9966;
   }
 }

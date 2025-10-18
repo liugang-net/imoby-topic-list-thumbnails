@@ -13,7 +13,7 @@ export default apiInitializer("0.8", (api) => {
   api.replaceIcon("d-topic-share", "share-nodes");
   api.replaceIcon("d-post-share", "share-nodes");
   api.replaceIcon("far-pen-to-square", "plus");
-  api.replaceIcon("chevron-down", "far-file-lines");
+  // api.replaceIcon("chevron-down", "far-file-lines");
 
   api.registerValueTransformer("topic-list-class", ({ value }) => {
     if (ttService.displayMinimalGrid) {
