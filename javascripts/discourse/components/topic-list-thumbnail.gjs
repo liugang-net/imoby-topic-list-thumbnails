@@ -311,13 +311,6 @@ export default class TopicListThumbnail extends Component {
     return 0;
   }
 
-  get likeActionSummary() {
-    // 获取点赞的actions_summary数据
-    if (this.topic.first_post && this.topic.first_post.actions_summary) {
-      return this.topic.first_post.actions_summary.find(action => action.id === 2);
-    }
-    return null;
-  }
 
   get likeCount() {
     // 如果_tracked属性有值，优先使用
@@ -325,22 +318,8 @@ export default class TopicListThumbnail extends Component {
       return this._likeCount;
     }
     
-    // 优先使用actions_summary中的count
-    // 直接从topic获取最新数据，避免缓存问题
-    const firstPost = this.topic.first_post;
-    const actionsSummary = firstPost && firstPost.actions_summary;
-    const actionSummary = actionsSummary ? actionsSummary.find(action => action.id === 2) : null;
-    
-    if (actionSummary && typeof actionSummary.count === "number") {
-      return actionSummary.count;
-    }
-    
-    // 回退到原来的like_count
-    const likes = this.topic.like_count;
-    if (typeof likes === "number") {
-      return likes;
-    }
-    return 0;
+    // 使用新的op_like_count字段
+    return this.topic.op_like_count || 0;
   }
 
   get isLiked() {
@@ -349,38 +328,13 @@ export default class TopicListThumbnail extends Component {
       return this._isLiked;
     }
     
-    // 使用actions_summary中的acted字段
-    // 直接从topic获取最新数据，避免缓存问题
-    const firstPost = this.topic.first_post;
-    const actionsSummary = firstPost && firstPost.actions_summary;
-    const actionSummary = actionsSummary ? actionsSummary.find(action => action.id === 2) : null;
-    
-    if (actionSummary && typeof actionSummary.acted === "boolean") {
-      return actionSummary.acted;
-    }
-    
-    // 回退到原来的liked字段
-    return !!this.topic.liked;
+    // 使用新的op_liked字段
+    return !!this.topic.op_liked;
   }
 
   get canLike() {
-    // 检查是否可以点赞
-    // 直接从topic获取最新数据，避免缓存问题
-    const firstPost = this.topic.first_post;
-    const actionsSummary = firstPost && firstPost.actions_summary;
-    const actionSummary = actionsSummary ? actionsSummary.find(action => action.id === 2) : null;
-    
-    if (actionSummary) {
-      // 如果已经点赞，检查是否可以取消点赞
-      if (actionSummary.acted && typeof actionSummary.can_undo === "boolean") {
-        return actionSummary.can_undo;
-      }
-      // 如果没有点赞，检查是否可以点赞
-      if (!actionSummary.acted && typeof actionSummary.can_act === "boolean") {
-        return actionSummary.can_act;
-      }
-    }
-    return true; // 默认允许操作
+    // 使用新的op_can_like字段
+    return !!this.topic.op_can_like;
   }
 
   @action
@@ -395,7 +349,7 @@ export default class TopicListThumbnail extends Component {
     
     try {
       const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-      const postId = this.topic.first_post?.id;
+      const postId = this.topic.first_post_id;
       
       if (!postId) {
         return;
@@ -403,7 +357,7 @@ export default class TopicListThumbnail extends Component {
       
       if (this.isLiked) {
         // 取消点赞
-        await fetch(`/post_actions/${postId}`, {
+        const response = await fetch(`/post_actions/${postId}`, {
           method: 'DELETE',
           headers: {
             'accept': '*/*',
@@ -415,11 +369,14 @@ export default class TopicListThumbnail extends Component {
           mode: 'cors',
           credentials: 'include'
         });
-        // 更新本地状态
-        this.updateLikeState(false);
+        
+        if (response.ok) {
+          const data = await response.json();
+          this.updateLikeStateFromResponse(data);
+        }
       } else {
         // 点赞
-        await fetch('/post_actions', {
+        const response = await fetch('/post_actions', {
           method: 'POST',
           headers: {
             'accept': '*/*',
@@ -431,65 +388,55 @@ export default class TopicListThumbnail extends Component {
           mode: 'cors',
           credentials: 'include'
         });
-        // 更新本地状态
-        this.updateLikeState(true);
+        
+        if (response.ok) {
+          const data = await response.json();
+          this.updateLikeStateFromResponse(data);
+        }
       }
     } catch (error) {
       console.error('点赞操作失败:', error);
     }
   }
 
-  updateLikeState(liked) {
-    // 更新actions_summary中的状态
-    const actionSummary = this.likeActionSummary;
-    if (actionSummary) {
-      // 创建新的actions_summary数组
-      const newActionsSummary = this.topic.first_post.actions_summary.map(action => {
-        if (action.id === 2) {
-          const newAction = {
-            ...action,
-            acted: liked,
-            count: Math.max(0, action.count + (liked ? 1 : -1)),
-            // 更新can_act和can_undo状态
-            can_act: liked ? false : true, // 点赞后不能再次点赞，取消点赞后可以重新点赞
-            can_undo: liked ? true : false  // 点赞后可以取消，取消点赞后不能取消
-          };
-          return newAction;
-        }
-        return action;
-      });
+  updateLikeStateFromResponse(responseData) {
+    // 从API响应中获取最新的点赞状态
+    const likeAction = responseData.actions_summary?.find(action => action.id === 2);
+    
+    if (likeAction) {
+      // 判断是否已点赞：如果有acted字段且为true，说明已点赞；否则未点赞
+      const isLiked = likeAction.acted === true;
+      const likeCount = likeAction.count || 0;
       
-      // 使用 Ember 的 set 方法来确保响应式更新
-      this.topic.set('first_post.actions_summary', newActionsSummary);
+      // 更新新的字段
+      this.topic.set('op_liked', isLiked);
+      this.topic.set('op_like_count', likeCount);
       
       // 强制触发重新计算
-      this.topic.notifyPropertyChange('first_post.actions_summary');
+      this.topic.notifyPropertyChange('op_liked');
+      this.topic.notifyPropertyChange('op_like_count');
       
-      // 尝试另一种方法：直接设置整个first_post对象
-      const newFirstPost = {
-        ...this.topic.first_post,
-        actions_summary: newActionsSummary
-      };
-      this.topic.set('first_post', newFirstPost);
+      // 更新tracked属性
+      this._isLiked = isLiked;
+      this._likeCount = likeCount;
+      
+      // 强制重新渲染组件
+      this._forceUpdate++;
     }
-    
-    // 同时更新原来的字段以保持兼容性
-    this.topic.set('liked', liked);
-    this.topic.set('like_count', Math.max(0, (this.topic.like_count || 0) + (liked ? 1 : -1)));
+  }
+
+  updateLikeState(liked) {
+    // 更新新的字段
+    this.topic.set('op_liked', liked);
+    this.topic.set('op_like_count', Math.max(0, (this.topic.op_like_count || 0) + (liked ? 1 : -1)));
     
     // 强制触发重新计算
-    this.topic.notifyPropertyChange('liked');
-    this.topic.notifyPropertyChange('like_count');
+    this.topic.notifyPropertyChange('op_liked');
+    this.topic.notifyPropertyChange('op_like_count');
     
     // 更新tracked属性
     this._isLiked = liked;
-    // 使用更新后的actions_summary中的count值
-    const updatedActionSummary = this.likeActionSummary;
-    if (updatedActionSummary && typeof updatedActionSummary.count === "number") {
-      this._likeCount = updatedActionSummary.count;
-    } else {
-      this._likeCount = Math.max(0, (this.topic.like_count || 0));
-    }
+    this._likeCount = this.topic.op_like_count;
     
     // 强制重新渲染组件
     this._forceUpdate++;
