@@ -179,7 +179,7 @@ export default class TopicListThumbnail extends Component {
         return this.topic.images
           .filter(img => img.url)
           .slice(0, 3)
-          .map(img => img.url);
+          .map(img => this.getOptimizedImageUrl(img));
       }
       return [];
     }
@@ -189,7 +189,7 @@ export default class TopicListThumbnail extends Component {
       return this.topic.images
         .filter(img => img.url)
         .slice(0, 3)
-        .map(img => img.url);
+        .map(img => this.getOptimizedImageUrl(img));
     }
     
     // 回退到原来的thumbnails
@@ -201,6 +201,22 @@ export default class TopicListThumbnail extends Component {
       .map(t => t.url);
     
     return imageUrls;
+  }
+
+  getOptimizedImageUrl(imageData) {
+    // 从thumbnails数组中找到第一个max_width >= 400的缩略图
+    if (imageData.thumbnails && imageData.thumbnails.length > 0) {
+      const optimizedThumbnail = imageData.thumbnails.find(thumb => 
+        thumb.max_width !== null && thumb.max_width >= 399
+      );
+      
+      if (optimizedThumbnail) {
+        return optimizedThumbnail.url;
+      }
+    }
+    
+    // 如果没有找到合适的缩略图，使用原始URL
+    return imageData.url;
   }
 
   get imageCount() {
@@ -231,10 +247,50 @@ export default class TopicListThumbnail extends Component {
   }
 
   get imageLayoutClass() {
-    if (this.imageCount === 1) return "single-image";
+    if (this.imageCount === 1) {
+      // 单张图片时，根据宽高比例添加形状类型
+      const imageShape = this.getImageShape();
+      return `single-image ${imageShape}`;
+    }
     if (this.imageCount === 2) return "multiple-images two-images";
     if (this.imageCount === 3) return "multiple-images three-images";
     return "";
+  }
+
+  getImageShape() {
+    // 从topic.images数组中获取第一张图片的尺寸信息
+    const firstImage = this.topic.images?.[0];
+    if (!firstImage) return "normal";
+    
+    // 检查firstImage是否是对象
+    if (typeof firstImage !== 'object' || firstImage === null) {
+      return "normal";
+    }
+    
+    // 从topic.images数组中获取图片尺寸信息
+    const width = firstImage.width;
+    const height = firstImage.height;
+    
+    // 当width和height都是null时，归为正常
+    if (width === null && height === null) return "normal";
+    
+    // 当width或height为null时，归为正常
+    if (width === null || height === null) return "normal";
+    
+    // 当宽度和高度都小于400px时，归为正常
+    if (width < 400 && height < 400) return "normal";
+    
+    // 计算宽高比
+    const ratio = width / height;
+    
+    // 以3:4和4:3为判断条件
+    if (ratio > 4/3) {
+      return "landscape"; // 横向：宽高比大于4:3
+    } else if (ratio < 3/4) {
+      return "portrait"; // 竖向：宽高比小于3:4
+    } else {
+      return "normal"; // 正常：宽高比在3:4到4:3之间
+    }
   }
 
   get avatarUrl() {
@@ -261,6 +317,11 @@ export default class TopicListThumbnail extends Component {
 
   @action
   handleTopicClick(event) {
+    // 防止重复点击
+    if (this._isNavigating) {
+      return;
+    }
+    
     // 检查是否点击在可交互元素上（这些元素有自己的点击处理）
     const target = event.target;
     const interactiveElements = target.closest('.user-link, .discourse-tag, .stat, .action-button, .video-play-button, .title, .topic-excerpt');
@@ -272,27 +333,34 @@ export default class TopicListThumbnail extends Component {
     event.preventDefault();
     event.stopPropagation();
     
-    // 使用SPA跳转，避免页面刷新
-    // 方法1：尝试使用router.transitionTo
-    if (this.router && typeof this.router.transitionTo === 'function') {
-      try {
-        this.router.transitionTo('topic', this.topic.slug, this.topic.id);
-        return;
-      } catch (error) {
-        console.warn('Router transitionTo failed:', error);
-      }
-    }
+    // 设置导航标志，防止重复点击
+    this._isNavigating = true;
     
-    // 方法2：使用history.pushState保持SPA行为
-    try {
-      history.pushState(null, '', this.url);
-      // 触发popstate事件，让Discourse处理路由
-      window.dispatchEvent(new PopStateEvent('popstate'));
-    } catch (error) {
-      console.warn('History pushState failed:', error);
-      // 最终回退到直接跳转
+    // 检测是否为移动端
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+      // 移动端直接跳转，避免SPA路由问题
+      window.location.href = this.url;
+    } else {
+      // 桌面端使用SPA路由
+      if (this.router && typeof this.router.transitionTo === 'function') {
+        try {
+          this.router.transitionTo('topic', this.topic.slug, this.topic.id);
+          return;
+        } catch (error) {
+          console.warn('Router transitionTo failed:', error);
+        }
+      }
+      
+      // 回退到直接跳转
       window.location.href = this.url;
     }
+    
+    // 延迟重置导航标志
+    setTimeout(() => {
+      this._isNavigating = false;
+    }, 1000);
   }
 
   get replyCount() {
@@ -445,23 +513,21 @@ export default class TopicListThumbnail extends Component {
   <template>
     {{#if this.topicThumbnails.displayFeed}}
       {{! 信息流模式 - 完整的社交媒体风格布局 }}
-      <div class="topic-feed-item" {{on "click" this.handleTopicClick}}>
+      <a href={{this.url}} class="topic-feed-item">
         {{! 用户信息头部 }}
         <div class="topic-user-header">
           <div class="user-avatar">
-            <a href={{this.url}} aria-label={{this.topic.title}}>
-              {{#if this.avatarUrl}}
-                <img src={{this.avatarUrl}} alt={{this.userName}} />
-              {{else}}
-                <div class="avatar-placeholder">
-                  {{this.avatarInitials}}
-                </div>
-              {{/if}}
-            </a>
+            {{#if this.avatarUrl}}
+              <img src={{this.avatarUrl}} alt={{this.userName}} />
+            {{else}}
+              <div class="avatar-placeholder">
+                {{this.avatarInitials}}
+              </div>
+            {{/if}}
           </div>
           <div class="user-info">
             <div class="user-name">
-              <a href={{this.url}} class="user-link">{{this.userName}}</a>
+              <span class="user-link">{{this.userName}}</span>
             </div>
             <div class="post-time">{{this.postTimeFormatted}}</div>
             {{#if this.userTitle}}
@@ -478,14 +544,14 @@ export default class TopicListThumbnail extends Component {
         {{! 主题内容 }}
         <div class="topic-content">
           <div class="topic-title">
-            <a href={{this.url}} class="title">{{this.topic.title}}</a>
+            <span class="title">{{this.topic.title}}</span>
           </div>
           {{#if this.topic.excerpt}}
-            <a href={{this.url}} class="topic-excerpt">{{this.topic.excerpt}}</a>
+            <span class="topic-excerpt">{{this.topic.excerpt}}</span>
           {{/if}}
           {{! 图片/视频展示 }}
           {{#if this.images.length}}
-            <div class={{concatClass "topic-images" this.imageLayoutClass}} {{on "click" this.handleTopicClick}} aria-label={{this.topic.title}}>
+            <div class={{concatClass "topic-images" this.imageLayoutClass}} aria-label={{this.topic.title}}>
               {{#each this.images as |imageUrl index|}}
                 <div class="image-container">
                   <img src={{imageUrl}} alt="主题图片" loading="lazy" />
@@ -506,7 +572,7 @@ export default class TopicListThumbnail extends Component {
             </div>
           {{/if}}
         </div>
-
+        
         {{! 底部统计信息 }}
         <div class="topic-footer">
           <div class="topic-tags">
@@ -541,7 +607,7 @@ export default class TopicListThumbnail extends Component {
             </a>
           </div>
         </div>
-      </div>
+      </a>
     {{else}}
       {{! List模式的简化布局 }}
       {{#if this.topicThumbnails.displayList}}

@@ -78,16 +78,57 @@
         position: relative;
         display: inline-block; // 让容器适应图片尺寸
         max-width: 300px;
-        max-height: 250px;
+        max-height: 300px;
 
         img {
           max-width: 300px !important;
-          max-height: 250px !important;
+          max-height: 300px !important;
           min-height: 200px !important;
           width: auto !important;
           height: auto !important;
           object-fit: cover !important;
           display: block !important;
+        }
+      }
+
+      // 正常形状 - 等比例缩放
+      &.normal {
+        .image-container {
+          img {
+            object-fit: contain !important; // 等比例缩放，完整显示
+          }
+        }
+      }
+
+      // 竖向形状 - 3:4比例，居中裁剪
+      &.portrait {
+        .image-container {
+          aspect-ratio: 3/4; // 强制3:4比例
+          width: 100%;
+          max-width: 240px; // 移动端3:4比例的最大宽度
+
+          img {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important; // 居中裁剪
+            object-position: center !important;
+          }
+        }
+      }
+
+      // 横向形状 - 4:3比例，居中裁剪
+      &.landscape {
+        .image-container {
+          aspect-ratio: 4/3; // 强制4:3比例
+          width: 100%;
+          max-width: 300px; // 移动端4:3比例的最大宽度
+
+          img {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important; // 居中裁剪
+            object-position: center !important;
+          }
         }
       }
     }
