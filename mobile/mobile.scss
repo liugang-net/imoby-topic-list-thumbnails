@@ -24,7 +24,7 @@
 
 .navigation-container {
   padding: 0 0.5em;
-  font-size: 1em;
+  font-size: var(--font-down-1);
 
   #navigation-bar {
     margin-bottom: 0;
@@ -55,7 +55,7 @@
 
     .user-name {
       font-size: 0.9em;
-      color: #201e22;
+      color: var(--primary);
     }
 
     .user-title,
@@ -395,6 +395,8 @@
 // 移动端公告滚动组件样式
 .announcement-scroll {
   padding: 8px 0 8px 0;
+  margin-left: 1em;
+  margin-right: 1em;
   // margin-top: 2.5em;
 
 
@@ -634,4 +636,26 @@
 
 .footer-message {
   padding: 0 1em;
+}
+
+/*标签*/
+.navigation-container {
+  margin-bottom: 0;
+
+
+  .nav-pills>li>a:hover,
+  .nav-pills>li button:hover {
+    color: var(--primary-high);
+
+    .d-icon {
+      color: var(--primary-high)
+    }
+  }
+
+  .navigation-controls {
+    .btn {
+      padding: 0 0.5em;
+    }
+
+  }
 }

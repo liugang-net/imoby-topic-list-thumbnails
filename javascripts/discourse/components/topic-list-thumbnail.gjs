@@ -596,7 +596,9 @@ export default class TopicListThumbnail extends Component {
                 <span class="number">{{this.likeCount}}</span>
               </button>
             {{else}}
-              <div class="stat stat-like disabled {{if this.isLiked 'liked'}}" aria-label="无法操作" title="无法进行点赞操作">
+              <div class="stat stat-like disabled {{if this.isLiked 'liked'}}"
+               {{on "click" this.handleLikeClick}} 
+                aria-label="无法操作" title="无法进行点赞操作">
                 {{dIcon "heart"}}
                 <span class="number">{{this.likeCount}}</span>
               </div>

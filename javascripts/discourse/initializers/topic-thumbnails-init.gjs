@@ -65,7 +65,7 @@ export default apiInitializer("0.8", (api) => {
 
   // 注册公告滚动组件到top-notices（在首页、最新页、话题列表页显示）
   api.renderInOutlet(
-    "top-notices",
+    "above-main-container",
     <template>
       <AnnouncementScroll />
     </template>
