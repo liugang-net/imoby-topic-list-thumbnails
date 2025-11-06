@@ -46,17 +46,14 @@ export default class ScrollingCategoryNav extends Component {
     this.setupUrlWatcher();
   }
 
-  get shouldShowNav() {
+  // 使用 shouldRender 控制 connector 是否渲染
+  get shouldRender() {
     return settings.show_scrolling_category_nav;
   }
 
   get allowedCategories() {
     if (!settings.scrolling_nav_categories) return [];
     return settings.scrolling_nav_categories.split('|').map(id => parseInt(id));
-  }
-
-  get showCounts() {
-    return settings.scrolling_nav_show_counts;
   }
 
   get showOnMobile() {
@@ -137,8 +134,6 @@ export default class ScrollingCategoryNav extends Component {
     }.bind(this);
   }
 
-
-
   get categories() {
     if (!this.site?.categories) {
       return [];
@@ -165,8 +160,6 @@ export default class ScrollingCategoryNav extends Component {
       return `/c/${slug}/${category.id}`;
     };
   }
-
-
 
   updateActiveState() {
     const currentPath = window.location.pathname;
@@ -215,24 +208,24 @@ export default class ScrollingCategoryNav extends Component {
   }
   
   extractCategoryId(path) {
-    const parts = path.split('/');
-    return parts[parts.length - 1];
+    // 兼容 /c/slug/id 以及 /c/slug/id/后续子路径（如 /l/latest、/l/hot）
+    const match = path.match(/^\/c\/[^/]+\/(\d+)/);
+    return match ? match[1] : null;
   }
 
   <template>
-    {{#if this.shouldShowNav}}
-      <div class="scrolling-category-nav" style={{this.navStyle}}>
-        <div class="nav-container">
-          <div class="nav-items">
-            <a href="/latest" class="nav-item">最新</a>
-            {{#each this.categories as |category|}}
-              <a href={{this.categoryUrl category}} class="nav-item">
-                {{category.name}}
-              </a>
-            {{/each}}
-          </div>
+    <div class="scrolling-category-nav" style={{this.navStyle}}>
+      <div class="nav-container">
+        <div class="nav-items">
+          <a href="/latest" class="nav-item">最新</a>
+          {{#each this.categories as |category|}}
+            <a href={{this.categoryUrl category}} class="nav-item">
+              {{category.name}}
+            </a>
+          {{/each}}
         </div>
       </div>
-    {{/if}}
+    </div>
   </template>
 }
+

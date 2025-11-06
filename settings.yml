@@ -120,15 +120,30 @@ scrolling_nav_categories:
   list_type: category
   default: ""
 
-scrolling_nav_show_counts:
-  default: true
-  type: bool
-
 scrolling_nav_show_on_mobile:
   default: true
   type: bool
 
 announcement_background_color:
   default: "#e3f2fd"
+  type: string
+  client: true
+
+# 维护模式设置
+maintenance_mode_enabled:
+  default: false
+  type: bool
+
+maintenance_mode_image:
+  type: upload
+  default: ""
+
+maintenance_mode_title:
+  default: "敬请期待"
+  type: string
+  client: true
+
+maintenance_mode_description:
+  default: "我们正在努力开发中，请稍后再来！"
   type: string
   client: true

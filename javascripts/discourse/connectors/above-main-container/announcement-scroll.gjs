@@ -127,6 +127,69 @@ export default class AnnouncementScroll extends Component {
     }
   }
 
+  // 使用 shouldRender 控制 connector 是否渲染
+  get shouldRender() {
+    const currentPath = window.location.pathname;
+    
+    // 1. 首先检查是否有公告数据
+    if (!this.announcements || this.announcements.length === 0) {
+      return false;
+    }
+    
+    // 2. 检查移动设备显示设置
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile && !this.showOnMobile) {
+      return false;
+    }
+    
+    // 排除的页面 - 这些页面不显示公告
+    const excludedPaths = [
+      '/login',
+      '/admin',
+      '/t/',
+      '/u/',
+      '/about',
+      '/faq',
+      '/tos',
+      '/privacy',
+      '/session',
+      '/admin/',
+      '/my/',
+      '/preferences',
+      '/notifications',
+      '/messages',
+      '/badges',
+      '/groups',
+      '/search',
+      '/top',
+      '/unread',
+      '/new',
+      '/bookmarks',
+      '/activity',
+      '/summary'
+    ];
+    
+    // 检查是否在排除的路径中
+    const isExcluded = excludedPaths.some(path => currentPath.startsWith(path));
+    if (isExcluded) {
+      return false;
+    }
+    
+    // 只允许在以下页面显示
+    const allowedPaths = ['/', '/latest', '/c/', '/tags', '/tag/'];
+    
+    // 检查是否在允许的路径中
+    const isAllowed = allowedPaths.some(path => {
+      if (path === '/') {
+        return currentPath === '/' || currentPath === '';
+      }
+      return currentPath.startsWith(path);
+    });
+    
+    // 只有在允许的页面且有公告数据时才渲染
+    return isAllowed && this.announcements && this.announcements.length > 0;
+  }
+
   get shouldShow() {
     // 依赖强制更新属性，确保路由变化时重新计算
     this._forceUpdate;
@@ -150,27 +213,27 @@ export default class AnnouncementScroll extends Component {
     const excludedPaths = [
       '/login',
       '/admin',
-      '/t/',      // 话题详情页
-      '/u/',      // 用户页面
+      '/t/',
+      '/u/',
       '/about',
       '/faq',
       '/tos',
       '/privacy',
-      '/session', // 登录相关页面
-      '/admin/',  // 管理页面
-      '/my/',     // 个人设置页面
-      '/preferences', // 偏好设置
-      '/notifications', // 通知页面
-      '/messages', // 消息页面
-      '/badges',  // 徽章页面
-      '/groups',  // 群组页面
-      '/search',  // 搜索页面
-      '/top',     // 热门页面（如果需要排除的话）
-      '/unread',  // 未读页面
-      '/new',     // 新话题页面
-      '/bookmarks', // 书签页面
-      '/activity', // 活动页面
-      '/summary'  // 摘要页面
+      '/session',
+      '/admin/',
+      '/my/',
+      '/preferences',
+      '/notifications',
+      '/messages',
+      '/badges',
+      '/groups',
+      '/search',
+      '/top',
+      '/unread',
+      '/new',
+      '/bookmarks',
+      '/activity',
+      '/summary'
     ];
     
     // 检查是否在排除的路径中
@@ -185,11 +248,11 @@ export default class AnnouncementScroll extends Component {
     // - 分类页面 (/c/)
     // - 标签页面 (/tags 和 /tag/)
     const allowedPaths = [
-      '/',        // 首页
-      '/latest',  // 最新页
-      '/c/',      // 分类页面
-      '/tags',    // 标签列表页
-      '/tag/'     // 具体标签页
+      '/',
+      '/latest',
+      '/c/',
+      '/tags',
+      '/tag/'
     ];
     
     // 检查是否在允许的路径中
@@ -219,7 +282,6 @@ export default class AnnouncementScroll extends Component {
   get backgroundColor() {
     return settings.announcement_background_color;
   }
-
 
   get topicUrl() {
     return (announcement) => {
@@ -336,3 +398,4 @@ export default class AnnouncementScroll extends Component {
     {{/if}}
   </template>
 }
+

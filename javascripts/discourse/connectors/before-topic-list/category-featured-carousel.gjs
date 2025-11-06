@@ -6,7 +6,6 @@ import dIcon from "discourse/helpers/d-icon";
 import concatClass from "discourse/helpers/concat-class";
 import { on } from "@ember/modifier";
 import { fn } from "@ember/helper";
-// 不使用模板修饰符，改为监听路由变化
 
 export default class CategoryFeaturedCarousel extends Component {
   @service router;
@@ -15,12 +14,18 @@ export default class CategoryFeaturedCarousel extends Component {
   @tracked loading = true;
   @tracked lastKey = null;
 
-  get categoryId() {
-    return this.args?.categoryId;
+  get category() {
+    // 从 outletArgs 获取 category
+    return this.args.outletArgs?.category || null;
   }
 
-  get category() {
-    return this.args?.category || null;
+  get categoryId() {
+    return this.category?.id || null;
+  }
+
+  // 使用 shouldRender 控制 connector 是否渲染
+  get shouldRender() {
+    return !!this.category;
   }
 
   get hasItems() {
@@ -210,5 +215,4 @@ export default class CategoryFeaturedCarousel extends Component {
     {{/if}}
   </template>
 }
-
 

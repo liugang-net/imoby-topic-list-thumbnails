@@ -17,14 +17,26 @@ export default class FeaturedButton extends Component {
   @tracked isLoading = false;
 
   get canSetFeatured() {
-    return this.args.topic?.can_set_featured || false;
+    // 从 outletArgs.model 获取 topic
+    const topic = this.args.outletArgs?.model;
+    return topic?.can_set_featured || false;
+  }
+
+  // 使用 shouldRender 控制 connector 是否渲染
+  get shouldRender() {
+    return this.canSetFeatured;
+  }
+
+  get topic() {
+    // 从 outletArgs.model 获取 topic
+    return this.args.outletArgs?.model;
   }
 
   get isFeatured() {
     if (this.featuredLocal !== null) {
       return this.featuredLocal;
     }
-    return !!this.args.topic?.featured;
+    return !!this.topic?.featured;
   }
 
   get buttonText() {
@@ -48,7 +60,7 @@ export default class FeaturedButton extends Component {
   async toggleFeatured() {
     if (!this.canSetFeatured) return;
 
-    const topic = this.args.topic;
+    const topic = this.topic;
     const isCurrentlyFeatured = this.isFeatured;
     const endpoint = isCurrentlyFeatured ? "unset-featured" : "set-featured";
 
@@ -101,15 +113,16 @@ export default class FeaturedButton extends Component {
   }
 
   <template>
-    {{#if this.canSetFeatured}}
-      <button 
-        class={{concatClass "btn" this.buttonClass "featured-button"}}
-        {{on "click" this.toggleFeatured}}
-        title={{this.buttonText}}
-        disabled={{this.isLoading}}
-      >
-        {{dIcon this.buttonIcon}}
-      </button>
-    {{/if}}
+    <button 
+      class={{concatClass "btn" this.buttonClass "featured-button"}}
+      {{on "click" this.toggleFeatured}}
+      title={{this.buttonText}}
+      disabled={{this.isLoading}}
+    >
+      {{dIcon this.buttonIcon}}
+    </button>
   </template>
 }
+
+
+

@@ -1163,7 +1163,7 @@ body.category {
 
             .title {
               &::before {
-                content: "置顶";
+                content: "\7f6e\9876";
                 display: inline-block;
                 background-color: #007bff;
                 color: white;
@@ -1920,5 +1920,88 @@ body.category {
 
   .caret-icon {
     padding-left: 0;
+  }
+}
+
+// 用户页面统计组件样式
+#collapsed-info-panel {
+  display: none;
+}
+
+.user-profile-stats {
+  display: flex;
+  gap: 2em;
+  padding: 1em 0;
+  border-bottom: 1px solid var(--primary-low);
+
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25em;
+
+    .stat-label {
+      font-size: var(--font-0);
+      color: var(--primary-medium);
+    }
+
+    .stat-value {
+      font-size: var(--font-up-2);
+      font-weight: 600;
+      color: var(--primary);
+    }
+  }
+}
+
+// 维护模式样式
+.maintenance-notice-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--secondary);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2em;
+  overflow-y: auto;
+
+  .maintenance-notice-content {
+    max-width: 600px;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2em;
+
+    .maintenance-notice-image {
+      max-width: 300px;
+      width: 100%;
+      margin-bottom: 1em;
+
+      img {
+        width: 100%;
+        height: auto;
+      }
+    }
+
+    .maintenance-notice-text {
+      .maintenance-notice-title {
+        font-size: var(--font-up-3);
+        font-weight: 600;
+        color: var(--primary);
+        margin: 0 0 1em 0;
+      }
+
+      .maintenance-notice-description {
+        font-size: var(--font-up-1);
+        color: var(--primary-medium);
+        line-height: 1.6;
+        margin: 0;
+      }
+    }
   }
 }

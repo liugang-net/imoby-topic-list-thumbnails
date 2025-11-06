@@ -2,18 +2,9 @@ import { readOnly } from "@ember/object/computed";
 import { service } from "@ember/service";
 import { apiInitializer } from "discourse/lib/api";
 import TopicListThumbnail from "../components/topic-list-thumbnail";
-import ScrollingCategoryNav from "../components/scrolling-category-nav";
-import AnnouncementScroll from "../components/announcement-scroll";
-import FeaturedButton from "../components/featured-button";
-import CategoryFeaturedCarousel from "../components/category-featured-carousel";
 
 export default apiInitializer("0.8", (api) => {
   const ttService = api.container.lookup("service:topic-thumbnails");
-  
-  api.replaceIcon("d-topic-share", "share-nodes");
-  api.replaceIcon("d-post-share", "share-nodes");
-  api.replaceIcon("far-pen-to-square", "plus");
-  // api.replaceIcon("chevron-down", "far-file-lines");
 
   api.registerValueTransformer("topic-list-class", ({ value }) => {
     if (ttService.displayMinimalGrid) {
@@ -48,43 +39,6 @@ export default apiInitializer("0.8", (api) => {
     <template>
       {{#if ttService.displayList}}
         <TopicListThumbnail @topic={{@outletArgs.topic}} />
-      {{/if}}
-    </template>
-  );
-
-  // 注册可滑动分类导航组件
-  console.log("Navigation setting:", settings.show_scrolling_category_nav);
-  if (settings.show_scrolling_category_nav) {
-    api.renderInOutlet(
-      "discovery-list-controls-above",
-      <template>
-        <ScrollingCategoryNav />
-      </template>
-    );
-  }
-
-  // 注册公告滚动组件到top-notices（在首页、最新页、话题列表页显示）
-  api.renderInOutlet(
-    "above-main-container",
-    <template>
-      <AnnouncementScroll />
-    </template>
-  );
-
-  // 注册精选按钮到timeline-controls-before
-  api.renderInOutlet(
-    "timeline-controls-before",
-    <template>
-      <FeaturedButton @topic={{@outletArgs.model}} />
-    </template>
-  );
-
-  // 分类页推荐活动轮播，挂载在话题列表之前
-  api.renderInOutlet(
-    "before-topic-list",
-    <template>
-      {{#if @outletArgs.category}}
-        <CategoryFeaturedCarousel @categoryId={{@outletArgs.category.id}} @category={{@outletArgs.category}} />
       {{/if}}
     </template>
   );

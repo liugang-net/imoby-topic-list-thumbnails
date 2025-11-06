@@ -1,5 +1,103 @@
 @charset "utf-8";
 
+// 下拉菜单（移动端筛选）字体不加粗
+.mobile-sort-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.mobile-sort-trigger {
+  .select-kit-header {
+    font-weight: normal !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    color: inherit;
+    position: relative;
+    padding-right: 18px; // 给右侧箭头预留空间
+  }
+
+  // header 选中名称
+  .select-kit-header .selected-name .name,
+  .select-kit-header .selected-name .name span {
+    font-weight: normal !important;
+  }
+
+  // 按钮类（Discourse 默认 .btn 可能是粗体）
+  .btn {
+    font-weight: normal !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    color: var(--primary-high) !important;
+  }
+
+  // 下拉列表每一行的文本
+  .select-kit-row .texts .name,
+  .select-kit-row .texts .name span {
+    font-weight: normal !important;
+  }
+
+  // hover/active 状态也保持无背景无边框
+  .select-kit-header:hover,
+  .select-kit-header:active,
+  .btn:hover,
+  .btn:active {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    color: var(--primary-high) !important;
+  }
+
+  // 移除原内置箭头（如果有）
+  .select-kit-header::after {
+    content: none !important;
+  }
+}
+
+// 外置箭头：默认向右（收起），展开时向下
+.mobile-sort-caret {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// 右箭头（使用纯 CSS 三角形模拟 caret-right）
+.mobile-sort-caret .d-icon {
+  width: 0.9em;
+  height: 0.9em;
+  color: currentColor;
+}
+
+// 展开时变为向下
+.mobile-sort-caret .d-icon-caret-right {
+  display: inline;
+}
+
+.mobile-sort-caret .d-icon-caret-down {
+  display: none;
+}
+
+.mobile-sort-trigger.is-expanded+.mobile-sort-caret .d-icon-caret-right,
+.mobile-sort-trigger[open]+.mobile-sort-caret .d-icon-caret-right {
+  display: none;
+}
+
+.mobile-sort-trigger.is-expanded+.mobile-sort-caret .d-icon-caret-down,
+.mobile-sort-trigger[open]+.mobile-sort-caret .d-icon-caret-down {
+  display: inline;
+}
+
+.nav-pills>li:has(.list-control-toggle-link-trigger) {
+  display: none;
+}
+
+
 // html,
 // body {
 //   height: 100%;
@@ -594,6 +692,7 @@
     z-index: 299;
     bottom: 60px;
     right: 30px;
+    padding: 0.5em;
     transform: scale(1.5);
     color: var(--d-button-primary-text-color);
     background-color: var(--d-button-primary-bg-color);
@@ -657,5 +756,19 @@
       padding: 0 0.5em;
     }
 
+  }
+}
+
+.user-main .about.collapsed-info .details {
+  display: block !important;
+}
+
+.user-main .about .controls {
+  margin-top: 0.5em;
+}
+
+.follow-button-container {
+  &>div {
+    width: 100%;
   }
 }
