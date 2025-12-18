@@ -3,12 +3,14 @@
 :root {
   --bm-body-bg-color: #f5f7f8;
   --bm-card-bg-color: #ffffff;
+  --bm-bg-image: url("http://cdn.ibomy.com/forum/images/hero_bg_light.png");
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --bm-body-bg-color: #313131;
     --bm-card-bg-color: #222222;
+    --bm-bg-image: url("http://cdn.ibomy.com/forum/images/hero_bg_dark.png");
   }
 }
 
@@ -18,6 +20,7 @@ body {
   background-color: var(--bm-body-bg-color);
   font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Segoe UI, Arial, Roboto, "PingFang SC", "miui", "Hiragino Sans GB", "Microsoft Yahei", sans-serif;
 }
+
 
 .container {
   background-color: var(--bm-card-bg-color);
@@ -802,7 +805,7 @@ body {
   .topic-list-body {
     display: flex;
     flex-direction: column;
-    padding-top: 0.5em;
+    padding-top: 0;
     border: 0;
   }
 
@@ -1882,6 +1885,7 @@ body.category {
 /*操作导航*/
 .navigation-container {
   font-size: var(--font-down-1);
+  margin-bottom: 0.5em;
 
   .category-breadcrumb>li {
     margin-right: 0;
@@ -2003,5 +2007,13 @@ body.category {
         margin: 0;
       }
     }
+  }
+}
+
+#list-area {
+  margin-bottom: 0;
+
+  .topic-list-bottom {
+    padding-left: 1em;
   }
 }

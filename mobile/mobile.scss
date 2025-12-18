@@ -1,5 +1,11 @@
 @charset "utf-8";
 
+body.navigation-topics,
+body.category.navigation-category {
+  background: var(--bm-bg-image) no-repeat fixed center top / 100%;
+  background-color: var(--bm-body-bg-color);
+}
+
 // 下拉菜单（移动端筛选）字体不加粗
 .mobile-sort-wrapper {
   position: relative;
@@ -116,8 +122,9 @@
 .d-header-wrap {
   // top: env(safe-area-inset-top);
   transform: translateZ(0);
-  padding-top: constant(safe-area-inset-top);
+  will-change: transform;
   padding-top: env(safe-area-inset-top);
+
 }
 
 .navigation-container {
@@ -398,7 +405,8 @@
   border-radius: 0; // 移动端去掉圆角
   border-left: none;
   border-right: none;
-
+  transform: translateZ(0);
+  will-change: transform;
   // // 确保在discovery-list-container-top位置时仍然粘性定位
   // &.discovery-list-container-top {
   //   position: sticky !important;
@@ -739,7 +747,6 @@
 
 /*标签*/
 .navigation-container {
-  margin-bottom: 0;
 
 
   .nav-pills>li>a:hover,
@@ -770,5 +777,19 @@
 .follow-button-container {
   &>div {
     width: 100%;
+  }
+}
+
+.powered-by-discourse {
+  margin-left: 1em;
+}
+
+.mobile-sort-trigger .select-kit-body,
+.tag-drop .select-kit-body {
+  width: 50vw !important;
+  max-width: 400px;
+
+  .select-kit-row {
+    padding: 1em 1em;
   }
 }
