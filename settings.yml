@@ -147,3 +147,18 @@ maintenance_mode_description:
   default: "我们正在努力开发中，请稍后再来！"
   type: string
   client: true
+
+# 年龄验证设置
+age_verification_enabled:
+  default: false
+  type: bool
+
+age_verification_excluded_paths:
+  default: "/verify|/auth/login?return_to=|/auth/sso-error|/auth/"
+  type: string
+  client: true
+
+age_verification_reject_url:
+  default: "https://cdn.ibomy.com/forum/images/age_verify/r18.html"
+  type: string
+  client: true

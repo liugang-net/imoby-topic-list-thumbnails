@@ -2017,3 +2017,214 @@ body.category {
     padding-left: 1em;
   }
 }
+
+// 年龄验证弹窗样式
+.age-verification-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1em;
+  // 阻止点击外部关闭
+  pointer-events: auto;
+  // 阻止滚动
+  overflow: hidden;
+  // 阻止滚动链和过度滚动
+  overscroll-behavior: none;
+  -webkit-overscroll-behavior: none;
+  // 阻止移动端触摸滚动
+  touch-action: none;
+  // 阻止选择文本
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  // 阻止拖拽
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+
+  .age-verification-dialog {
+    position: relative;
+    width: 335px;
+    height: 267px;
+    max-width: 335px;
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 0;
+    margin: 0;
+    // 阻止选择文本
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+
+    // 移动端样式
+    @media (min-width: 768px) {
+      width: 827px;
+      height: 480px;
+      max-width: 827px;
+    }
+
+    // 背景图
+    .age-verify-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 335px;
+      height: 267px;
+      object-fit: cover;
+      z-index: -1;
+
+      @media (min-width: 768px) {
+        width: 827px;
+        height: 631px;
+      }
+    }
+
+    // 角色图片
+    .age-verify-character {
+      position: absolute;
+      top: -61px;
+      left: 193px;
+      width: 105px;
+      height: 170px;
+      z-index: -2;
+
+      @media (min-width: 768px) {
+        top: -151px;
+        left: 478px;
+        width: 258px;
+        height: 419px;
+      }
+    }
+
+    // R18 标签
+    .age-verify-r18 {
+      position: absolute;
+      top: -38px;
+      left: 59px;
+      width: 125px;
+      height: 62px;
+      z-index: -2;
+
+      @media (min-width: 768px) {
+        top: -93px;
+        left: 147px;
+        width: 308px;
+        height: 152px;
+      }
+    }
+
+    // 内容区域
+    .age-verification-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 42px;
+      position: relative;
+      z-index: 1;
+
+      @media (min-width: 768px) {
+        margin-top: 104px;
+      }
+
+      // 标题图片
+      .age-verify-title {
+        width: 187px;
+        height: 57px;
+        object-fit: cover;
+
+        @media (min-width: 768px) {
+          width: 461px;
+          height: 140px;
+        }
+      }
+
+      // 说明文字
+      .age-verify-text {
+        width: 268px;
+        margin-top: 9px;
+        font-family: "HKYuan", -apple-system, BlinkMacSystemFont, "Helvetica Neue",
+          Helvetica, Segoe UI, Arial, Roboto, "PingFang SC", "miui",
+          "Hiragino Sans GB", "Microsoft Yahei", sans-serif;
+        font-weight: 900;
+        color: white;
+        font-size: 11px;
+        line-height: 18px;
+        text-indent: 2em;
+
+        @media (min-width: 768px) {
+          width: 661px;
+          margin-top: 21px;
+          font-size: 22px;
+          line-height: 44px;
+        }
+      }
+
+      // 按钮区域
+      .age-verify-buttons {
+        margin-top: 24px;
+        display: flex;
+        justify-content: center;
+        gap: 4px;
+
+        @media (min-width: 768px) {
+          margin-top: 58px;
+          gap: 0;
+        }
+
+        .age-verify-button {
+          cursor: pointer;
+          user-select: none;
+          -webkit-tap-highlight-color: transparent;
+
+          &.age-verify-accept {
+            width: 127px;
+            height: 32px;
+
+            @media (min-width: 768px) {
+              width: 313px;
+              height: 78px;
+            }
+          }
+
+          &.age-verify-reject {
+            margin-left: -2px;
+            width: 127px;
+            height: 32px;
+
+            @media (min-width: 768px) {
+              margin-left: -5px;
+              width: 313px;
+              height: 78px;
+            }
+          }
+
+          .age-verify-button-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+          }
+
+          &:hover {
+            opacity: 0.9;
+          }
+
+          &:active {
+            opacity: 0.8;
+          }
+        }
+      }
+    }
+  }
+}
