@@ -4,7 +4,10 @@ import { service } from "@ember/service";
 import { action } from "@ember/object";
 import { on } from "@ember/modifier";
 
-const STORAGE_KEY = "age_verified";
+const STORAGE_KEYS = {
+  AGE_VERIFIED: "age_verified",
+  AGE_VERIFIED_TIMESTAMP: "age_verified_timestamp",
+};
 
 export default class AgeVerificationDialog extends Component {
   @service router;
@@ -165,7 +168,42 @@ export default class AgeVerificationDialog extends Component {
     if (typeof window === "undefined") {
       return false;
     }
-    return sessionStorage.getItem(STORAGE_KEY) === "true";
+
+    // 获取时间间隔配置（默认 86400 秒 = 1天）
+    const intervalSeconds =
+      settings.age_verification_interval_seconds || 86400;
+
+    // 如果时间间隔为 0 或负数，每次都需要验证
+    if (intervalSeconds <= 0) {
+      return false;
+    }
+
+    // 检查时间戳
+    const verifiedTimestamp = localStorage.getItem(
+      STORAGE_KEYS.AGE_VERIFIED_TIMESTAMP
+    );
+
+    // 如果没有时间戳，检查是否有旧的验证状态（向后兼容）
+    if (!verifiedTimestamp) {
+      const oldVerified = localStorage.getItem(STORAGE_KEYS.AGE_VERIFIED);
+      // 如果有旧的验证状态但没有时间戳，视为需要重新验证
+      return false;
+    }
+
+    // 计算时间差
+    const now = Date.now();
+    const timestamp = parseInt(verifiedTimestamp, 10);
+
+    // 如果时间戳无效，需要重新验证
+    if (isNaN(timestamp)) {
+      return false;
+    }
+
+    // 计算距离验证的时间（秒）
+    const timeSinceVerification = (now - timestamp) / 1000;
+
+    // 如果还在时间间隔内，返回 true
+    return timeSinceVerification < intervalSeconds;
   }
 
   // 检查是否应该显示弹窗
@@ -206,7 +244,14 @@ export default class AgeVerificationDialog extends Component {
   @action
   handleConfirm() {
     if (typeof window !== "undefined") {
-      sessionStorage.setItem(STORAGE_KEY, "true");
+      // 存储当前时间戳（毫秒）
+      const timestamp = Date.now();
+      localStorage.setItem(
+        STORAGE_KEYS.AGE_VERIFIED_TIMESTAMP,
+        timestamp.toString()
+      );
+      // 同时存储验证状态（保持兼容性）
+      localStorage.setItem(STORAGE_KEYS.AGE_VERIFIED, "true");
     }
     // 触发重新计算 shouldShow
     this._routeUpdate = Date.now();
@@ -239,9 +284,9 @@ export default class AgeVerificationDialog extends Component {
   get imageUrls() {
     return {
       character:
-        "https://cdn.ibomy.com/forum/images/age_verify/character.png",
+        "https://cdn.ibomy.com/forum/images/age_verify/character1.png",
       r18: "https://cdn.ibomy.com/forum/images/age_verify/r18.png",
-      bg: "https://cdn.ibomy.com/forum/images/age_verify/bg@2x.png",
+      bg: "https://cdn.ibomy.com/forum/images/age_verify/bg.png",
       title: "https://cdn.ibomy.com/forum/images/age_verify/title.png",
       accept: "https://cdn.ibomy.com/forum/images/age_verify/accept.png",
       reject: "https://cdn.ibomy.com/forum/images/age_verify/reject.png",

@@ -162,3 +162,8 @@ age_verification_reject_url:
   default: "https://cdn.ibomy.com/forum/images/age_verify/r18.html"
   type: string
   client: true
+
+age_verification_interval_seconds:
+  default: 86400
+  type: integer
+  client: true
