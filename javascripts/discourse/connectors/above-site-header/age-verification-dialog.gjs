@@ -280,6 +280,14 @@ export default class AgeVerificationDialog extends Component {
   }
 
 
+  // 检测是否为移动端
+  get isMobile() {
+    if (typeof window === "undefined") {
+      return false;
+    }
+    return window.innerWidth < 768;
+  }
+
   // CDN 图片地址
   get imageUrls() {
     return {
@@ -287,6 +295,7 @@ export default class AgeVerificationDialog extends Component {
         "https://cdn.ibomy.com/forum/images/age_verify/character1.png",
       r18: "https://cdn.ibomy.com/forum/images/age_verify/r18.png",
       bg: "https://cdn.ibomy.com/forum/images/age_verify/bg.png",
+      mobileBg: "https://cdn.ibomy.com/forum/images/age_verify/m_bg@2x.png",
       title: "https://cdn.ibomy.com/forum/images/age_verify/title.png",
       accept: "https://cdn.ibomy.com/forum/images/age_verify/accept.png",
       reject: "https://cdn.ibomy.com/forum/images/age_verify/reject.png",
@@ -311,9 +320,9 @@ export default class AgeVerificationDialog extends Component {
             class="age-verify-r18"
           />
 
-          {{! 背景图 }}
+          {{! 背景图 - 移动端使用 m_bg@2x.png，桌面端使用 bg.png }}
           <img
-            src={{this.imageUrls.bg}}
+            src={{if this.isMobile this.imageUrls.mobileBg this.imageUrls.bg}}
             alt=""
             class="age-verify-bg"
           />

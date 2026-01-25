@@ -2030,7 +2030,7 @@ body.category {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1em;
+  padding: 2px;
   // 阻止点击外部关闭
   pointer-events: auto;
   // 阻止滚动
@@ -2053,9 +2053,10 @@ body.category {
 
   .age-verification-dialog {
     position: relative;
-    width: 335px;
-    height: 267px;
-    max-width: 335px;
+    // 移动端尺寸：371px × 318px
+    width: 371px;
+    height: 318px;
+    max-width: 371px;
     background: transparent;
     border: none;
     outline: none;
@@ -2067,7 +2068,7 @@ body.category {
     -moz-user-select: none;
     -ms-user-select: none;
 
-    // 移动端样式
+    // 桌面端样式
     @media (min-width: 768px) {
       width: 620px;
       height: 360px;
@@ -2079,8 +2080,9 @@ body.category {
       position: absolute;
       top: 0;
       left: 0;
-      width: 335px;
-      height: 267px;
+      // 移动端：371px × 318px
+      width: 371px;
+      height: 318px;
       object-fit: cover;
       z-index: -1;
 
@@ -2093,10 +2095,11 @@ body.category {
     // 角色图片
     .age-verify-character {
       position: absolute;
-      top: -61px;
-      left: 193px;
-      width: 105px;
-      height: 170px;
+      // 移动端：top: -81px, left: 207px, 134px × 218px
+      top: -81px;
+      left: 207px;
+      width: 134px;
+      height: 218px;
       z-index: -2;
 
       @media (min-width: 768px) {
@@ -2110,10 +2113,11 @@ body.category {
     // R18 标签
     .age-verify-r18 {
       position: absolute;
-      top: -38px;
-      left: 59px;
-      width: 125px;
-      height: 62px;
+      // 移动端：top: -59px, left: 45px, 160px × 79px
+      top: -59px;
+      left: 45px;
+      width: 160px;
+      height: 79px;
       z-index: -2;
 
       @media (min-width: 768px) {
@@ -2129,7 +2133,8 @@ body.category {
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin-top: 42px;
+      // 移动端：margin-top: 66px
+      margin-top: 66px;
       position: relative;
       z-index: 1;
 
@@ -2139,8 +2144,9 @@ body.category {
 
       // 标题图片
       .age-verify-title {
-        width: 187px;
-        height: 57px;
+        // 移动端：264px × 80px
+        width: 264px;
+        height: 80px;
         object-fit: cover;
 
         @media (min-width: 768px) {
@@ -2151,15 +2157,16 @@ body.category {
 
       // 说明文字
       .age-verify-text {
-        width: 268px;
-        margin-top: 9px;
+        // 移动端：263px 宽，13px 字号，23px 行高，margin-top: 21px
+        width: 263px;
+        margin-top: 21px;
         font-family: "HKYuan", -apple-system, BlinkMacSystemFont, "Helvetica Neue",
           Helvetica, Segoe UI, Arial, Roboto, "PingFang SC", "miui",
           "Hiragino Sans GB", "Microsoft Yahei", sans-serif;
         font-weight: 900;
         color: white;
-        font-size: 11px;
-        line-height: 18px;
+        font-size: 13px;
+        line-height: 23px;
         text-indent: 2em;
 
         @media (min-width: 768px) {
@@ -2172,12 +2179,19 @@ body.category {
 
       // 按钮区域
       .age-verify-buttons {
+        // 移动端：绝对定位 bottom: -112px，垂直排列
+        position: absolute;
+        bottom: -172px;
         margin-top: 24px;
         display: flex;
+        flex-direction: column;
         justify-content: center;
+        align-items: center;
         gap: 4px;
 
         @media (min-width: 768px) {
+          position: static;
+          flex-direction: row;
           margin-top: 44px;
           gap: 0;
         }
@@ -2188,8 +2202,9 @@ body.category {
           -webkit-tap-highlight-color: transparent;
 
           &.age-verify-accept {
-            width: 127px;
-            height: 32px;
+            // 移动端：211px × 52px
+            width: 211px;
+            height: 52px;
 
             @media (min-width: 768px) {
               width: 235px;
@@ -2198,9 +2213,10 @@ body.category {
           }
 
           &.age-verify-reject {
+            // 移动端：211px × 52px
             margin-left: -2px;
-            width: 127px;
-            height: 32px;
+            width: 211px;
+            height: 52px;
 
             @media (min-width: 768px) {
               margin-left: -4px;
