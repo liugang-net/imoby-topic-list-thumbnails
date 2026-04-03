@@ -1,9 +1,12 @@
 @charset "utf-8";
 
 :root {
-  --bm-body-bg-color: #f5f7f8;
+  --bm-body-bg-color: #f3f7fa;
   --bm-card-bg-color: #ffffff;
   --bm-bg-image: url("http://cdn.ibomy.com/forum/images/hero_bg_light.png");
+  --header_background: #ff3cf8;
+  --shadow-header: 0 0 0 1px #f01fe9;
+  --d-header-icon-color: #ffffff;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -14,7 +17,30 @@
   }
 }
 
+/* 华康圆体（DFP Yuan）— CDN，按需加类名使用 */
+@font-face {
+  font-family: "DFPYuan W7";
+  src: url("https://cdn.ibomy.com/static/fonts/DFPYuanW7.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
 
+@font-face {
+  font-family: "DFPYuan W9";
+  src: url("https://cdn.ibomy.com/static/fonts/DFPYuanW9.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+.imoby-dfpyuan-w7 {
+  font-family: "DFPYuan W7", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+.imoby-dfpyuan-w9 {
+  font-family: "DFPYuan W9", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
 
 body {
   background-color: var(--bm-body-bg-color);
@@ -819,7 +845,8 @@ body {
     transition: box-shadow 0.2s ease, transform 0.2s ease;
     cursor: pointer; // 添加指针样式，表明可点击
     // border-bottom: none;
-    margin-bottom: 0.5em;
+    margin-bottom: 1em;
+    border-radius: 1em;
 
 
 

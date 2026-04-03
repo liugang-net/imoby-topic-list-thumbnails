@@ -307,12 +307,63 @@ export default class TopicListThumbnail extends Component {
     return "?";
   }
 
+  /**
+   * 支持两种后端返回格式：
+   * - 旧：topic.tags = ["tag-a", "tag-b"]
+   * - 新：topic.tags = [{ id, name, slug }, ...]
+   */
+  get normalizedTags() {
+    const rawTags = this.topic?.tags || [];
+
+    return rawTags
+      .map((t) => {
+        if (typeof t === "string") {
+          return { id: null, name: t, slug: t };
+        }
+
+        const id = t?.id ?? null;
+        const name = t?.name;
+        const slug = t?.slug || name;
+
+        if (!name && !slug) {
+          return null;
+        }
+
+        return { id, name: name || slug, slug };
+      })
+      .filter(Boolean);
+  }
+
   tagHref(tag) {
     if (!tag) {
       return "/tags";
     }
-    // Discourse 标签列表标准路径为 /tags/<tag>
-    return `/tags/${encodeURIComponent(tag)}`;
+
+    // 新接口可能返回对象：{ id, name, slug }
+    if (typeof tag === "object") {
+      const slug = tag?.slug || tag?.name;
+      const id = tag?.id;
+
+      // 你当前站点的 tag 路由形如：/tag/<slug>/<id>
+      if (slug && id) {
+        return `/tag/${encodeURIComponent(slug)}/${encodeURIComponent(id)}`;
+      }
+
+      // 回退到只有 slug 的形式（不同站点/版本可能是 /tag/<slug>）
+      if (slug) {
+        return `/tag/${encodeURIComponent(slug)}`;
+      }
+    }
+
+    // 旧格式：topic.tags = ["tag-a", "tag-b"]
+    const tagName = typeof tag === "string" ? tag : null;
+    if (tagName) {
+      // 回退到 /tag/<name>（更接近新版路由）
+      return `/tag/${encodeURIComponent(tagName)}`;
+    }
+
+    // 最终回退
+    return "/tags";
   }
 
   @action
@@ -576,8 +627,12 @@ export default class TopicListThumbnail extends Component {
         {{! 底部统计信息 }}
         <div class="topic-footer">
           <div class="topic-tags">
-            {{#each this.topic.tags as |tag|}}
-              <a href={{this.tagHref tag}} data-tag-name="{{tag}}" class="discourse-tag">{{tag}}</a>
+            {{#each this.normalizedTags as |tag|}}
+              <a
+                href={{this.tagHref tag}}
+                data-tag-name="{{tag.name}}"
+                class="discourse-tag"
+              >{{tag.name}}</a>
             {{/each}}
           </div>
           <div class="topic-stats">
