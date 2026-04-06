@@ -55,8 +55,13 @@ body {
   background-color: var(--bm-body-bg-color);
   font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Segoe UI, Arial, Roboto, "PingFang SC", "miui", "Hiragino Sans GB", "Microsoft Yahei", sans-serif;
 }
-
-
+* {
+  /* 去除移动端点击时的蓝色高亮 */
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+.dots {
+  background: #ff3cf8;
+}
 .container {
   background-color: var(--bm-card-bg-color);
   padding: 1em;
