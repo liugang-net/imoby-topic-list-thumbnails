@@ -7,11 +7,13 @@ import coldAgeClass from "discourse/helpers/cold-age-class";
 import concatClass from "discourse/helpers/concat-class";
 import dIcon from "discourse/helpers/d-icon";
 import formatDate from "discourse/helpers/format-date";
-import { getURL } from "discourse-common/lib/get-url";
+import { ajax } from "discourse/lib/ajax";
+import { popupAjaxError } from "discourse/lib/ajax-error";
 
 export default class TopicListThumbnail extends Component {
   @service topicThumbnails;
   @service router;
+  @service currentUser;
 
   @tracked _forceUpdate = 0;
   @tracked _isLiked = null;
@@ -456,6 +458,52 @@ export default class TopicListThumbnail extends Component {
     return !!this.topic.op_can_like;
   }
 
+  get isBookmarked() {
+    this._forceUpdate;
+    return !!this.topic.bookmarked;
+  }
+
+  get cannotBookmark() {
+    return !this.currentUser || !this.topic.first_post_id;
+  }
+
+  @action
+  async handleBookmarkClick(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (this.cannotBookmark) {
+      return;
+    }
+
+    const postId = this.topic.first_post_id;
+
+    try {
+      if (this.isBookmarked) {
+        const data = await ajax(`/posts/${postId}/bookmark.json`, {
+          type: "DELETE",
+        });
+        const bookmarked = data.topic_bookmarked === true;
+        this.topic.set("bookmarked", bookmarked);
+        this.topic.notifyPropertyChange("bookmarked");
+        this._forceUpdate++;
+      } else {
+        await ajax("/bookmarks.json", {
+          type: "POST",
+          data: {
+            bookmarkable_type: "Post",
+            bookmarkable_id: postId,
+          },
+        });
+        this.topic.set("bookmarked", true);
+        this.topic.notifyPropertyChange("bookmarked");
+        this._forceUpdate++;
+      }
+    } catch (error) {
+      popupAjaxError.call(this, error);
+    }
+  }
+
   @action
   async handleLikeClick(event) {
     event.preventDefault();
@@ -658,6 +706,20 @@ export default class TopicListThumbnail extends Component {
                 <span class="number">{{this.likeCount}}</span>
               </div>
             {{/if}}
+            <button
+              type="button"
+              class={{concatClass "stat" "stat-bookmark" (if this.isBookmarked "is-bookmarked")}}
+              disabled={{this.cannotBookmark}}
+              aria-label={{if this.isBookmarked "取消收藏" "加入收藏"}}
+              title={{if
+                this.cannotBookmark
+                "登录后可收藏"
+                (if this.isBookmarked "点击取消收藏" "点击加入收藏")
+              }}
+              {{on "click" this.handleBookmarkClick}}
+            >
+              {{dIcon "star"}}
+            </button>
             <a href={{this.url}} class="stat stat-views" aria-label="查看浏览">
               {{dIcon "eye"}}
               <span class="number">{{this.topic.views}}</span>

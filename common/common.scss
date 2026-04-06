@@ -64,6 +64,10 @@ body {
 .dots {
   background: #ff3cf8;
 }
+.d-combo-button, .bulk-select,#topic-footer-button-flag,.topic-notifications-button,
+.post-action-menu__flag, #topic-progress-wrapper{
+  display: none !important;
+}
 .container {
   background-color: var(--bm-card-bg-color);
   padding: 1em;
@@ -1336,6 +1340,36 @@ body.category {
               color: var(--love) !important;
             }
           }
+        }
+      }
+
+      &.stat-bookmark {
+        background: none;
+        border: none;
+        padding: 0;
+        margin: 0;
+        font: inherit;
+        color: inherit;
+        cursor: pointer;
+
+        &:disabled {
+          cursor: default;
+        }
+
+        .d-icon {
+          color: var(--primary-low-mid);
+        }
+
+        &.is-bookmarked .d-icon {
+          color: var(--gold);
+        }
+
+        &:disabled .d-icon {
+          color: var(--primary-low-mid);
+        }
+
+        &.is-bookmarked:disabled .d-icon {
+          color: var(--gold);
         }
       }
     }
