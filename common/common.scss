@@ -8,7 +8,7 @@
   --shadow-header: 0 0 0 1px #f01fe9;
   --d-header-icon-color: #ffffff;
   --d-button-primary-bg-color: #ff3cf8;
-
+  --d-button-primary-bg-color--hover: #ff14d1;
   --d-hover: transparent;
   --d-header-icon-color--hover:#ffffff;
   --d-link-color:#4c4c4c;
@@ -53,7 +53,9 @@
 
 body {
   background-color: var(--bm-body-bg-color);
-  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Segoe UI, Arial, Roboto, "PingFang SC", "miui", "Hiragino Sans GB", "Microsoft Yahei", sans-serif;
+  // font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Segoe UI, Arial, Roboto, "PingFang SC", "miui", "Hiragino Sans GB", "Microsoft Yahei", sans-serif;
+  font-family: "DFPYuan W7", "PingFang SC", "Microsoft YaHei", sans-serif;
+
 }
 * {
   /* 去除移动端点击时的蓝色高亮 */
@@ -1648,6 +1650,8 @@ body.category {
       -webkit-line-clamp: 2;
       line-clamp: 2;
       overflow: hidden;
+      font-family: "DFPYuan W9", "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 18px;
     }
   }
 }
