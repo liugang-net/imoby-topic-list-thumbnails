@@ -19,13 +19,13 @@
   color-scheme: light !important;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bm-body-bg-color: #313131;
-    --bm-card-bg-color: #222222;
-    --bm-bg-image: url("http://cdn.ibomy.com/forum/images/hero_bg_dark.png");
-  }
-}
+// @media (prefers-color-scheme: dark) {
+//   :root {
+//     --bm-body-bg-color: #313131;
+//     --bm-card-bg-color: #222222;
+//     --bm-bg-image: url("http://cdn.ibomy.com/forum/images/hero_bg_dark.png");
+//   }
+// }
 
 /* 华康圆体（DFP Yuan）— CDN，按需加类名使用 */
 @font-face {
