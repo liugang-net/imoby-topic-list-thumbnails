@@ -8,6 +8,12 @@
   --shadow-header: 0 0 0 1px #f01fe9;
   --d-header-icon-color: #ffffff;
   --d-button-primary-bg-color: #ff3cf8;
+
+  --d-hover: transparent;
+  --d-header-icon-color--hover:#ffffff;
+  --d-link-color:#4c4c4c;
+
+  --dot-color:#ff3cf8;
 }
 
 @media (prefers-color-scheme: dark) {
