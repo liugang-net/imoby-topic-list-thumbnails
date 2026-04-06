@@ -1,4 +1,9 @@
 {
+  "name": "ibomy-topic-list-thumbnails",
+  "version": "0.0.1",
+  "description": "Ibomy Topic List Thumbnails",
+  "author": "Ibomy",
+  "license": "MIT",
   "private": true,
   "devDependencies": {
     "@discourse/lint-configs": "2.25.0",
