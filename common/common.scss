@@ -365,7 +365,7 @@ body {
     max-width: 100%;
     margin-left: 0;
     margin-right: 0;
-    margin-bottom: 0.75em;
+    margin-bottom: 0;
     box-sizing: border-box;
   }
 
@@ -395,6 +395,11 @@ body {
     width: 100%;
     margin-bottom: 0.75em;
     box-shadow: none;
+  }
+
+  // 有轮播时去掉主内容区顶内边距，避免与轮播之间出现多余空白（覆盖 core .mobile-view #main-outlet 的 padding-top）
+  #main-outlet-wrapper:has(> .ibomy-hero-carousel) #main-outlet {
+    padding-top: 0;
   }
 }
 
