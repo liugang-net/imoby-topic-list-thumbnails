@@ -376,7 +376,7 @@ body {
     justify-self: center;
     width: calc(100% - 2rem);
     max-width: min(calc(100% - 2rem), var(--d-max-width));
-    margin: 0 1rem 2.5rem;
+    margin: 0 1rem 2rem;
     box-sizing: border-box;
     border-radius: 8px;
     box-shadow: 0 -2px 12px rgb(0 0 0 / 12%);
@@ -400,6 +400,8 @@ body {
   // 有轮播时去掉主内容区顶内边距，避免与轮播之间出现多余空白（覆盖 core .mobile-view #main-outlet 的 padding-top）
   #main-outlet-wrapper:has(> .ibomy-hero-carousel) #main-outlet {
     padding-top: 0;
+    margin-top: -1rem;
+    border-radius: 14px;
   }
 }
 
@@ -1741,7 +1743,7 @@ body.category {
         transform: translateX(-50%);
         width: 2em;
         height: 3px;
-        background-color: var(--d-button-primary-bg-color);
+        background-color: #ff3cf8;
         border-radius: 2px;
         transition: all 0.3s ease;
       }
