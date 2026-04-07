@@ -4,10 +4,60 @@ import { action } from "@ember/object";
 import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { modifier } from "ember-modifier";
+import { service } from "@ember/service";
 import bodyClass from "discourse/helpers/body-class";
 import concatClass from "discourse/helpers/concat-class";
 import dIcon from "discourse/helpers/d-icon";
+import { bind } from "discourse/lib/decorators";
 import getURL from "discourse/lib/get-url";
+
+// 与 before-main-outlet/announcement-scroll.gjs 一致：仅首页、最新、分类、标签相关页显示
+const HERO_CAROUSEL_EXCLUDED_PREFIXES = [
+  "/login",
+  "/admin",
+  "/t/",
+  "/u/",
+  "/about",
+  "/faq",
+  "/tos",
+  "/privacy",
+  "/session",
+  "/admin/",
+  "/my/",
+  "/preferences",
+  "/notifications",
+  "/messages",
+  "/badges",
+  "/groups",
+  "/search",
+  "/top",
+  "/unread",
+  "/new",
+  "/bookmarks",
+  "/activity",
+  "/summary",
+];
+
+const HERO_CAROUSEL_ALLOWED_PREFIXES = [
+  "/",
+  "/latest",
+  "/c/",
+  "/tags",
+  "/tag/",
+];
+
+function isHeroCarouselPath(pathname) {
+  const path = pathname || "";
+  if (HERO_CAROUSEL_EXCLUDED_PREFIXES.some((p) => path.startsWith(p))) {
+    return false;
+  }
+  return HERO_CAROUSEL_ALLOWED_PREFIXES.some((p) => {
+    if (p === "/") {
+      return path === "/" || path === "";
+    }
+    return path.startsWith(p);
+  });
+}
 
 function parseObjectSlides(raw) {
   if (!Array.isArray(raw) || raw.length === 0) {
@@ -95,8 +145,16 @@ function resolveHref(href) {
 }
 
 export default class IbomyHeroCarousel extends Component {
+  @service router;
+
   @tracked activeIndex = 0;
+  @tracked _routeEpoch = 0;
   _timer = null;
+
+  constructor() {
+    super(...arguments);
+    this.router?.on("routeDidChange", this, this.onHeroRouteDidChange);
+  }
 
   get rawItems() {
     const fromObjects = parseObjectSlides(settings.hero_carousel_slides);
@@ -114,22 +172,16 @@ export default class IbomyHeroCarousel extends Component {
   }
 
   get shouldShow() {
-    return !!settings.hero_carousel_enabled && this.slides.length > 0;
-  }
-
-  get heightPx() {
-    const raw = String(settings.hero_carousel_height || "220").replace(/px\s*$/i, "");
-    const n = parseInt(raw, 10);
-    return Number.isFinite(n) && n >= 120 && n <= 560 ? n : 220;
+    this._routeEpoch;
+    if (!settings.hero_carousel_enabled || this.slides.length === 0) {
+      return false;
+    }
+    return isHeroCarouselPath(window.location.pathname);
   }
 
   get intervalSec() {
     const n = parseInt(String(settings.hero_carousel_interval_seconds), 10);
     return Number.isFinite(n) && n >= 2 && n <= 60 ? n : 6;
-  }
-
-  get wrapperStyle() {
-    return `--ibomy-hero-carousel-height:${this.heightPx}px;height:${this.heightPx}px`;
   }
 
   get trackStyle() {
@@ -162,10 +214,16 @@ export default class IbomyHeroCarousel extends Component {
 
   willDestroy() {
     super.willDestroy?.();
+    this.router?.off("routeDidChange", this, this.onHeroRouteDidChange);
     if (this._timer) {
       clearInterval(this._timer);
       this._timer = null;
     }
+  }
+
+  @bind
+  onHeroRouteDidChange() {
+    this._routeEpoch++;
   }
 
   @action
@@ -202,7 +260,6 @@ export default class IbomyHeroCarousel extends Component {
       {{bodyClass "has-ibomy-hero-carousel"}}
       <section
         class="ibomy-hero-carousel"
-        style={{this.wrapperStyle}}
         aria-roledescription="carousel"
         aria-label="Hero"
         {{this.autoplay}}

@@ -133,11 +133,6 @@ hero_carousel_enabled:
   default: false
   type: bool
 
-hero_carousel_height:
-  default: "220"
-  type: string
-  client: true
-
 hero_carousel_interval_seconds:
   default: 6
   type: integer

@@ -398,4 +398,3 @@ export default class AnnouncementScroll extends Component {
     {{/if}}
   </template>
 }
-

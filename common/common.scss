@@ -159,7 +159,6 @@ body {
 .announcement-scroll {
   background-color: rgba(255, 255, 255, 0.95);
   color: var(--tertiary);
-  padding: 6px 0;
   overflow: hidden;
   border-radius: 8px;
   margin-bottom: 1em;
@@ -243,7 +242,7 @@ body {
 
 }
 
-// 头图轮播（before-main-outlet / ibomy-hero-carousel.gjs；公告仍在 above-main-container，独立数据与逻辑）
+// 头图轮播 + 公告均在 before-main-outlet（announcement-scroll.gjs、ibomy-hero-carousel.gjs），DOM 顺序：公告在上、轮播在下，便于统一调样式与网格
 .ibomy-hero-carousel {
   position: relative;
   z-index: 1;
@@ -254,6 +253,9 @@ body {
   box-sizing: border-box;
   overflow: hidden;
   background: var(--primary-very-low, #f5f5f5);
+  // 设计比例 393×170，宽度由布局决定，高度随宽按比例变化
+  aspect-ratio: 393 / 170;
+  height: auto;
 
   &__viewport {
     width: 100%;
@@ -345,11 +347,9 @@ body {
   }
 }
 
-// 窄屏与 core 的 #main-outlet-wrapper 单列断点（viewport.until(md) = 48rem）一致：
-// 轮播在 DOM 中位于 #main-outlet 之前，但未分配 grid-area 时会与 content 区重叠，
-// #main-outlet 后渲染会盖住轮播。单独占第一行「hero」即可正常显示。
+// 窄屏：有轮播时公告与轮播共用同一 grid「hero」格，公告 align-self:end 叠在轮播底部；仅公告时仍单独一行 hero-notice。
 @media (width < 48rem) {
-  #main-outlet-wrapper {
+  #main-outlet-wrapper:has(> .ibomy-hero-carousel) {
     grid-template-rows: auto 1fr auto;
     grid-template-areas:
       "hero"
@@ -357,18 +357,48 @@ body {
       "below-content";
   }
 
-  #main-outlet-wrapper > .ibomy-hero-carousel {
+  #main-outlet-wrapper:has(> .ibomy-hero-carousel) > .ibomy-hero-carousel {
     grid-area: hero;
+    position: relative;
+    z-index: 1;
     width: 100%;
     max-width: 100%;
     margin-left: 0;
     margin-right: 0;
     margin-bottom: 0.75em;
+    box-sizing: border-box;
+  }
+
+  #main-outlet-wrapper:has(> .ibomy-hero-carousel) > .announcement-scroll {
+    grid-area: hero;
+    z-index: 2;
+    align-self: end;
+    justify-self: center;
+    width: calc(100% - 2rem);
+    max-width: min(calc(100% - 2rem), var(--d-max-width));
+    margin: 0 1rem 2.5rem;
+    box-sizing: border-box;
+    border-radius: 8px;
+    box-shadow: 0 -2px 12px rgb(0 0 0 / 12%);
+  }
+
+  #main-outlet-wrapper:has(> .announcement-scroll):not(:has(> .ibomy-hero-carousel)) {
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+      "hero-notice"
+      "content"
+      "below-content";
+  }
+
+  #main-outlet-wrapper:has(> .announcement-scroll):not(:has(> .ibomy-hero-carousel)) > .announcement-scroll {
+    grid-area: hero-notice;
+    width: 100%;
+    margin-bottom: 0.75em;
+    box-shadow: none;
   }
 }
 
-// 桌面端：同样给轮播独立「hero」行，避免与 #main-outlet（分类列表、列表头等）叠在同一格导致内容压到轮播上；
-// 宽度与站点主内容对齐并居中（不再 100vw 顶满视口）。
+// 桌面端：有轮播时公告叠在轮播底部；仅公告时单独 hero-notice 行。
 @media (width >= 48rem) {
   body.has-ibomy-hero-carousel #main-outlet-wrapper {
     grid-template-rows: auto 1fr auto;
@@ -380,10 +410,41 @@ body {
 
   body.has-ibomy-hero-carousel #main-outlet-wrapper > .ibomy-hero-carousel {
     grid-area: hero;
+    position: relative;
+    z-index: 1;
     justify-self: center;
     width: min(100%, var(--d-max-width));
     margin-bottom: 0.75em;
     box-sizing: border-box;
+  }
+
+  body.has-ibomy-hero-carousel #main-outlet-wrapper > .announcement-scroll {
+    grid-area: hero;
+    z-index: 2;
+    align-self: end;
+    justify-self: center;
+    width: min(calc(100% - 20rem), var(--d-max-width));
+    margin: 0 1.2rem 3rem;
+    box-sizing: border-box;
+    border-radius: 8px;
+    box-shadow: 0 -2px 14px rgb(0 0 0 / 14%);
+  }
+
+  body:not(.has-ibomy-hero-carousel) #main-outlet-wrapper:has(> .announcement-scroll) {
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+      "sidebar hero-notice"
+      "sidebar content"
+      "sidebar below-content";
+  }
+
+  body:not(.has-ibomy-hero-carousel) #main-outlet-wrapper:has(> .announcement-scroll) > .announcement-scroll {
+    grid-area: hero-notice;
+    justify-self: center;
+    width: min(100%, var(--d-max-width));
+    box-sizing: border-box;
+    margin-bottom: 0.75em;
+    box-shadow: none;
   }
 }
 
@@ -391,12 +452,6 @@ body {
   .ibomy-hero-carousel__track {
     transition: none;
   }
-}
-
-body.has-ibomy-hero-carousel #main-outlet .announcement-scroll {
-  margin-top: calc(-1 * clamp(2.75rem, 14vw, 5rem));
-  margin-bottom: 0.75em;
-  z-index: 3;
 }
 
 
