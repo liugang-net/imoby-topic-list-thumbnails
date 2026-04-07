@@ -401,11 +401,11 @@ body.category.navigation-category {
   background: var(--secondary);
   border-bottom: 1px solid var(--primary-low);
   box-shadow: none;
-  border-radius: 0; // 移动端去掉圆角
   border-left: none;
   border-right: none;
   transform: translateZ(0);
   will-change: transform;
+  border-radius: 14px 14px 0 0;
   // // 确保在discovery-list-container-top位置时仍然粘性定位
   // &.discovery-list-container-top {
   //   position: sticky !important;
