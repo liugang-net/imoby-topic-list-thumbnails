@@ -1,21 +1,26 @@
 en:
   theme_metadata:
-    description: Theme component which adds thumbnails to topic lists. You can enable it globally, or per-category
+    description: 在话题列表中显示缩略图的主题组件，可全站启用或按分类启用。
     settings:
-      default_thumbnail_mode: Which thumbnail display mode should be used by default?
-      docs_thumbnail_mode: If the docs plugin is enabled, which thumbnail display mode should be used for docs topics?
-      blog_style_categories: The blog-style view will be used in these categories. This style makes use of topic-excerpts if enabled via theme or theme component.
-      minimal_grid_categories: The minimal grid view will be used in these categories
-      grid_categories: The grid view will be used in these categories
-      masonry_categories: The masonry view will be used in these categories
-      list_categories: The list view will be used in these categories
-      minimal_grid_tags: The minimal grid view will be used for these tags
-      grid_tags: The grid view will be used for these tags
-      masonry_tags: The masonry view will be used for these tags
-      list_tags: The list view will be used for these tags
-      suggested_topics_mode: Which thumbnail display mode should be used for suggested topics? If blank, will follow the 'enable outside topic lists' setting.
-      enable_outside_topic_lists: Enable thumbnails on non-topic-list pages (e.g. user activity, personal messages, suggested topics)
-      placeholder_icon: Icon to display on topics without thumbnail images
-      mobile_thumbnails: Enable thumbnails on mobile devices
-      list_thumbnail_size: Base size for thumbnails in the 'list' view
-      mobile_inline_search_enabled: Show a pill-style inline search in the header (between logo and icons) on mobile and desktop. Hides the default header search icon when shown. Skips when Discourse’s own header search field is already visible (search field mode). Hidden on topic header, full-page search, and admin.
+      default_thumbnail_mode: 默认使用哪种缩略图展示模式？
+      docs_thumbnail_mode: 若启用了文档插件，文档类话题使用哪种缩略图模式？
+      blog_style_categories: 在这些分类中使用博客样式列表（若主题或组件开启了话题摘录，会配合使用摘录）。
+      minimal_grid_categories: 在这些分类中使用精简网格视图
+      grid_categories: 在这些分类中使用网格视图
+      masonry_categories: 在这些分类中使用瀑布流（砌体）视图
+      list_categories: 在这些分类中使用列表视图
+      minimal_grid_tags: 在这些标签下使用精简网格视图
+      grid_tags: 在这些标签下使用网格视图
+      masonry_tags: 在这些标签下使用瀑布流视图
+      list_tags: 在这些标签下使用列表视图
+      suggested_topics_mode: 建议话题列表使用哪种缩略图模式？留空则跟随「在话题列表外启用缩略图」设置。
+      enable_outside_topic_lists: 在非话题列表页面也显示缩略图（如用户动态、私信、建议话题等）
+      placeholder_icon: 没有缩略图时显示的图标名称
+      mobile_thumbnails: 是否在移动设备上显示缩略图
+      list_thumbnail_size: 「列表」视图下缩略图基准边长（像素）
+      mobile_inline_search_enabled: 在页头 Logo 与右侧图标之间显示胶囊搜索（移动端与桌面端），并隐藏默认搜索图标。若站点已启用 Discourse 自带「标题内搜索字段」且该栏会显示，则不再重复显示本组件。话题顶栏、全页搜索、管理后台不显示。
+      hero_carousel_enabled: 在标题栏下方、主内容上方显示头图轮播；与公告条独立，可同时使用。
+      hero_carousel_height: 轮播高度（像素，只填数字，例如 220）。
+      hero_carousel_interval_seconds: 自动轮播间隔（秒，范围 2～60）。
+      hero_carousel_slides: "Recommended: add slides here (image URL, link, alt text per row). Use full image URLs. If no valid slides here, the legacy text field below is used."
+      hero_carousel_items: "Fallback when slides above are empty: JSON array or each line as image|link|alt. Example: https://cdn.example.com/banner.jpg|/latest|Home"

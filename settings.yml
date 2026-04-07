@@ -129,6 +129,39 @@ announcement_background_color:
   type: string
   client: true
 
+hero_carousel_enabled:
+  default: false
+  type: bool
+
+hero_carousel_height:
+  default: "220"
+  type: string
+  client: true
+
+hero_carousel_interval_seconds:
+  default: 6
+  type: integer
+  client: true
+
+hero_carousel_slides:
+  type: objects
+  default: []
+  client: true
+  schema:
+    name: slide
+    properties:
+      image_url:
+        type: string
+      link_url:
+        type: string
+      alt_text:
+        type: string
+
+hero_carousel_items:
+  default: ""
+  type: string
+  client: true
+
 # 维护模式设置
 maintenance_mode_enabled:
   default: false

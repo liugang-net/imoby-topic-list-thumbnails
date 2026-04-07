@@ -157,7 +157,7 @@ body {
 
 // 公告滚动组件样式
 .announcement-scroll {
-  background-color: var(--tertiary-low);
+  background-color: rgba(255, 255, 255, 0.95);
   color: var(--tertiary);
   padding: 6px 0;
   overflow: hidden;
@@ -200,8 +200,8 @@ body {
     }
 
     .announcement-badge {
-      background-color: var(--tertiary);
-      color: #ffffff;
+      background-color: #ff3cf8;
+      color: #fcfb07;
       padding: 0px 6px;
       border-radius: 6px;
       font-size: 12px;
@@ -214,6 +214,8 @@ body {
     .announcement-title {
       font-weight: 500;
       font-size: 14px;
+      color: #000000;
+      font-family: "DFPYuan W9", "PingFang SC", "Microsoft YaHei", sans-serif;
     }
   }
 
@@ -230,6 +232,7 @@ body {
       font-size: 14px;
       font-weight: 500;
       transition: color 0.3s ease;
+      color: #c0c0c0;
 
       &:hover {
         // color: var(--primary-high);
@@ -238,6 +241,162 @@ body {
     }
   }
 
+}
+
+// 头图轮播（before-main-outlet / ibomy-hero-carousel.gjs；公告仍在 above-main-container，独立数据与逻辑）
+.ibomy-hero-carousel {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: var(--primary-very-low, #f5f5f5);
+
+  &__viewport {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  &__track {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    transition: transform 0.5s ease-out;
+  }
+
+  &__slide {
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+    display: block;
+    position: relative;
+  }
+
+  &__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  &__dots {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    z-index: 2;
+    pointer-events: none;
+
+    .ibomy-hero-carousel__dot {
+      pointer-events: auto;
+      width: 8px;
+      height: 8px;
+      padding: 0;
+      border-radius: 999px;
+      border: 0;
+      background: rgb(255 255 255 / 55%);
+      cursor: pointer;
+
+      &.is-active {
+        background: #fff;
+        width: 22px;
+      }
+    }
+  }
+
+  &__nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    border: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    background: rgb(0 0 0 / 25%);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    &--prev {
+      left: 10px;
+    }
+
+    &--next {
+      right: 10px;
+    }
+
+    &:hover {
+      background: rgb(0 0 0 / 40%);
+    }
+
+    .d-icon {
+      color: #fff;
+    }
+  }
+}
+
+// 窄屏与 core 的 #main-outlet-wrapper 单列断点（viewport.until(md) = 48rem）一致：
+// 轮播在 DOM 中位于 #main-outlet 之前，但未分配 grid-area 时会与 content 区重叠，
+// #main-outlet 后渲染会盖住轮播。单独占第一行「hero」即可正常显示。
+@media (width < 48rem) {
+  #main-outlet-wrapper {
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+      "hero"
+      "content"
+      "below-content";
+  }
+
+  #main-outlet-wrapper > .ibomy-hero-carousel {
+    grid-area: hero;
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: 0.75em;
+  }
+}
+
+// 桌面端：同样给轮播独立「hero」行，避免与 #main-outlet（分类列表、列表头等）叠在同一格导致内容压到轮播上；
+// 宽度与站点主内容对齐并居中（不再 100vw 顶满视口）。
+@media (width >= 48rem) {
+  body.has-ibomy-hero-carousel #main-outlet-wrapper {
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+      "sidebar hero"
+      "sidebar content"
+      "sidebar below-content";
+  }
+
+  body.has-ibomy-hero-carousel #main-outlet-wrapper > .ibomy-hero-carousel {
+    grid-area: hero;
+    justify-self: center;
+    width: min(100%, var(--d-max-width));
+    margin-bottom: 0.75em;
+    box-sizing: border-box;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ibomy-hero-carousel__track {
+    transition: none;
+  }
+}
+
+body.has-ibomy-hero-carousel #main-outlet .announcement-scroll {
+  margin-top: calc(-1 * clamp(2.75rem, 14vw, 5rem));
+  margin-bottom: 0.75em;
+  z-index: 3;
 }
 
 

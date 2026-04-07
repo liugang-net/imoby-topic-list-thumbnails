@@ -374,7 +374,7 @@ export default class AnnouncementScroll extends Component {
 
   <template>
     {{#if this.announcements.length}}
-      <div class="announcement-scroll" style={{this.announcementStyle}}>
+      <div class="announcement-scroll">
         <div class="announcement-scroll-container">
           <div class="announcement-content">
             {{#each this.announcements as |announcement|}}
