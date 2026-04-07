@@ -1,6 +1,7 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
+import { next } from "@ember/runloop";
 import { service } from "@ember/service";
 import dIcon from "discourse/helpers/d-icon";
 import concatClass from "discourse/helpers/concat-class";
@@ -12,7 +13,9 @@ export default class CategoryFeaturedCarousel extends Component {
 
   @tracked items = [];
   @tracked loading = true;
-  @tracked lastKey = null;
+
+  /** 非 @tracked，避免在渲染/计算过程中读写 tracked 触发 Glimmer 断言 */
+  _lastReloadKey = null;
 
   get category() {
     // 从 outletArgs 获取 category
@@ -34,10 +37,9 @@ export default class CategoryFeaturedCarousel extends Component {
 
   constructor() {
     super(...arguments);
-    this.maybeReload();
-    // 监听路由变化，切换分类时刷新
+    next(() => this.maybeReload());
     if (this.router && this.onRouteChanged) {
-      this.router.on('routeDidChange', this.onRouteChanged);
+      this.router.on("routeDidChange", this.onRouteChanged);
     }
   }
 
@@ -89,8 +91,8 @@ export default class CategoryFeaturedCarousel extends Component {
 
   @action maybeReload() {
     const currentKey = this.argsKey;
-    if (currentKey && currentKey !== this.lastKey) {
-      this.lastKey = currentKey;
+    if (currentKey && currentKey !== this._lastReloadKey) {
+      this._lastReloadKey = currentKey;
       this.loading = true;
       this.items = [];
       this.load();
@@ -98,8 +100,7 @@ export default class CategoryFeaturedCarousel extends Component {
   }
 
   @action onRouteChanged() {
-    // 路由变化时尝试刷新（分类切换等）
-    this.maybeReload();
+    next(() => this.maybeReload());
   }
 
   get showComponent() {

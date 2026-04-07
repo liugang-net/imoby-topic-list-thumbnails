@@ -65,7 +65,7 @@ body {
 .dots {
   background: #ff3cf8;
 }
-.d-combo-button, .bulk-select,#topic-footer-button-flag,.topic-notifications-button,
+.topic-drafts-menu-trigger, .bulk-select,#topic-footer-button-flag,.topic-notifications-button,
 .post-action-menu__flag, #topic-progress-wrapper{
   display: none !important;
 }
@@ -2323,5 +2323,184 @@ body.category {
         }
       }
     }
+  }
+}
+
+// Header 内胶囊搜索（before-header-panel / mobile-inline-search.gjs，移动端 + 桌面端）
+body.ibomy-mobile-inline-search--enabled .d-header .d-header-icons .search-dropdown {
+  display: none !important;
+}
+
+body.ibomy-mobile-inline-search--enabled .d-header .before-header-panel-outlet {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  margin-left: 0.4em;
+  margin-right: 0.25em;
+}
+
+body.ibomy-mobile-inline-search--enabled .ibomy-mobile-inline-search {
+  width: 100%;
+
+  .ibomy-mobile-inline-search__pill {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    min-height: 2.125em;
+    padding: 0.15em 0.35em 0.15em 0.5em;
+    box-sizing: border-box;
+    background: var(--secondary);
+    border-radius: 9999px;
+    border: none;
+    box-shadow: none;
+    // 桌面下拉挂在 .search-menu-container 内，hidden 会裁切 menu-panel；移动端再单独 hidden
+    overflow: visible;
+  }
+
+  .ibomy-mobile-inline-search__icon-btn {
+    flex-shrink: 0;
+    align-self: center;
+    margin: 0 !important;
+    padding: 0.2em 0.35em 0.2em 0.15em !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: var(--primary-medium) !important;
+
+    .d-icon {
+      color: var(--primary-medium);
+    }
+
+    &:hover,
+    &:focus-visible {
+      color: var(--primary-high) !important;
+      background: transparent !important;
+    }
+  }
+
+  .search-menu-container {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .search-input-wrapper {
+    background: transparent;
+    margin: 0;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .search-input.search-input--header {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    min-height: auto;
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    border: none !important;
+    background: transparent !important;
+    border-radius: 0;
+    box-shadow: none !important;
+    gap: 0.15em;
+
+    &:focus-within {
+      outline: none !important;
+      border-color: transparent !important;
+      box-shadow: none !important;
+    }
+  }
+
+  .search-term__input {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0 !important;
+    padding: 0.35em 0.4em 0.35em 0.15em !important;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: var(--primary-high);
+    font-size: var(--font-down-1);
+    border-radius: 0 !important;
+    -webkit-appearance: none;
+    appearance: none;
+
+    &:focus,
+    &:focus-visible {
+      outline: none !important;
+      box-shadow: none !important;
+    }
+
+    &::placeholder {
+      color: var(--primary-high);
+      opacity: 0.85;
+    }
+  }
+
+  .searching {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 0.05em;
+    margin-left: 0;
+
+    .show-advanced-search {
+      display: none;
+    }
+
+    .clear-search {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      padding: 0.15em;
+      margin: 0;
+      line-height: 1;
+
+      .d-icon {
+        font-size: 0.85em;
+      }
+    }
+  }
+}
+
+// 桌面：下拉至少与核心 header 搜索宽度接近；提高层级避免被 header 其它层挡住
+html.desktop-view body.ibomy-mobile-inline-search--enabled .d-header .before-header-panel-outlet {
+  overflow: visible;
+  position: relative;
+  z-index: 1200;
+}
+
+html.desktop-view body.ibomy-mobile-inline-search--enabled .ibomy-mobile-inline-search {
+  position: relative;
+  z-index: 1;
+
+  .search-menu-container.menu-panel-results .menu-panel.search-menu-panel {
+    width: min(500px, calc(100vw - 2rem)) !important;
+    max-width: min(500px, calc(100vw - 2rem)) !important;
+    z-index: 1201;
+  }
+}
+
+// 仅移动端：胶囊内清除按钮不溢出圆角 + 全宽固定层结果面板
+html.mobile-view body.ibomy-mobile-inline-search--enabled .ibomy-mobile-inline-search {
+  .ibomy-mobile-inline-search__pill {
+    overflow: hidden;
+  }
+
+  .search-menu-container.menu-panel-results .menu-panel.search-menu-panel {
+    position: fixed !important;
+    left: 10px !important;
+    right: 10px !important;
+    width: auto !important;
+    max-width: none !important;
+    top: calc(var(--header-offset, 60px) + 4px) !important;
+    max-height: calc(100dvh - var(--header-offset, 60px) - 12px) !important;
+    z-index: 1200;
+    box-sizing: border-box;
   }
 }

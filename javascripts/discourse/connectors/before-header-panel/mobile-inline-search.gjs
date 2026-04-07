@@ -3,6 +3,7 @@ import { modifier } from "ember-modifier";
 import { service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import SearchMenu from "discourse/components/search-menu";
+import { ALL_PAGES_EXCLUDED_ROUTES } from "discourse/components/welcome-banner";
 import bodyClass from "discourse/helpers/body-class";
 
 const MOBILE_INLINE_SEARCH_PLACEHOLDER = "啵咪·个性化定制";
@@ -12,6 +13,7 @@ export default class MobileInlineSearch extends Component {
   @service siteSettings;
   @service currentUser;
   @service router;
+  @service search;
 
   advancedSearchButtonHref = "/search?expanded=true";
 
@@ -45,11 +47,31 @@ export default class MobileInlineSearch extends Component {
     return () => observer.disconnect();
   });
 
+  get coreHeaderSearchVisible() {
+    if (this.site.mobileView || this.site.narrowDesktopView) {
+      return false;
+    }
+    if (
+      ALL_PAGES_EXCLUDED_ROUTES.some(
+        (n) => n === this.router.currentRouteName
+      ) ||
+      this.search.welcomeBannerSearchInViewport ||
+      this.router.currentRouteName?.startsWith("admin")
+    ) {
+      return false;
+    }
+    return (
+      this.search.searchExperience === "search_field" &&
+      !this.args.topicInfoVisible &&
+      !this.search.welcomeBannerSearchInViewport
+    );
+  }
+
   get shouldDisplay() {
     if (!settings.mobile_inline_search_enabled) {
       return false;
     }
-    if (!this.site.mobileView) {
+    if (this.coreHeaderSearchVisible) {
       return false;
     }
     if (this.siteSettings.login_required && !this.currentUser) {

@@ -18,4 +18,4 @@ en:
       placeholder_icon: Icon to display on topics without thumbnail images
       mobile_thumbnails: Enable thumbnails on mobile devices
       list_thumbnail_size: Base size for thumbnails in the 'list' view
-      mobile_inline_search_enabled: Show a pill-style inline search bar inside the header on mobile (between logo and icons). Hides the default header search icon on mobile. Hidden on topic header, full-page search, and admin.
+      mobile_inline_search_enabled: Show a pill-style inline search in the header (between logo and icons) on mobile and desktop. Hides the default header search icon when shown. Skips when Discourse’s own header search field is already visible (search field mode). Hidden on topic header, full-page search, and admin.
