@@ -17,7 +17,18 @@ body.category.navigation-category {
 .mobile-sort-wrapper,.category-breadcrumb,.notifications-tracking-trigger{
   display: none;
 }
-
+.category-navigation {
+  position: relative;
+}
+.navigation-controls {
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 5;
+}
+.edit-category {
+  margin: 0 1rem;
+}
 .mobile-sort-trigger {
   .select-kit-header {
     font-weight: normal !important;
