@@ -9,7 +9,7 @@ import bodyClass from "discourse/helpers/body-class";
 import concatClass from "discourse/helpers/concat-class";
 import dIcon from "discourse/helpers/d-icon";
 import { bind } from "discourse/lib/decorators";
-import getURL from "discourse/lib/get-url";
+import getURL, { withoutPrefix } from "discourse/lib/get-url";
 
 // 与 before-main-outlet/announcement-scroll.gjs 一致：仅首页、最新、分类、标签相关页显示
 const HERO_CAROUSEL_EXCLUDED_PREFIXES = [
@@ -176,7 +176,7 @@ export default class IbomyHeroCarousel extends Component {
     if (!settings.hero_carousel_enabled || this.slides.length === 0) {
       return false;
     }
-    return isHeroCarouselPath(window.location.pathname);
+    return isHeroCarouselPath(withoutPrefix(window.location.pathname) || "/");
   }
 
   get intervalSec() {
