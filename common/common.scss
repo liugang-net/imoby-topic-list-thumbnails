@@ -506,10 +506,10 @@ body {
   }
 
   tbody {
-    &.topic-list-body {
-      border-top: 0.5em solid var(--bm-body-bg-color);
+    // &.topic-list-body {
+    //   border-top: 0.5em solid var(--bm-body-bg-color);
 
-    }
+    // }
 
     tr {
       background-color: transparent;
@@ -2311,7 +2311,6 @@ body.category {
 
   // 响应式设计
   @media (max-width: 767px) {
-    margin: 0.5em 0 0 0;
 
     .cfc-nav {
       display: none;
