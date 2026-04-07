@@ -70,7 +70,9 @@ body {
 .dots {
   background: #ff3cf8;
 }
-
+.category-breadcrumb,.notifications-tracking-trigger{
+  display: none;
+}
 .extra-info-wrapper .extra-info {
   --title-color--header: #ffffff;
   --category-badge-title-color:rgb(255, 255, 255, 0.8);

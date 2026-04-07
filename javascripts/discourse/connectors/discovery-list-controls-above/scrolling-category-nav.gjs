@@ -8,7 +8,7 @@ import concatClass from "discourse/helpers/concat-class";
 import icon from "discourse/helpers/d-icon";
 import DMenu from "discourse/float-kit/components/d-menu";
 import { bind } from "discourse/lib/decorators";
-import { withoutPrefix } from "discourse/lib/get-url";
+import getURL, { withoutPrefix } from "discourse/lib/get-url";
 import NavItem from "discourse/models/nav-item";
 import { i18n } from "discourse-i18n";
 
@@ -256,6 +256,25 @@ export default class ScrollingCategoryNav extends Component {
     };
   }
 
+  get homeUrl() {
+    return getURL("/");
+  }
+
+  get homeLabel() {
+    return i18n("js.home");
+  }
+
+  isHomeActivePath(pathname) {
+    const p = pathname || "/";
+    if (p === "/") {
+      return true;
+    }
+    if (p === "/latest" || p.startsWith("/latest/")) {
+      return true;
+    }
+    return false;
+  }
+
   updateActiveState() {
     const currentPath = this.applicationPathname;
 
@@ -273,7 +292,9 @@ export default class ScrollingCategoryNav extends Component {
       const href = item.getAttribute("href");
       let isActive = false;
 
-      if (href && href.startsWith("/c/") && currentCategoryId) {
+      if (item.classList.contains("nav-item--home")) {
+        isActive = this.isHomeActivePath(currentPath);
+      } else if (href && href.startsWith("/c/") && currentCategoryId) {
         const hrefCategoryId = this.extractCategoryId(href);
         if (hrefCategoryId === currentCategoryId) {
           isActive = true;
@@ -346,6 +367,9 @@ export default class ScrollingCategoryNav extends Component {
 
         <div class="nav-container__scroll">
           <div class="nav-items nav-items-scroll">
+            <a href={{this.homeUrl}} class="nav-item nav-item--home">
+              {{this.homeLabel}}
+            </a>
             {{#each this.categories as |category|}}
               <a href={{this.categoryUrl category}} class="nav-item">
                 {{category.name}}
