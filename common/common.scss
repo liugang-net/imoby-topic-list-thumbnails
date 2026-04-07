@@ -70,6 +70,12 @@ body {
 .dots {
   background: #ff3cf8;
 }
+
+.extra-info-wrapper .extra-info {
+  --title-color--header: #ffffff;
+  --category-badge-title-color:rgb(255, 255, 255, 0.8);
+  --primary-medium:#ffffff;
+}
 .topic-drafts-menu-trigger, .bulk-select,#topic-footer-button-flag,.topic-notifications-button,
 .post-action-menu__flag, #topic-progress-wrapper{
   display: none !important;
