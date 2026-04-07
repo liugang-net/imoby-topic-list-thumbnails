@@ -15,6 +15,11 @@
 
   --dot-color:#ff3cf8;
 
+  --tertiary:#ff3cf8;
+  --tertiary-high:#ff3cf8;
+  --tertiary-100:#ffd2fd;
+  --d-selected:#ffd2fd;
+
   --title-color--header:#ffffff;
   color-scheme: light !important;
 }
@@ -1436,7 +1441,7 @@ body.category {
               &::before {
                 content: "\7f6e\9876";
                 display: inline-block;
-                background-color: #007bff;
+                background-color: #ff3cf8;
                 color: white;
                 padding: 2px 8px;
                 border-radius: 12px;
