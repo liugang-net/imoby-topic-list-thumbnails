@@ -1,63 +1,76 @@
 import Component from "@glimmer/component";
+import { on } from "@ember/modifier";
+import { action } from "@ember/object";
 import { service } from "@ember/service";
+import { tracked } from "@glimmer/tracking";
+import DropdownMenu from "discourse/components/dropdown-menu";
+import concatClass from "discourse/helpers/concat-class";
+import icon from "discourse/helpers/d-icon";
+import DMenu from "discourse/float-kit/components/d-menu";
+import { bind } from "discourse/lib/decorators";
+import { withoutPrefix } from "discourse/lib/get-url";
+import NavItem from "discourse/models/nav-item";
+import { i18n } from "discourse-i18n";
+
+const FILTER_TYPES = ["latest", "hot", "categories"];
+
+// 仅允许在触发器上/下翻转，禁止 flip 到左侧或右侧（否则会在「最新」右边弹出）
+const FILTER_MENU_FALLBACK_PLACEMENTS = [
+  "bottom-start",
+  "bottom",
+  "bottom-end",
+  "top-start",
+  "top",
+  "top-end",
+];
 
 export default class ScrollingCategoryNav extends Component {
   @service site;
+  @service router;
+
+  @tracked urlVersion = 0;
 
   constructor() {
     super(...arguments);
-    console.log("ScrollingCategoryNav component initialized");
-    
-    // 在构造函数中直接设置选中状态
     this.setupActiveState();
+    this.router?.on?.("routeDidChange", this, this.bumpUrlVersion);
   }
-  
+
   willDestroy() {
     super.willDestroy();
-    
-    // 清理事件监听器
+
+    this.router?.off?.("routeDidChange", this, this.bumpUrlVersion);
+
     if (this.urlWatcher) {
-      window.removeEventListener('popstate', this.urlWatcher);
+      window.removeEventListener("popstate", this.urlWatcher);
     }
-    
-    // 清理点击事件监听器
+
+    if (this._originalPushState) {
+      history.pushState = this._originalPushState;
+      history.replaceState = this._originalReplaceState;
+    }
+
     if (this.navItems) {
-      this.navItems.forEach(item => {
+      this.navItems.forEach((item) => {
         if (item.clickHandler) {
-          item.removeEventListener('click', item.clickHandler);
+          item.removeEventListener("click", item.clickHandler);
           item.clickHandler = null;
         }
       });
     }
-    
-    // 清理缓存的DOM元素
+
     this.navItems = null;
   }
 
-  setupActiveState() {
-    // 使用requestAnimationFrame确保DOM完全渲染，但更高效
-    requestAnimationFrame(() => {
-      this.updateActiveState();
-      // 设置点击事件监听器
-      this.setupClickHandlers();
-    });
-    
-    // 设置URL变化监听器
-    this.setupUrlWatcher();
-  }
-
-  // 使用 shouldRender 控制 connector 是否渲染
   get shouldRender() {
     return settings.show_scrolling_category_nav;
   }
 
   get allowedCategories() {
-    if (!settings.scrolling_nav_categories) return [];
-    return settings.scrolling_nav_categories.split('|').map(id => parseInt(id));
-  }
-
-  get showOnMobile() {
-    return settings.scrolling_nav_show_on_mobile;
+    if (!settings.scrolling_nav_categories) {
+      return [];
+    }
+    return settings.scrolling_nav_categories.split("|").map((id) => parseInt(id, 10));
   }
 
   get backgroundColor() {
@@ -68,89 +81,171 @@ export default class ScrollingCategoryNav extends Component {
     return `background-color: ${this.backgroundColor};`;
   }
 
+  get pathContext() {
+    return {
+      category: this.args.category,
+      tag: this.args.tag,
+      noSubcategories: false,
+    };
+  }
+
+  get filterMenuItems() {
+    this.urlVersion;
+    this.router?.currentURL;
+    const current = this.currentFilter;
+    return FILTER_TYPES.map((name) => ({
+      name,
+      href: NavItem.pathFor(name, this.pathContext),
+      label: i18n(`filters.${name}.title`),
+      isActive: current === name,
+    }));
+  }
+
+  get filterTriggerLabel() {
+    this.urlVersion;
+    this.router?.currentURL;
+    const f = this.currentFilter;
+    return i18n(`filters.${f}.title`);
+  }
+
+  get currentFilter() {
+    this.urlVersion;
+    this.router?.currentURL;
+    return this._filterFromPath(this.applicationPathname);
+  }
+
+  get applicationPathname() {
+    try {
+      return withoutPrefix(window.location.pathname) || "/";
+    } catch {
+      return window.location.pathname || "/";
+    }
+  }
+
+  _filterFromPath(pathname) {
+    const p = pathname || "/";
+    if (p === "/categories") {
+      return "categories";
+    }
+    const lMatch = p.match(/\/l\/([^/]+)/);
+    if (lMatch) {
+      const seg = lMatch[1];
+      if (seg === "hot") {
+        return "hot";
+      }
+      if (seg === "categories") {
+        return "categories";
+      }
+      if (seg === "latest") {
+        return "latest";
+      }
+      return "latest";
+    }
+    if (p === "/hot" || p.startsWith("/hot/")) {
+      return "hot";
+    }
+    return "latest";
+  }
+
+  @bind
+  bumpUrlVersion() {
+    this.urlVersion++;
+  }
+
+  @action
+  onRegisterFilterMenuApi(api) {
+    this.filterMenuApi = api;
+  }
+
+  @action
+  closeFilterMenu() {
+    this.filterMenuApi?.close?.();
+  }
+
+  setupActiveState() {
+    requestAnimationFrame(() => {
+      this.updateActiveState();
+      this.setupClickHandlers();
+    });
+
+    this.setupUrlWatcher();
+  }
+
   setupClickHandlers() {
-    // 为每个导航项添加点击事件监听器
     if (this.navItems && this.navItems.length > 0) {
-      this.navItems.forEach(item => {
-        // 移除之前的事件监听器（如果存在）
+      this.navItems.forEach((item) => {
         if (item.clickHandler) {
-          item.removeEventListener('click', item.clickHandler);
+          item.removeEventListener("click", item.clickHandler);
         }
-        
-        // 创建新的点击处理器
-        item.clickHandler = (event) => {
-          // 立即更新选中状态，不等待URL变化
+
+        item.clickHandler = () => {
           this.updateActiveStateOnClick(item);
         };
-        
-        // 添加事件监听器
-        item.addEventListener('click', item.clickHandler);
+
+        item.addEventListener("click", item.clickHandler);
       });
     }
   }
-  
+
   updateActiveStateOnClick(clickedItem) {
-    // 立即清除所有active状态
     if (this.navItems) {
-      this.navItems.forEach(item => {
-        item.classList.remove('active');
+      this.navItems.forEach((item) => {
+        item.classList.remove("active");
       });
     }
-    
-    // 立即设置被点击项为active
-    clickedItem.classList.add('active');
-    console.log('Immediately activated item:', clickedItem.getAttribute('href'));
+
+    clickedItem.classList.add("active");
   }
 
   setupUrlWatcher() {
-    let lastUrl = window.location.pathname;
-    
-    // 使用更高效的URL变化检测
+    let lastUrl = this.applicationPathname;
+
     this.urlWatcher = () => {
-      const currentUrl = window.location.pathname;
+      const currentUrl = this.applicationPathname;
       if (currentUrl !== lastUrl) {
-        console.log('URL changed from', lastUrl, 'to', currentUrl);
         lastUrl = currentUrl;
-        // 立即更新，减少延迟
+        this.bumpUrlVersion();
         this.updateActiveState();
       }
     };
-    
-    // 监听popstate事件（浏览器前进/后退）
-    window.addEventListener('popstate', this.urlWatcher);
-    
-    // 监听pushstate/replacestate（SPA路由变化）
-    const originalPushState = history.pushState;
-    const originalReplaceState = history.replaceState;
-    
-    history.pushState = function(...args) {
-      originalPushState.apply(history, args);
+
+    window.addEventListener("popstate", this.urlWatcher);
+
+    this._originalPushState = history.pushState;
+    this._originalReplaceState = history.replaceState;
+
+    history.pushState = (...args) => {
+      this._originalPushState.apply(history, args);
       setTimeout(() => this.urlWatcher(), 0);
-    }.bind(this);
-    
-    history.replaceState = function(...args) {
-      originalReplaceState.apply(history, args);
+    };
+
+    history.replaceState = (...args) => {
+      this._originalReplaceState.apply(history, args);
       setTimeout(() => this.urlWatcher(), 0);
-    }.bind(this);
+    };
   }
 
   get categories() {
     if (!this.site?.categories) {
       return [];
     }
-    
+
     const allCategories = this.site.categories;
     const allowedIds = this.allowedCategories;
-    
-    // 过滤分类：公开、顶级分类，并且如果在设置中指定了分类ID，则只显示指定的分类
-    const filtered = allCategories.filter(category => {
-      const isPublic = category.read_restricted === false;
-      const isTopLevel = (category.parent_category_id === null || category.parent_category_id === undefined);
-      const isAllowed = allowedIds.length === 0 || allowedIds.includes(category.id);
-      
-      return isPublic && isTopLevel && isAllowed;
-    }).sort((a, b) => a.position - b.position);
-    
+
+    const filtered = allCategories
+      .filter((category) => {
+        const isPublic = category.read_restricted === false;
+        const isTopLevel =
+          category.parent_category_id === null ||
+          category.parent_category_id === undefined;
+        const isAllowed =
+          allowedIds.length === 0 || allowedIds.includes(category.id);
+
+        return isPublic && isTopLevel && isAllowed;
+      })
+      .sort((a, b) => a.position - b.position);
+
     return filtered;
   }
 
@@ -162,53 +257,34 @@ export default class ScrollingCategoryNav extends Component {
   }
 
   updateActiveState() {
-    const currentPath = window.location.pathname;
-    
-    // 缓存DOM查询结果
-    if (!this.navItems) {
-      this.navItems = document.querySelectorAll('.scrolling-category-nav .nav-item');
-    }
-    
-    // 如果DOM元素不存在，尝试重新查询
+    const currentPath = this.applicationPathname;
+
+    this.navItems = document.querySelectorAll(
+      ".scrolling-category-nav .nav-items-scroll .nav-item"
+    );
+
     if (this.navItems.length === 0) {
-      this.navItems = document.querySelectorAll('.scrolling-category-nav .nav-item');
-      if (this.navItems.length === 0) {
-        console.log('Nav items not found, skipping update');
-        return;
-      }
+      return;
     }
-    
-    // 预计算当前路径的匹配规则
-    const isLatestPage = currentPath === '/latest' || currentPath === '/' || currentPath.startsWith('/latest/');
+
     const currentCategoryId = this.extractCategoryId(currentPath);
-    
-    this.navItems.forEach(item => {
-      const href = item.getAttribute('href');
+
+    this.navItems.forEach((item) => {
+      const href = item.getAttribute("href");
       let isActive = false;
-      
-      // 检查"最新"页面
-      if (href === '/latest' && isLatestPage) {
-        isActive = true;
-      }
-      // 检查分类页面 - 使用预计算的分类ID
-      else if (href && href.startsWith('/c/') && currentCategoryId) {
+
+      if (href && href.startsWith("/c/") && currentCategoryId) {
         const hrefCategoryId = this.extractCategoryId(href);
         if (hrefCategoryId === currentCategoryId) {
           isActive = true;
         }
       }
-      
-      // 使用classList.toggle优化DOM操作
-      item.classList.toggle('active', isActive);
-      
-      if (isActive) {
-        console.log('Activated item:', href);
-      }
+
+      item.classList.toggle("active", isActive);
     });
   }
-  
+
   extractCategoryId(path) {
-    // 兼容 /c/slug/id 以及 /c/slug/id/后续子路径（如 /l/latest、/l/hot）
     const match = path.match(/^\/c\/[^/]+\/(\d+)/);
     return match ? match[1] : null;
   }
@@ -216,16 +292,68 @@ export default class ScrollingCategoryNav extends Component {
   <template>
     <div class="scrolling-category-nav" style={{this.navStyle}}>
       <div class="nav-container">
-        <div class="nav-items">
-          <a href="/latest" class="nav-item">最新</a>
-          {{#each this.categories as |category|}}
-            <a href={{this.categoryUrl category}} class="nav-item">
-              {{category.name}}
-            </a>
-          {{/each}}
+        <div class="nav-container__filter">
+          <DMenu
+            @modalForMobile={{false}}
+            @placement="bottom-start"
+            @visibilityOptimizer="none"
+            @fallbackPlacements={{FILTER_MENU_FALLBACK_PLACEMENTS}}
+            @identifier="ibomy-scrolling-category-nav-filter"
+            @onRegisterApi={{this.onRegisterFilterMenuApi}}
+            @triggerClass="scrolling-category-nav__filter-trigger"
+            @contentClass="scrolling-category-nav__filter-panel"
+          >
+            <:trigger>
+              <span class="scrolling-category-nav__filter-trigger-inner">
+                <span
+                  class="scrolling-category-nav__filter-trigger-label"
+                >{{this.filterTriggerLabel}}</span>
+                {{icon "angle-down"}}
+              </span>
+            </:trigger>
+            <:content>
+              <div class="scrolling-category-nav__filter-dropdown">
+                <DropdownMenu
+                  class="scrolling-category-nav__filter-menu"
+                  {{on "click" this.closeFilterMenu}}
+                  as |dropdown|
+                >
+                  {{#each this.filterMenuItems key="name" as |item|}}
+                    <dropdown.item>
+                      <a
+                        href={{item.href}}
+                        data-filter-active={{if item.isActive "true" "false"}}
+                        class={{concatClass
+                          "scrolling-category-nav__filter-link"
+                          (if item.isActive "scrolling-category-nav__filter-link--active")
+                        }}
+                      >
+                        <span
+                          class="scrolling-category-nav__filter-link-label"
+                        >{{item.label}}</span>
+                        {{icon
+                          "chevron-right"
+                          class="scrolling-category-nav__filter-link-icon"
+                        }}
+                      </a>
+                    </dropdown.item>
+                  {{/each}}
+                </DropdownMenu>
+              </div>
+            </:content>
+          </DMenu>
+        </div>
+
+        <div class="nav-container__scroll">
+          <div class="nav-items nav-items-scroll">
+            {{#each this.categories as |category|}}
+              <a href={{this.categoryUrl category}} class="nav-item">
+                {{category.name}}
+              </a>
+            {{/each}}
+          </div>
         </div>
       </div>
     </div>
   </template>
 }
-

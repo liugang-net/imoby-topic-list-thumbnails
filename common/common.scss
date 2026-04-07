@@ -1635,8 +1635,16 @@ body.category {
 }
 
 
-// 可滑动分类导航样式
+// 可滑动分类导航样式（左侧筛选下拉可主题化；右侧仅分类横向滚动）
 .scrolling-category-nav {
+  --ibomy-filter-active-bg: #ff3cf8;
+  --ibomy-filter-active-fg: #ffffff;
+  --ibomy-filter-row-bg: #ffffff;
+  --ibomy-filter-inactive-text: #3c3c3c;
+  --ibomy-filter-inactive-icon: #6e6e6e;
+  --ibomy-filter-menu-bg: #ffffff;
+  --ibomy-filter-border-color: #e8e8e8;
+
   display: flex;
   align-items: center;
   background: var(--secondary);
@@ -1647,7 +1655,7 @@ body.category {
 
   max-width: calc(var(--d-sidebar-width) + var(--d-max-width));
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 
   .scroll-button {
     position: absolute;
@@ -1686,7 +1694,23 @@ body.category {
   }
 
   .nav-container {
+    display: flex;
     flex: 1;
+    align-items: stretch;
+    gap: 0.35em;
+    min-width: 0;
+  }
+
+  .nav-container__filter {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    z-index: 2;
+  }
+
+  .nav-container__scroll {
+    flex: 1;
+    min-width: 0;
     overflow-x: auto;
     overflow-y: hidden;
     scroll-behavior: smooth;
@@ -1696,6 +1720,46 @@ body.category {
     &::-webkit-scrollbar {
       display: none;
     }
+  }
+
+  // DMenu 默认用 DButton 作触发器：白底、常规下拉（modalForMobile=false）
+  .nav-container__filter .fk-d-menu__trigger.scrolling-category-nav__filter-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0.65em 0.55em 0.65em 0.75em;
+    min-height: 0;
+    font: inherit;
+    font-size: 1em;
+    font-weight: 600;
+    color: var(--primary);
+    background: #ffffff !important;
+    border: none !important;
+    border-radius: 8px;
+    box-shadow: none !important;
+    cursor: pointer;
+    white-space: nowrap;
+    -webkit-tap-highlight-color: transparent;
+
+    &:hover,
+    &:focus,
+    &.hover {
+      background: #ffffff !important;
+      color: var(--primary);
+    }
+  }
+
+  .scrolling-category-nav__filter-trigger-inner {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25em;
+  }
+
+  .scrolling-category-nav__filter-trigger-inner .d-icon {
+    font-size: 0.65em;
+    opacity: 0.65;
+    color: var(--primary-medium);
   }
 
   .nav-items {
@@ -1760,32 +1824,6 @@ body.category {
     }
   }
 
-  // 使用CSS选择器实现选中状态，避免JavaScript错误
-  .nav-item[href="/latest"] {
-    &:target {
-      background: transparent;
-      color: var(--primary);
-      border: none;
-      font-weight: 600;
-      transform: none;
-      box-shadow: none;
-
-      &::after {
-        content: '';
-        display: block;
-        position: absolute;
-        bottom: -0.5em;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 2em;
-        height: 3px;
-        background-color: var(--d-button-primary-bg-color);
-        border-radius: 2px;
-        transition: all 0.3s ease;
-      }
-    }
-  }
-
   .nav-item[href^="/c/"] {
     &:target {
       background: transparent;
@@ -1818,6 +1856,117 @@ body.category {
       border-radius: 12px;
       font-weight: 500;
     }
+  }
+}
+
+// DMenu 浮层挂在 #d-menu-portals，不在 .scrolling-category-nav 子树内，嵌套选择器无法命中；变量须定义在浮层根上
+@keyframes ibomy-filter-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fk-d-menu.scrolling-category-nav__filter-panel {
+  --ibomy-filter-active-bg: #ff3cf8;
+  --ibomy-filter-active-fg: #ffffff;
+  --ibomy-filter-row-bg: #ffffff;
+  --ibomy-filter-inactive-text: #3c3c3c;
+  --ibomy-filter-inactive-icon: #6e6e6e;
+  --ibomy-filter-menu-bg: #ffffff;
+  --ibomy-filter-border-color: #e8e8e8;
+
+  .fk-d-menu__inner-content {
+    animation: ibomy-filter-slide-up 0.22s ease-out;
+    border-radius: 0 !important;
+  }
+
+  .scrolling-category-nav__filter-dropdown {
+    width: 100%;
+
+    .dropdown-menu {
+      min-width: 12.5em;
+      gap: 0 !important;
+      padding: 0 !important;
+    }
+  }
+
+  .scrolling-category-nav__filter-menu.scrolling-category-nav__filter-menu {
+    padding: 0 !important;
+    margin: 0;
+    border-radius: 0;
+    border: 1px solid var(--ibomy-filter-border-color);
+    background: var(--ibomy-filter-menu-bg);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+
+  .scrolling-category-nav__filter-menu .dropdown-menu__item {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    border-bottom: 1px solid var(--ibomy-filter-border-color);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .scrolling-category-nav__filter-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75em;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.8em 1em;
+    min-height: 2.75em;
+    color: var(--ibomy-filter-inactive-text);
+    text-decoration: none;
+    font-size: 1em;
+    font-weight: 400;
+    line-height: 1.35;
+    border-radius: 0;
+    background: var(--ibomy-filter-row-bg);
+    transition:
+      background 0.12s ease,
+      color 0.12s ease;
+
+    &:hover {
+      background: #f7f7f7;
+      color: var(--ibomy-filter-inactive-text);
+    }
+  }
+
+  .scrolling-category-nav__filter-link--active,
+  .scrolling-category-nav__filter-link[data-filter-active="true"] {
+    background: var(--ibomy-filter-active-bg) !important;
+    color: var(--ibomy-filter-active-fg) !important;
+
+    &:hover {
+      background: var(--ibomy-filter-active-bg) !important;
+      color: var(--ibomy-filter-active-fg) !important;
+    }
+  }
+
+  .scrolling-category-nav__filter-link-icon {
+    flex-shrink: 0;
+    width: 1em;
+    height: 1em;
+    color: var(--ibomy-filter-inactive-icon);
+    opacity: 1;
+    font-size: 0.85em;
+  }
+
+  .scrolling-category-nav__filter-link--active .scrolling-category-nav__filter-link-icon,
+  .scrolling-category-nav__filter-link[data-filter-active="true"] .scrolling-category-nav__filter-link-icon {
+    color: var(--ibomy-filter-active-fg) !important;
+    opacity: 1;
   }
 }
 
