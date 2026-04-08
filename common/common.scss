@@ -2762,7 +2762,7 @@ body.ibomy-mobile-inline-search--enabled .ibomy-mobile-inline-search {
   .ibomy-mobile-inline-search__pill {
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: stretch;
     width: 100%;
     min-height: 2.125em;
     padding: 0.15em 0.35em 0.15em 0.5em;
@@ -2771,7 +2771,6 @@ body.ibomy-mobile-inline-search--enabled .ibomy-mobile-inline-search {
     border-radius: 9999px;
     border: none;
     box-shadow: none;
-    // 桌面下拉挂在 .search-menu-container 内，hidden 会裁切 menu-panel；移动端再单独 hidden
     overflow: visible;
   }
 
@@ -2796,42 +2795,17 @@ body.ibomy-mobile-inline-search--enabled .ibomy-mobile-inline-search {
     }
   }
 
-  .search-menu-container {
+  .ibomy-mobile-inline-search__field {
+    position: relative;
     flex: 1 1 auto;
     min-width: 0;
-  }
-
-  .search-input-wrapper {
-    background: transparent;
-    margin: 0;
-    min-width: 0;
-    max-width: 100%;
-  }
-
-  .search-input.search-input--header {
     display: flex;
+    flex-direction: row;
     align-items: center;
-    flex-wrap: nowrap;
-    min-height: auto;
-    min-width: 0;
-    width: 100%;
-    max-width: 100%;
-    margin: 0;
-    padding: 0;
-    border: none !important;
-    background: transparent !important;
-    border-radius: 0;
-    box-shadow: none !important;
     gap: 0.15em;
-
-    &:focus-within {
-      outline: none !important;
-      border-color: transparent !important;
-      box-shadow: none !important;
-    }
   }
 
-  .search-term__input {
+  .ibomy-mobile-inline-search__input {
     flex: 1 1 auto;
     min-width: 0;
     margin: 0 !important;
@@ -2857,35 +2831,97 @@ body.ibomy-mobile-inline-search--enabled .ibomy-mobile-inline-search {
     }
   }
 
-  .searching {
-    flex: 0 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding-right: 0.05em;
-    margin-left: 0;
+  .ibomy-mobile-inline-search__clear-input {
+    flex-shrink: 0;
+    padding: 0.1em 0.25em !important;
+    margin: 0 !important;
+    line-height: 1;
+    font-size: 1.1em;
+    color: var(--primary-medium);
+    min-width: auto;
 
-    .show-advanced-search {
-      display: none;
+    &:hover,
+    &:focus-visible {
+      color: var(--primary-high);
     }
+  }
 
-    .clear-search {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      padding: 0.15em;
-      margin: 0;
-      line-height: 1;
+  .ibomy-mobile-inline-search__dropdown {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 6px);
+    z-index: 1201;
+    max-height: min(360px, 55dvh);
+    overflow-y: auto;
+    padding: 0.35em 0;
+    background: var(--secondary);
+    border: 1px solid var(--primary-low);
+    border-radius: var(--d-border-radius);
+    box-shadow: var(--shadow-card);
+    box-sizing: border-box;
+  }
 
-      .d-icon {
-        font-size: 0.85em;
-      }
+  .ibomy-mobile-inline-search__section {
+    padding: 0 0.5em 0.5em;
+
+    &:not(:last-of-type) {
+      border-bottom: 1px solid var(--primary-low);
+      margin-bottom: 0.35em;
+    }
+  }
+
+  .ibomy-mobile-inline-search__section-head {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5em;
+    padding: 0.25em 0 0.35em;
+  }
+
+  .ibomy-mobile-inline-search__section-title {
+    font-size: var(--font-down-1);
+    font-weight: 700;
+    color: var(--primary-medium);
+  }
+
+  .ibomy-mobile-inline-search__section-action {
+    font-size: var(--font-down-1);
+    padding: 0.15em 0.35em !important;
+    color: var(--tertiary);
+  }
+
+  .ibomy-mobile-inline-search__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .ibomy-mobile-inline-search__list-item,
+  .ibomy-mobile-inline-search__list-link {
+    display: block;
+    width: 100%;
+    text-align: start;
+    padding: 0.4em 0.35em;
+    margin: 0;
+    border: none;
+    border-radius: var(--d-border-radius);
+    background: transparent;
+    color: var(--primary);
+    font: inherit;
+    cursor: pointer;
+    text-decoration: none;
+    box-sizing: border-box;
+
+    &:hover,
+    &:focus-visible {
+      background: var(--primary-very-low);
     }
   }
 }
 
-// 桌面：下拉至少与核心 header 搜索宽度接近；提高层级避免被 header 其它层挡住
+// 桌面：提高层级避免被 header 其它层挡住
 html.desktop-view body.ibomy-mobile-inline-search--enabled .d-header .before-header-panel-outlet {
   overflow: visible;
   position: relative;
@@ -2896,20 +2932,21 @@ html.desktop-view body.ibomy-mobile-inline-search--enabled .ibomy-mobile-inline-
   position: relative;
   z-index: 1;
 
-  .search-menu-container.menu-panel-results .menu-panel.search-menu-panel {
-    width: min(500px, calc(100vw - 2rem)) !important;
-    max-width: min(500px, calc(100vw - 2rem)) !important;
-    z-index: 1201;
+  .ibomy-mobile-inline-search__dropdown {
+    width: min(500px, calc(100vw - 2rem));
+    max-width: min(500px, calc(100vw - 2rem));
+    left: auto;
+    right: 0;
   }
 }
 
-// 仅移动端：胶囊内清除按钮不溢出圆角 + 全宽固定层结果面板
+// 仅移动端：胶囊内裁切圆角；下拉全宽固定层
 html.mobile-view body.ibomy-mobile-inline-search--enabled .ibomy-mobile-inline-search {
   .ibomy-mobile-inline-search__pill {
     overflow: hidden;
   }
 
-  .search-menu-container.menu-panel-results .menu-panel.search-menu-panel {
+  .ibomy-mobile-inline-search__dropdown {
     position: fixed !important;
     left: 10px !important;
     right: 10px !important;

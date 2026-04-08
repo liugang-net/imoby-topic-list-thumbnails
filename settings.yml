@@ -199,3 +199,16 @@ age_verification_interval_seconds:
 mobile_inline_search_enabled:
   default: true
   type: bool
+  client: true
+
+mobile_inline_search_hot_items:
+  type: objects
+  default: []
+  client: true
+  schema:
+    name: hot_item
+    properties:
+      title:
+        type: string
+      link_url:
+        type: string
