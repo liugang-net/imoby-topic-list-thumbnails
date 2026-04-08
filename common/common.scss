@@ -22,6 +22,7 @@
 
   --title-color--header:#ffffff;
   color-scheme: light !important;
+  --heading-font-family:"Alibaba PuHuiTi", "PingFang SC", "Microsoft YaHei", sans-serif;
 }
 
 // @media (prefers-color-scheme: dark) {
@@ -264,7 +265,6 @@ body {
       font-weight: 500;
       font-size: 14px;
       color: #000000;
-      font-family: "DFPYuan W9", "PingFang SC", "Microsoft YaHei", sans-serif;
     }
   }
 
@@ -2104,7 +2104,6 @@ body.category {
       -webkit-line-clamp: 2;
       line-clamp: 2;
       overflow: hidden;
-      font-family: "DFPYuan W9", "PingFang SC", "Microsoft YaHei", sans-serif;
       font-size: 18px;
       font-weight: 400;
     }
