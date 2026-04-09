@@ -5,6 +5,8 @@
 # https://translate.discourse.org/
 
 zh_CN:
+  topic_excerpt:
+    full_text: "全文"
   theme_metadata:
     description: 用于将缩略图添加到话题列表的主题组件。您可以全局或按类别启用该组件
     settings:

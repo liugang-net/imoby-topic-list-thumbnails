@@ -1330,11 +1330,11 @@ body {
       }
 
       .topic-excerpt {
-        display: block; // 恢复为块级显示
-        -webkit-line-clamp: unset; // 取消行数限制
-        line-clamp: unset;
-        -webkit-box-orient: unset;
-        overflow: visible; // 允许内容完全显示
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        overflow: hidden;
       }
     }
   }
