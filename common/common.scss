@@ -22,7 +22,7 @@
 
   --title-color--header:#ffffff;
   color-scheme: light !important;
-  --heading-font-family:"Alibaba PuHuiTi", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --heading-font-family:"Alibaba PuHuiTi", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
 }
 
 // @media (prefers-color-scheme: dark) {
@@ -98,7 +98,7 @@
 body {
   background-color: var(--bm-body-bg-color);
   // font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Segoe UI, Arial, Roboto, "PingFang SC", "miui", "Hiragino Sans GB", "Microsoft Yahei", sans-serif;
-  font-family: "Alibaba PuHuiTi","PingFang SC", "Microsoft YaHei", sans-serif;
+  font-family: "Alibaba PuHuiTi", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
 
 }
 * {
