@@ -2425,34 +2425,9 @@ body.category {
   }
 }
 
-// 用户页面统计组件样式
+// 用户资料页：隐藏默认折叠信息区（与主题布局一致）
 #collapsed-info-panel {
   display: none;
-}
-
-.user-profile-stats {
-  display: flex;
-  gap: 2em;
-  padding: 1em 0;
-  border-bottom: 1px solid var(--primary-low);
-
-  .stat-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.25em;
-
-    .stat-label {
-      font-size: var(--font-0);
-      color: var(--primary-medium);
-    }
-
-    .stat-value {
-      font-size: var(--font-up-2);
-      font-weight: 600;
-      color: var(--primary);
-    }
-  }
 }
 
 // 维护模式样式
