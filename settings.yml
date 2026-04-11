@@ -212,3 +212,5 @@ mobile_inline_search_hot_items:
         type: string
       link_url:
         type: string
+      badge:
+        type: string

@@ -9,8 +9,6 @@ import bodyClass from "discourse/helpers/body-class";
 import { isValidSearchTerm } from "discourse/lib/search";
 import getURL from "discourse/lib/get-url";
 import closeOnClickOutside from "discourse/modifiers/close-on-click-outside";
-import { i18n } from "discourse-i18n";
-import { themePrefix } from "virtual:theme";
 
 const HISTORY_KEY = "ibomy_mobile_inline_search_history_v1";
 const MAX_HISTORY = 10;
@@ -29,7 +27,17 @@ function parseHotItems(raw) {
       if (!title || linkUrl == null || String(linkUrl).trim() === "") {
         return null;
       }
-      return { title, href: String(linkUrl).trim() };
+      let badge = null;
+      const rawBadge = row.badge ?? row.tag;
+      if (rawBadge != null) {
+        const b = String(rawBadge).trim().toLowerCase();
+        if (b === "hot" || b === "热") {
+          badge = "hot";
+        } else if (b === "new" || b === "新") {
+          badge = "new";
+        }
+      }
+      return { title, href: String(linkUrl).trim(), badge };
     })
     .filter(Boolean);
 }
@@ -131,6 +139,16 @@ export default class MobileInlineSearch extends Component {
     return parseHotItems(settings.mobile_inline_search_hot_items || []);
   }
 
+  get hotItemsRanked() {
+    return this.hotItems.map((item, i) => ({
+      ...item,
+      rank: i + 1,
+      rankLead: i < 3,
+      badgeLabel:
+        item.badge === "hot" ? "热" : item.badge === "new" ? "新" : null,
+    }));
+  }
+
   @action
   syncHistory() {
     this.history = readHistory();
@@ -174,7 +192,7 @@ export default class MobileInlineSearch extends Component {
     if (!isValidSearchTerm(term, this.siteSettings)) {
       this.toasts.error({
         duration: "short",
-        data: { message: i18n("search.too_short") },
+        data: { message: "搜索词太短" },
       });
       return;
     }
@@ -236,7 +254,7 @@ export default class MobileInlineSearch extends Component {
         <div class="ibomy-mobile-inline-search__pill">
           <DButton
             @icon="magnifying-glass"
-            @title={{i18n "search.search_button"}}
+            @title="搜索"
             class="btn search-icon ibomy-mobile-inline-search__icon-btn"
             @action={{this.submitSearch}}
           />
@@ -246,8 +264,8 @@ export default class MobileInlineSearch extends Component {
               type="search"
               autocomplete="off"
               class="ibomy-mobile-inline-search__input"
-              placeholder={{i18n (themePrefix "inline_search.placeholder")}}
-              aria-label={{i18n (themePrefix "inline_search.placeholder")}}
+              placeholder="啵咪·个性化定制"
+              aria-label="啵咪·个性化定制"
               value={{this.searchTerm}}
               {{on "input" this.onInput}}
               {{on "keydown" this.onInputKeydown}}
@@ -257,7 +275,7 @@ export default class MobileInlineSearch extends Component {
               <button
                 type="button"
                 class="btn-flat ibomy-mobile-inline-search__clear-input"
-                title={{i18n "search.clear_search"}}
+                title="清除搜索"
                 {{on "click" this.clearSearchTerm}}
               >×</button>
             {{/if}}
@@ -266,48 +284,50 @@ export default class MobileInlineSearch extends Component {
                 {{#if this.history.length}}
                   <div class="ibomy-mobile-inline-search__section">
                     <div class="ibomy-mobile-inline-search__section-head">
-                      <span class="ibomy-mobile-inline-search__section-title">{{i18n
-                          (themePrefix "inline_search.history_heading")
-                        }}</span>
+                      <span class="ibomy-mobile-inline-search__section-title">搜索历史</span>
                       <button
                         type="button"
                         class="btn-flat ibomy-mobile-inline-search__section-action"
                         {{on "click" this.clearHistory}}
-                      >{{i18n (themePrefix "inline_search.clear_history")}}</button>
+                      >清空</button>
                     </div>
-                    <ul class="ibomy-mobile-inline-search__list">
+                    <div class="ibomy-mobile-inline-search__history-chips">
                       {{#each this.history as |term|}}
-                        <li>
-                          <button
-                            type="button"
-                            class="ibomy-mobile-inline-search__list-item"
-                            data-term={{term}}
-                            {{on "click" this.onHistoryRowClick}}
-                          >{{term}}</button>
-                        </li>
+                        <button
+                          type="button"
+                          class="ibomy-mobile-inline-search__history-chip"
+                          data-term={{term}}
+                          {{on "click" this.onHistoryRowClick}}
+                        >{{term}}</button>
                       {{/each}}
-                    </ul>
+                    </div>
                   </div>
                 {{/if}}
                 {{#if this.hotItems.length}}
                   <div class="ibomy-mobile-inline-search__section">
                     <div class="ibomy-mobile-inline-search__section-head">
-                      <span class="ibomy-mobile-inline-search__section-title">{{i18n
-                          (themePrefix "inline_search.hot_heading")
-                        }}</span>
+                      <span class="ibomy-mobile-inline-search__section-title">BOMI热榜</span>
                     </div>
-                    <ul class="ibomy-mobile-inline-search__list">
-                      {{#each this.hotItems as |item|}}
-                        <li>
-                          <button
-                            type="button"
-                            class="ibomy-mobile-inline-search__list-link"
-                            data-href={{item.href}}
-                            {{on "click" this.onHotRowClick}}
-                          >{{item.title}}</button>
-                        </li>
+                    <div class="ibomy-mobile-inline-search__hot-grid">
+                      {{#each this.hotItemsRanked as |item|}}
+                        <button
+                          type="button"
+                          class="ibomy-mobile-inline-search__hot-item"
+                          data-href={{item.href}}
+                          {{on "click" this.onHotRowClick}}
+                        >
+                          <span
+                            class="ibomy-mobile-inline-search__hot-rank {{if item.rankLead 'ibomy-mobile-inline-search__hot-rank--lead'}}"
+                          >{{item.rank}}</span>
+                          <span class="ibomy-mobile-inline-search__hot-title">{{item.title}}</span>
+                          {{#if item.badgeLabel}}
+                            <span
+                              class="ibomy-mobile-inline-search__hot-badge ibomy-mobile-inline-search__hot-badge--{{item.badge}}"
+                            >{{item.badgeLabel}}</span>
+                          {{/if}}
+                        </button>
                       {{/each}}
-                    </ul>
+                    </div>
                   </div>
                 {{/if}}
               </div>

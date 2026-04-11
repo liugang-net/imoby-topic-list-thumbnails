@@ -1,9 +1,4 @@
 en:
-  inline_search:
-    placeholder: "啵咪·个性化定制"
-    history_heading: "搜索历史"
-    hot_heading: "热搜"
-    clear_history: "清空"
   theme_metadata:
     description: 在话题列表中显示缩略图的主题组件，可全站启用或按分类启用。
     settings:
@@ -24,7 +19,7 @@ en:
       mobile_thumbnails: 是否在移动设备上显示缩略图
       list_thumbnail_size: 「列表」视图下缩略图基准边长（像素）
       mobile_inline_search_enabled: 在页头 Logo 与右侧图标之间显示胶囊搜索（移动端与桌面端），并隐藏默认搜索图标。若站点已启用 Discourse 自带「标题内搜索字段」且该栏会显示，则不再重复显示本组件。话题顶栏、全页搜索、管理后台不显示。
-      mobile_inline_search_hot_items: "胶囊搜索下拉中的「热搜」条目：每条填写标题与链接（站内路径或完整 URL）。搜索历史保存在访客浏览器本地。"
+      mobile_inline_search_hot_items: "BOMI热榜：两列展示，按顺序显示序号。每条填写标题、链接（站内路径或完整 URL）；可选 badge 填 hot/热 或 new/新 显示角标。"
       hero_carousel_enabled: "Hero carousel below header, only on home, /latest, category (/c/) and tag (/tags, /tag/) pages (same as announcement); fixed aspect ratio 393:170."
       hero_carousel_interval_seconds: 自动轮播间隔（秒，范围 2～60）。
       hero_carousel_slides: "Recommended: add slides here (image URL, link, alt text per row). Use full image URLs. If no valid slides here, the legacy text field below is used."
