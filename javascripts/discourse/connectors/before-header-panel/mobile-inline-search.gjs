@@ -1,7 +1,8 @@
 import Component from "@glimmer/component";
 import { fn } from "@ember/helper";
+import { getOwner } from "@ember/owner";
 import { htmlSafe } from "@ember/template";
-import { cancel } from "@ember/runloop";
+import { cancel, schedule } from "@ember/runloop";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
@@ -199,6 +200,7 @@ export default class MobileInlineSearch extends Component {
   @service router;
   @service search;
   @service toasts;
+  @service appEvents;
 
   @tracked searchTerm = "";
   @tracked dropdownOpen = false;
@@ -209,6 +211,30 @@ export default class MobileInlineSearch extends Component {
 
   _suggestRequest = null;
   _suggestDebounceTimer = null;
+
+  constructor() {
+    super(...arguments);
+    this.router.on(
+      "routeDidChange",
+      this,
+      this.syncInlineSearchFromFullPageController
+    );
+    this.appEvents.on(
+      "full-page-search:trigger-search",
+      this,
+      this.syncInlineSearchFromFullPageController
+    );
+    schedule("afterRender", () => {
+      this.syncInlineSearchFromFullPageController();
+    });
+  }
+
+  get portalSearchUiEnabled() {
+    return (
+      this.siteSettings.ibomy_portal_enabled &&
+      this.siteSettings.ibomy_portal_search_ui
+    );
+  }
 
   get coreHeaderSearchVisible() {
     if (this.site.mobileView || this.site.narrowDesktopView) {
@@ -248,7 +274,7 @@ export default class MobileInlineSearch extends Component {
       return false;
     }
     if (name === "full-page-search") {
-      return false;
+      return this.portalSearchUiEnabled;
     }
     return true;
   }
@@ -266,10 +292,36 @@ export default class MobileInlineSearch extends Component {
   }
 
   willDestroy() {
+    super.willDestroy(...arguments);
+    this.router.off(
+      "routeDidChange",
+      this,
+      this.syncInlineSearchFromFullPageController
+    );
+    this.appEvents.off(
+      "full-page-search:trigger-search",
+      this,
+      this.syncInlineSearchFromFullPageController
+    );
     this._suggestRequest?.abort?.();
     if (this._suggestDebounceTimer != null) {
       cancel(this._suggestDebounceTimer);
       this._suggestDebounceTimer = null;
+    }
+  }
+
+  @action
+  syncInlineSearchFromFullPageController() {
+    if (!this.portalSearchUiEnabled) {
+      return;
+    }
+    if (this.router.currentRouteName !== "full-page-search") {
+      return;
+    }
+    const c = getOwner(this).lookup("controller:full-page-search");
+    const st = c?.searchTerm;
+    if (st != null && this.searchTerm !== st) {
+      this.searchTerm = st;
     }
   }
 
