@@ -16,6 +16,7 @@ import { isValidSearchTerm, searchForTerm } from "discourse/lib/search";
 import getURL from "discourse/lib/get-url";
 import { escapeExpression } from "discourse/lib/utilities";
 import closeOnClickOutside from "discourse/modifiers/close-on-click-outside";
+import { or } from "discourse/truth-helpers";
 
 const HISTORY_KEY = "ibomy_mobile_inline_search_history_v1";
 const MAX_HISTORY = 10;
@@ -151,6 +152,62 @@ function writeHistory(terms) {
   localStorage.setItem(HISTORY_KEY, JSON.stringify(terms.slice(0, MAX_HISTORY)));
 }
 
+/** 写入历史时去掉分类筛选（与全页搜索 category:n / #slug 一致），只记关键词 */
+function termForHistoryRecord(raw) {
+  if (!raw || typeof raw !== "string") {
+    return "";
+  }
+  return raw
+    .replace(/\s+#\S+/g, "")
+    .replace(/\s+category:\S+/gi, "")
+    .replace(/\s+#\S+:\S+/g, "")
+    .trim();
+}
+
+/** 从整段查询里抽出 category:… / #…，用于框外保留分类筛选 */
+function extractCategoryFiltersSegment(raw) {
+  if (!raw || typeof raw !== "string") {
+    return "";
+  }
+  const tokens = [];
+  const s = raw.trim();
+  const re = /(?:^|\s)((?:category:\S+)|(?:#[a-zA-Z0-9\-_:]+))/gi;
+  let m;
+  while ((m = re.exec(s)) !== null) {
+    tokens.push(m[1]);
+  }
+  return [...new Set(tokens)].join(" ");
+}
+
+function mergeCategoryFilterStrings(a, b) {
+  const out = new Set();
+  for (const t of String(a || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)) {
+    out.add(t);
+  }
+  for (const t of String(b || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)) {
+    out.add(t);
+  }
+  return [...out].join(" ");
+}
+
+function joinMobileSearchQuery(visible, hiddenTail) {
+  const v = (visible || "").trim();
+  const h = (hiddenTail || "").trim();
+  if (!h) {
+    return v;
+  }
+  if (!v) {
+    return h;
+  }
+  return `${v} ${h}`;
+}
+
 function termRowHtml(term) {
   const e = escapeExpression(term);
   return `<span class="ibomy-mobile-inline-search__suggest-q">${e}</span>`;
@@ -202,7 +259,9 @@ export default class MobileInlineSearch extends Component {
   @service toasts;
   @service appEvents;
 
-  @tracked searchTerm = "";
+  /** 输入框内仅展示关键词；分类筛选放在 hiddenCategoryTail，提交时合并 */
+  @tracked visibleTerm = "";
+  @tracked hiddenCategoryTail = "";
   @tracked dropdownOpen = false;
   @tracked history = [];
   @tracked historyExpanded = true;
@@ -283,12 +342,19 @@ export default class MobileInlineSearch extends Component {
     return parseHotItems(settings.mobile_inline_search_hot_items || []);
   }
 
-  get hasTypedQuery() {
-    return this.searchTerm.trim().length > 0;
+  get showIdlePanel() {
+    return !this.visibleTerm.trim();
   }
 
-  get showIdlePanel() {
-    return !this.hasTypedQuery;
+  /** 发往 Discourse 搜索的完整 q（关键词 + 隐藏的分类筛选 + 用户在框内粘贴的 category:） */
+  get fullSearchQuery() {
+    const fromInputHidden = extractCategoryFiltersSegment(this.visibleTerm);
+    const visibleOnly = termForHistoryRecord(this.visibleTerm);
+    const mergedHidden = mergeCategoryFilterStrings(
+      this.hiddenCategoryTail,
+      fromInputHidden
+    );
+    return joinMobileSearchQuery(visibleOnly, mergedHidden);
   }
 
   willDestroy() {
@@ -320,8 +386,17 @@ export default class MobileInlineSearch extends Component {
     }
     const c = getOwner(this).lookup("controller:full-page-search");
     const st = c?.searchTerm;
-    if (st != null && this.searchTerm !== st) {
-      this.searchTerm = st;
+    if (st == null) {
+      return;
+    }
+    const nextVisible = termForHistoryRecord(st);
+    const nextHidden = extractCategoryFiltersSegment(st);
+    if (
+      this.visibleTerm !== nextVisible ||
+      this.hiddenCategoryTail !== nextHidden
+    ) {
+      this.visibleTerm = nextVisible;
+      this.hiddenCategoryTail = nextHidden;
     }
   }
 
@@ -334,8 +409,9 @@ export default class MobileInlineSearch extends Component {
   openDropdown() {
     this.syncHistory();
     this.dropdownOpen = true;
-    const t = this.searchTerm.trim();
+    const t = this.fullSearchQuery.trim();
     if (
+      this.visibleTerm.trim().length > 0 &&
       t.length > 0 &&
       isValidSearchTerm(t, this.siteSettings)
     ) {
@@ -357,8 +433,8 @@ export default class MobileInlineSearch extends Component {
 
   @action
   onInput(event) {
-    this.searchTerm = event.target.value;
-    if (!this.hasTypedQuery) {
+    this.visibleTerm = event.target.value;
+    if (!this.visibleTerm.trim()) {
       if (this._suggestDebounceTimer != null) {
         cancel(this._suggestDebounceTimer);
         this._suggestDebounceTimer = null;
@@ -381,7 +457,7 @@ export default class MobileInlineSearch extends Component {
 
   @action
   async runTopicSuggest() {
-    const term = this.searchTerm.trim();
+    const term = this.fullSearchQuery.trim();
     if (!term) {
       this.suggestRows = [];
       this.suggestLoading = false;
@@ -407,11 +483,12 @@ export default class MobileInlineSearch extends Component {
 
       const posts = results.posts || [];
       const slice = posts.slice(0, MAX_TOPIC_SUGGEST);
+      const displayTerm = termForHistoryRecord(term);
       const rows = [
         {
           kind: "term",
           term,
-          titleSafe: htmlSafe(termRowHtml(term)),
+          titleSafe: htmlSafe(termRowHtml(displayTerm)),
         },
       ];
 
@@ -428,7 +505,10 @@ export default class MobileInlineSearch extends Component {
         ) {
           titleHtmlStr = post.topic_title_headline;
         } else {
-          titleHtmlStr = buildPlainTitleHighlight(titlePlain || "", term);
+          titleHtmlStr = buildPlainTitleHighlight(
+            titlePlain || "",
+            displayTerm
+          );
         }
         const url = topic.url || getURL("/");
         rows.push({
@@ -441,11 +521,12 @@ export default class MobileInlineSearch extends Component {
       this.suggestRows = rows;
     } catch {
       if (this._suggestRequest === req) {
+        const displayTerm = termForHistoryRecord(term);
         this.suggestRows = [
           {
             kind: "term",
             term,
-            titleSafe: htmlSafe(termRowHtml(term)),
+            titleSafe: htmlSafe(termRowHtml(displayTerm)),
           },
         ];
       }
@@ -472,7 +553,7 @@ export default class MobileInlineSearch extends Component {
 
   @action
   submitSearch() {
-    const term = this.searchTerm.trim();
+    const term = this.fullSearchQuery.trim();
     if (!term) {
       return;
     }
@@ -484,8 +565,14 @@ export default class MobileInlineSearch extends Component {
       return;
     }
 
-    const next = [term, ...readHistory().filter((t) => t !== term)];
-    writeHistory(next);
+    const toStore = termForHistoryRecord(term);
+    if (toStore) {
+      const next = [
+        toStore,
+        ...readHistory().filter((t) => t !== toStore),
+      ];
+      writeHistory(next);
+    }
 
     this.closeDropdown();
     this.router.transitionTo("full-page-search", {
@@ -495,7 +582,8 @@ export default class MobileInlineSearch extends Component {
 
   @action
   selectHistoryTerm(term) {
-    this.searchTerm = term;
+    this.visibleTerm = term;
+    this.hiddenCategoryTail = "";
     this.submitSearch();
   }
 
@@ -534,7 +622,8 @@ export default class MobileInlineSearch extends Component {
   @action
   clearSearchTerm(event) {
     event.preventDefault();
-    this.searchTerm = "";
+    this.visibleTerm = "";
+    this.hiddenCategoryTail = "";
     this.suggestRows = [];
     this.suggestLoading = false;
   }
@@ -543,13 +632,22 @@ export default class MobileInlineSearch extends Component {
   onSuggestRowClick(row, event) {
     event?.preventDefault?.();
     if (row.kind === "term") {
-      this.searchTerm = row.term;
+      this.visibleTerm = termForHistoryRecord(row.term);
+      this.hiddenCategoryTail = extractCategoryFiltersSegment(row.term);
       this.submitSearch();
       return;
     }
-    const term = this.searchTerm.trim();
-    if (term && isValidSearchTerm(term, this.siteSettings)) {
-      const next = [term, ...readHistory().filter((t) => t !== term)];
+    const term = this.fullSearchQuery.trim();
+    const toStore = termForHistoryRecord(term);
+    if (
+      toStore &&
+      term &&
+      isValidSearchTerm(term, this.siteSettings)
+    ) {
+      const next = [
+        toStore,
+        ...readHistory().filter((t) => t !== toStore),
+      ];
       writeHistory(next);
       this.syncHistory();
     }
@@ -579,12 +677,12 @@ export default class MobileInlineSearch extends Component {
               class="ibomy-mobile-inline-search__input"
               placeholder="啵咪·个性化定制"
               aria-label="啵咪·个性化定制"
-              value={{this.searchTerm}}
+              value={{this.visibleTerm}}
               {{on "input" this.onInput}}
               {{on "keydown" this.onInputKeydown}}
               {{on "focus" this.openDropdown}}
             />
-            {{#if this.searchTerm}}
+            {{#if (or this.visibleTerm this.hiddenCategoryTail)}}
               <button
                 type="button"
                 class="btn-flat ibomy-mobile-inline-search__clear-input"
