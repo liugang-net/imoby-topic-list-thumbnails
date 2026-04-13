@@ -495,6 +495,12 @@ export default class MobileInlineSearch extends Component {
       this.submitSearch();
       return;
     }
+    const term = this.searchTerm.trim();
+    if (term && isValidSearchTerm(term, this.siteSettings)) {
+      const next = [term, ...readHistory().filter((t) => t !== term)];
+      writeHistory(next);
+      this.syncHistory();
+    }
     this.closeDropdown();
     DiscourseURL.routeTo(row.url);
   }
