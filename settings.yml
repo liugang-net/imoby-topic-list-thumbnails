@@ -214,3 +214,7 @@ mobile_inline_search_hot_items:
         type: string
       badge:
         type: string
+      badge_color:
+        type: string
+      badge_bg_color:
+        type: string
