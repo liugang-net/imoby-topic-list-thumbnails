@@ -1204,16 +1204,52 @@ body {
   // 用户信息头部
   .topic-user-header {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 1em;
     padding-bottom: 0;
     // border-bottom: 1px solid var(--primary-low);
+
+    .topic-user-header__left {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .topic-user-header__profile {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75em;
+      max-width: 100%;
+      border-radius: 8px;
+      outline: none;
+
+      &:not(.topic-user-header__profile--static) {
+        cursor: pointer;
+
+        .user-name .user-link {
+          text-decoration: none;
+        }
+
+        &:hover .user-name .user-link,
+        &:active .user-name .user-link {
+          color: var(--primary);
+          text-decoration: none;
+        }
+
+        &:focus-visible {
+          outline: 2px solid var(--tertiary);
+          outline-offset: 2px;
+        }
+      }
+
+      &.topic-user-header__profile--static {
+        cursor: default;
+      }
+    }
 
     .user-avatar {
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      margin-right: 0.75em;
       flex-shrink: 0;
       background-color: var(--primary-low);
       display: flex;
@@ -1240,45 +1276,47 @@ body {
       }
     }
 
-    .user-info {
+    .topic-user-header__profile .user-info {
       flex: 1;
       min-width: 0;
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      margin-bottom: 0;
+      align-items: flex-start;
+      gap: 0.2em;
+      padding: 0;
+      margin: 0;
+    }
 
-      // a,
-      // a:visited,
-      // a:hover,
-      // a:active {
-      //   color: #201e22;
-      // }
+    .topic-user-header__profile .user-name {
+      width: 100%;
+      font-weight: 400;
+      color: var(--primary);
+      font-size: 0.95em;
+      display: block;
+      line-height: 1.25;
 
-      .user-name {
-        font-weight: 400;
-        color: var(--primary);
-        font-size: 0.95em;
+      .user-link {
         display: block;
-        line-height: 1;
-      }
-
-      .post-time {
-        color: #757377;
-        font-size: 0.8em;
-        display: block;
-        line-height: 1;
-      }
-
-      .user-title {
-        color: var(--primary-medium);
-        font-size: 0.85em;
-        display: block;
-        line-height: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
     }
 
+    .topic-user-header__profile .post-time {
+      color: #757377;
+      font-size: 0.8em;
+      line-height: 1.2;
+    }
+
+    .topic-user-header__profile .user-title {
+      color: var(--primary-medium);
+      font-size: 0.85em;
+      line-height: 1.2;
+    }
+
     .post-actions {
+      flex-shrink: 0;
       display: flex;
       align-items: center;
       gap: 0.5em;
@@ -1654,6 +1692,9 @@ body.category {
       }
 
       &.stat-bookmark {
+        /* 暂时隐藏列表卡片上的收藏入口；恢复时去掉下一行 */
+        display: none !important;
+
         background: none;
         border: none;
         padding: 0;

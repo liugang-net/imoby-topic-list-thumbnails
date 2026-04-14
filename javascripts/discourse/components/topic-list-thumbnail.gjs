@@ -152,6 +152,60 @@ export default class TopicListThumbnail extends Component {
     return this.user?.name || this.user?.username;
   }
 
+  get authorUsername() {
+    const u = this.user?.username;
+    return typeof u === "string" ? u.trim() : "";
+  }
+
+  get authorHasIbomyProfile() {
+    return this.authorUsername.length > 0;
+  }
+
+  get authorProfileWrapperClass() {
+    return this.authorHasIbomyProfile
+      ? "topic-user-header__profile"
+      : "topic-user-header__profile topic-user-header__profile--static";
+  }
+
+  navigateToIbomyProfile() {
+    const username = this.authorUsername;
+    if (!username) {
+      return;
+    }
+    if (this.router?.transitionTo) {
+      try {
+        this.router.transitionTo("ibomy.u.index", username);
+      } catch {
+        window.location.href = `/ibomy/u/${encodeURIComponent(username)}`;
+      }
+    } else {
+      window.location.href = `/ibomy/u/${encodeURIComponent(username)}`;
+    }
+  }
+
+  @action
+  handleAuthorProfileClick(event) {
+    if (!this.authorHasIbomyProfile) {
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    this.navigateToIbomyProfile();
+  }
+
+  @action
+  handleAuthorProfileKeydown(event) {
+    if (event.key !== "Enter" && event.key !== " ") {
+      return;
+    }
+    if (!this.authorHasIbomyProfile) {
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    this.navigateToIbomyProfile();
+  }
+
   get userTitle() {
     return this.user?.title;
   }
@@ -384,7 +438,7 @@ export default class TopicListThumbnail extends Component {
     // 检查是否点击在可交互元素上（这些元素有自己的点击处理）
     const target = event.target;
     const interactiveElements = target.closest(
-      ".user-link, .discourse-tag, .stat, .action-button, .video-play-button, .title, .topic-excerpt, .topic-list-simple__share, .topic-thumbnail-blog-data-share"
+      ".user-link, .topic-user-header__profile, .discourse-tag, .stat, .action-button, .video-play-button, .title, .topic-excerpt, .topic-list-simple__share, .topic-thumbnail-blog-data-share"
     );
     if (interactiveElements) {
       return; // 如果点击在可交互元素上，不处理
@@ -654,25 +708,35 @@ export default class TopicListThumbnail extends Component {
     {{#if this.topicThumbnails.displayFeed}}
       {{! 信息流模式 - 完整的社交媒体风格布局 }}
       <a href={{this.url}} class="topic-feed-item">
-        {{! 用户信息头部 }}
+        {{! 用户信息头部；头像+用户名跳转 /ibomy/u/:username（不可嵌套 a，故用 role=link + 点击） }}
         <div class="topic-user-header">
-          <div class="user-avatar">
-            {{#if this.avatarUrl}}
-              <img src={{this.avatarUrl}} alt={{this.userName}} />
-            {{else}}
-              <div class="avatar-placeholder">
-                {{this.avatarInitials}}
+          <div class="topic-user-header__left">
+            <div
+              class={{this.authorProfileWrapperClass}}
+              role={{if this.authorHasIbomyProfile "link"}}
+              tabindex={{if this.authorHasIbomyProfile "0"}}
+              {{on "click" this.handleAuthorProfileClick}}
+              {{on "keydown" this.handleAuthorProfileKeydown}}
+            >
+              <div class="user-avatar">
+                {{#if this.avatarUrl}}
+                  <img src={{this.avatarUrl}} alt={{this.userName}} />
+                {{else}}
+                  <div class="avatar-placeholder">
+                    {{this.avatarInitials}}
+                  </div>
+                {{/if}}
               </div>
-            {{/if}}
-          </div>
-          <div class="user-info">
-            <div class="user-name">
-              <span class="user-link">{{this.userName}}</span>
+              <div class="user-info">
+                <div class="user-name">
+                  <span class="user-link">{{this.userName}}</span>
+                </div>
+                <div class="post-time">{{this.postTimeFormatted}}</div>
+                {{#if this.userTitle}}
+                  <div class="user-title">{{this.userTitle}}</div>
+                {{/if}}
+              </div>
             </div>
-            <div class="post-time">{{this.postTimeFormatted}}</div>
-            {{#if this.userTitle}}
-              <div class="user-title">{{this.userTitle}}</div>
-            {{/if}}
           </div>
           <div class="post-actions">
             <button class="action-button" title="更多选项">
