@@ -9,11 +9,17 @@ import dIcon from "discourse/helpers/d-icon";
 import formatDate from "discourse/helpers/format-date";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
+import { getAbsoluteURL } from "discourse/lib/get-url";
+import { nativeShare } from "discourse/lib/pwa-utils";
+import ShareTopicModal from "discourse/components/modal/share-topic";
+import { i18n } from "discourse-i18n";
 
 export default class TopicListThumbnail extends Component {
   @service topicThumbnails;
   @service router;
   @service currentUser;
+  @service modal;
+  @service capabilities;
 
   @tracked _forceUpdate = 0;
   @tracked _isLiked = null;
@@ -377,7 +383,9 @@ export default class TopicListThumbnail extends Component {
     
     // 检查是否点击在可交互元素上（这些元素有自己的点击处理）
     const target = event.target;
-    const interactiveElements = target.closest('.user-link, .discourse-tag, .stat, .action-button, .video-play-button, .title, .topic-excerpt');
+    const interactiveElements = target.closest(
+      ".user-link, .discourse-tag, .stat, .action-button, .video-play-button, .title, .topic-excerpt, .topic-list-simple__share, .topic-thumbnail-blog-data-share"
+    );
     if (interactiveElements) {
       return; // 如果点击在可交互元素上，不处理
     }
@@ -465,6 +473,39 @@ export default class TopicListThumbnail extends Component {
 
   get cannotBookmark() {
     return !this.currentUser || !this.topic.first_post_id;
+  }
+
+  get allowInvitesForShare() {
+    return (
+      !!this.currentUser?.can_invite_to_forum &&
+      !!this.topic.details?.can_invite_to_topic
+    );
+  }
+
+  @action
+  async handleShareClick(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const topic = this.topic;
+    const shareUrl = topic.shareUrl;
+    if (!shareUrl) {
+      return;
+    }
+
+    try {
+      await nativeShare(this.capabilities, {
+        url: getAbsoluteURL(shareUrl),
+      });
+    } catch {
+      this.modal.show(ShareTopicModal, {
+        model: {
+          category: topic.category,
+          topic,
+          allowInvites: this.allowInvitesForShare,
+        },
+      });
+    }
   }
 
   @action
@@ -720,6 +761,15 @@ export default class TopicListThumbnail extends Component {
             >
               {{dIcon "star"}}
             </button>
+            <button
+              type="button"
+              class="stat stat-share"
+              title={{i18n "topic.share.help"}}
+              aria-label={{i18n "topic.share.help"}}
+              {{on "click" this.handleShareClick}}
+            >
+              {{dIcon "d-topic-share"}}
+            </button>
             <a href={{this.url}} class="stat stat-views" aria-label="查看浏览">
               {{dIcon "eye"}}
               <span class="number">{{this.topic.views}}</span>
@@ -739,6 +789,15 @@ export default class TopicListThumbnail extends Component {
               <span class="post-time">{{this.postTimeFormatted}}</span>
             </div>
           </div>
+          <button
+            type="button"
+            class="topic-list-simple__share"
+            title={{i18n "topic.share.help"}}
+            aria-label={{i18n "topic.share.help"}}
+            {{on "click" this.handleShareClick}}
+          >
+            {{dIcon "d-topic-share"}}
+          </button>
           {{#if this.hasThumbnail}}
             <div class="topic-thumbnail">
               <a href={{this.url}} aria-label={{this.topic.title}}>
@@ -818,6 +877,15 @@ export default class TopicListThumbnail extends Component {
               {{this.topic.reply_count}}
             </span>
           </div>
+          <button
+            type="button"
+            class="topic-thumbnail-blog-data-share"
+            title={{i18n "topic.share.help"}}
+            aria-label={{i18n "topic.share.help"}}
+            {{on "click" this.handleShareClick}}
+          >
+            {{dIcon "d-topic-share"}}
+          </button>
           <div
             class={{concatClass
               "topic-thumbnail-blog-data-activity"
