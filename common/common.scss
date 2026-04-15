@@ -564,6 +564,11 @@ body {
 
 // List模式的简化布局样式
 .topic-list-simple {
+  // 旧版 JS 缓存仍可能渲染分享按钮；与模板移除配合，确保界面上不可见
+  .topic-list-simple__share {
+    display: none !important;
+  }
+
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -610,27 +615,6 @@ body {
         font-size: 0.9em;
         font-weight: 500;
       }
-    }
-  }
-
-  .topic-list-simple__share {
-    flex-shrink: 0;
-    align-self: flex-start;
-    margin-top: 0.15em;
-    padding: 0.35em;
-    border: none;
-    border-radius: 8px;
-    background: transparent;
-    color: var(--primary-medium);
-    cursor: pointer;
-
-    .d-icon {
-      font-size: 1.1em;
-    }
-
-    &:hover {
-      color: var(--primary);
-      background: var(--primary-low);
     }
   }
 

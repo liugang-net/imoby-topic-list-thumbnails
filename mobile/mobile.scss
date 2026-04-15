@@ -596,6 +596,10 @@ body.category.navigation-category {
 
 // 移动端List模式样式
 .topic-list-simple {
+  .topic-list-simple__share {
+    display: none !important;
+  }
+
   display: flex;
   align-items: flex-start;
   justify-content: space-between;

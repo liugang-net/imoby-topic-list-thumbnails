@@ -438,7 +438,7 @@ export default class TopicListThumbnail extends Component {
     // 检查是否点击在可交互元素上（这些元素有自己的点击处理）
     const target = event.target;
     const interactiveElements = target.closest(
-      ".user-link, .topic-user-header__profile, .discourse-tag, .stat, .action-button, .video-play-button, .title, .topic-excerpt, .topic-list-simple__share, .topic-thumbnail-blog-data-share"
+      ".user-link, .topic-user-header__profile, .discourse-tag, .stat, .action-button, .video-play-button, .title, .topic-excerpt, .topic-thumbnail-blog-data-share"
     );
     if (interactiveElements) {
       return; // 如果点击在可交互元素上，不处理
@@ -853,15 +853,6 @@ export default class TopicListThumbnail extends Component {
               <span class="post-time">{{this.postTimeFormatted}}</span>
             </div>
           </div>
-          <button
-            type="button"
-            class="topic-list-simple__share"
-            title={{i18n "topic.share.help"}}
-            aria-label={{i18n "topic.share.help"}}
-            {{on "click" this.handleShareClick}}
-          >
-            {{dIcon "d-topic-share"}}
-          </button>
           {{#if this.hasThumbnail}}
             <div class="topic-thumbnail">
               <a href={{this.url}} aria-label={{this.topic.title}}>
