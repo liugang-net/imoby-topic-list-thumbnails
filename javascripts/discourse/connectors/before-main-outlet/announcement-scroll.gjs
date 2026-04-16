@@ -56,6 +56,9 @@ function isAnnouncementEligiblePath(path) {
   if (ANNOUNCEMENT_EXCLUDED_PREFIXES.some((x) => p.startsWith(x))) {
     return false;
   }
+  if (p.startsWith("/c/") && p.split("/").includes("edit")) {
+    return false;
+  }
   return ANNOUNCEMENT_ALLOWED_PREFIXES.some((x) => {
     if (x === "/") {
       return p === "/" || p === "";

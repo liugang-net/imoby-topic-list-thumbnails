@@ -51,6 +51,10 @@ function isHeroCarouselPath(pathname) {
   if (HERO_CAROUSEL_EXCLUDED_PREFIXES.some((p) => path.startsWith(p))) {
     return false;
   }
+  // 分类编辑页 /c/:slug/edit/... 不显示头图（仍属 /c/ 前缀）
+  if (path.startsWith("/c/") && path.split("/").includes("edit")) {
+    return false;
+  }
   return HERO_CAROUSEL_ALLOWED_PREFIXES.some((p) => {
     if (p === "/") {
       return path === "/" || path === "";

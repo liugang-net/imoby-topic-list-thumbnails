@@ -27,7 +27,7 @@ zh_CN:
       mobile_thumbnails: 在移动设备上启用缩略图
       list_thumbnail_size: 「列表」视图下缩略图的基本大小
       mobile_inline_search_enabled: 在页头 Logo 与右侧图标之间显示胶囊搜索（移动端与桌面端），并隐藏默认搜索图标。若站点已启用 Discourse 自带「标题内搜索字段」且该栏会显示，则不再重复显示本组件。话题顶栏、全页搜索、管理后台不显示。
-      hero_carousel_enabled: 在标题栏下方、主内容上方显示头图轮播（与公告相同：仅首页、/latest、分类 /c/、标签 /tags 与 /tag/）；固定宽高比 393:170。
+      hero_carousel_enabled: 在标题栏下方、主内容上方显示头图轮播（与公告相同：仅首页、/latest、分类 /c/、标签 /tags 与 /tag/；分类编辑页 /c/.../edit/... 不显示）；固定宽高比 393:170。
       hero_carousel_interval_seconds: 自动轮播间隔（秒，范围 2～60）。
       hero_carousel_slides: "推荐：在此添加轮播条目（可逐条填写图片地址、链接、说明）。图片请填完整 URL（本站上传可在管理后台媒体中复制链接）。若此处无任何有效条目，才会使用下方「高级文本」配置。"
       hero_carousel_items: "备用：仅当「轮播条目」为空时生效。支持 JSON 数组，或每行「图片地址|跳转链接|可选说明」。示例：https://cdn.example.com/banner.jpg|/latest|首页"
