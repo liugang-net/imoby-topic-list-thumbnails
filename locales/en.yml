@@ -22,5 +22,5 @@ en:
       mobile_inline_search_hot_items: "bomi热搜（下拉内位于搜索历史上方）：两列展示。每条填写标题、链接（站内路径或完整 URL）。角标 badge：填 hot/热、new/新、exclusive/独家 为预设样式与默认字；填任意其它文字为自定义角标文案。可选 badge_color（文字色）、badge_bg_color（背景色），仅支持 #hex、rgb()/rgba()、hsl()/hsla()。"
       hero_carousel_enabled: "Hero carousel below header, only on home, /latest, category (/c/) and tag (/tags, /tag/) pages (same as announcement); not on category edit (/c/.../edit/...). Fixed aspect ratio 393:170."
       hero_carousel_interval_seconds: 自动轮播间隔（秒，范围 2～60）。
-      hero_carousel_slides: "Recommended: add slides here (image URL, link, alt text per row). Use full image URLs. If no valid slides here, the legacy text field below is used."
-      hero_carousel_items: "Fallback when slides above are empty: JSON array or each line as image|link|alt. Example: https://cdn.example.com/banner.jpg|/latest|Home"
+      hero_carousel_slides: "Recommended: add slides (image URL, link, image alt for accessibility, optional caption for the pink title bar). If no valid slides here, the legacy text field below is used."
+      hero_carousel_items: "Fallback when slides above is empty: JSON array, or each line image|link|alt|caption (caption optional). Example: https://cdn.example.com/banner.jpg|/latest|Banner alt|Campaign title"

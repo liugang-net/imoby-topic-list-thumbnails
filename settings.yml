@@ -151,6 +151,8 @@ hero_carousel_slides:
         type: string
       alt_text:
         type: string
+      caption:
+        type: string
 
 hero_carousel_items:
   default: ""

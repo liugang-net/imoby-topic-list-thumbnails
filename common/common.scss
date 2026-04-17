@@ -29,15 +29,6 @@
   --heading-font-family:"Alibaba PuHuiTi", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
 }
 
-// @media (prefers-color-scheme: dark) {
-//   :root {
-//     --bm-body-bg-color: #313131;
-//     --bm-card-bg-color: #222222;
-//     --bm-bg-image: url("http://cdn.ibomy.com/forum/images/hero_bg_dark.png");
-//   }
-// }
-
-
 /* 阿里巴巴普惠体（Alibaba PuHuiTi）— CDN */
 @font-face {
   font-family: "Alibaba PuHuiTi";
@@ -87,14 +78,8 @@
   font-display: swap;
 }
 
-.imoby-dfpyuan-w7 {
-  font-family: "Alibaba PuHuiTi", "PingFang SC", "Microsoft YaHei", sans-serif;
-}
-
-.imoby-dfpyuan-w9 {
-  font-family: "Alibaba PuHuiTi", "PingFang SC", "Microsoft YaHei", sans-serif;
-}
-
+.imoby-dfpyuan-w7,
+.imoby-dfpyuan-w9,
 .imoby-alibaba-puhuiti {
   font-family: "Alibaba PuHuiTi", "PingFang SC", "Microsoft YaHei", sans-serif;
 }
@@ -126,7 +111,7 @@ body {
 }
 .extra-info-wrapper .extra-info {
   --title-color--header: #ffffff;
-  --category-badge-title-color:rgb(255, 255, 255, 0.8);
+  --category-badge-title-color:rgba(255, 255, 255, 0.8);
   --primary-medium:#ffffff;
 }
 .topic-drafts-menu-trigger, .bulk-select,#topic-footer-button-flag,.topic-notifications-button,
@@ -183,20 +168,6 @@ body {
 .admin-content {
   padding: 1em;
 }
-
-.topic-drafts-menu-trigger {
-  font-size: var(--font-down-1);
-
-  &::after {
-    content: "草稿";
-    display: inline-block;
-    font-size: var(--font-down-1);
-    top: 0;
-    left: 0;
-    margin-left: 0.45em;
-  }
-}
-
 
 .navigation-container {
   .category-breadcrumb {
@@ -280,7 +251,7 @@ body {
     }
 
     .announcement-title {
-      font-weight: 500;
+      font-weight: 400;
       font-size: 14px;
       color: #ffffff;
     }
@@ -311,46 +282,130 @@ body {
 }
 
 // 头图轮播 + 公告均在 before-main-outlet；连接器顺序：ibomy-hero-carousel → ibomy-scroll-announcement（轮播在上、公告在下，正常文档流）
+// 居中「露边」卡片区：位移由 JS 按视口宽度计算；每张卡宽度约 78% 视口（见组件内 SLIDE_WIDTH_RATIO）
 .ibomy-hero-carousel {
   position: relative;
-  z-index: 1;
+  z-index: 4;
   width: 100%;
   max-width: 100%;
   margin-left: 0;
   margin-right: 0;
   box-sizing: border-box;
   overflow: hidden;
-  background: var(--primary-very-low, #f5f5f5);
-  // 设计比例 393×170，宽度由布局决定，高度随宽按比例变化
-  aspect-ratio: 393 / 210;
-  height: auto;
+  background: #ffffff url("https://dev.gexing8.com/images/common/tile.png")  repeat center center;
+  background-size: 10px 10px;
+  padding-block: 0.75rem 0.5rem;
 
   &__viewport {
     width: 100%;
-    height: 100%;
     overflow: hidden;
+    touch-action: pan-y;
+    -webkit-user-select: none;
+    user-select: none;
+    // 给中间放大卡左右留一点余地，避免 scale 贴边被裁
+    padding-inline: 0.35rem;
+    box-sizing: border-box;
   }
 
   &__track {
     display: flex;
-    height: 100%;
-    width: 100%;
-    transition: transform 0.5s ease-out;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 16px;
+    width: max-content;
+    min-height: clamp(168px, 48vw, 260px);
+    box-sizing: border-box;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
   }
 
   &__slide {
-    flex: 0 0 100%;
-    width: 100%;
-    height: 100%;
-    display: block;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: relative;
+    z-index: 1;
+    min-width: min(78vw, 28rem);
+    text-decoration: none;
+    color: inherit;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  &__slide:not(.is-active) .ibomy-hero-carousel__card {
+    transform: scale(0.88);
+    opacity: 0.88;
+  }
+
+  &__slide.is-active {
+    z-index: 2;
+  }
+
+  &__slide.is-active .ibomy-hero-carousel__card {
+    transform: scale(1.06);
+    opacity: 1;
+    box-shadow: 0 10px 28px rgb(0 0 0 / 22%);
+  }
+
+  &__card {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    min-height: clamp(160px, 46vw, 248px);
+    border-radius: 14px;
+    border: 1px solid #000000;
+    overflow: hidden;
+    background: #ffffff;
+    transform-origin: center center;
+    transition:
+      transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.35s ease,
+      box-shadow 0.35s ease;
+  }
+
+  &__media {
+    flex: 1 1 auto;
+    min-height: 0;
+    aspect-ratio: 393 / 210;
+    position: relative;
+    background: var(--primary-low);
   }
 
   &__img {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
+  }
+
+  &__caption {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0.45rem 0.65rem;
+    font-size: clamp(0.8rem, 2.8vw, 0.95rem);
+    font-weight: 600;
+    line-height: 1.25;
+    color: #ffffff;
+    letter-spacing: 0.02em;
+    text-shadow:
+      -1px -1px 0 #000000,
+      1px -1px 0 #000000,
+      -1px 1px 0 #000000,
+      1px 1px 0 #000000;
+    background-color: #ff3cf8;
+    background-image: repeating-linear-gradient(
+      -45deg,
+      rgb(255 255 255 / 22%) 0 6px,
+      rgb(255 255 255 / 0%) 6px 12px
+    );
   }
 
   &__dots {
@@ -361,7 +416,7 @@ body {
     display: flex;
     justify-content: center;
     gap: 8px;
-    z-index: 2;
+    z-index: 11;
     pointer-events: none;
 
     .ibomy-hero-carousel__dot {
@@ -542,7 +597,9 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ibomy-hero-carousel__track {
+  .ibomy-hero-carousel__track,
+  .ibomy-hero-carousel__track--instant,
+  .ibomy-hero-carousel__card {
     transition: none;
   }
 }
@@ -2220,23 +2277,6 @@ body.category {
     transform: translate(-50%, -50%) scale(1.1);
   }
 }
-
-// // 单张图片/视频的播放按钮稍大一些
-// .topic-images.single-image .image-container .video-play-button,
-// .topic-images.single-image .image-container .video-placeholder-overlay {
-//   width: 50px;
-//   height: 50px;
-//   font-size: 20px;
-//   border-radius: 0; // 方形按钮
-//   padding: 0.75rem;
-
-//   .d-icon,
-//   svg {
-//     margin-left: 3px;
-//     width: 20px;
-//     height: 20px;
-//   }
-// }
 
 // 支持新的video-placeholder-overlay类
 .topic-images .image-container .video-placeholder-overlay {

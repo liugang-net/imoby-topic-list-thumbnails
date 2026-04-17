@@ -5,18 +5,15 @@ body.category.navigation-category {
   background-color: var(--bm-body-bg-color);
 }
 
-// 下拉菜单（移动端筛选）字体不加粗
-.mobile-sort-wrapper {
-  position: relative;
-  display: inline-block;
-}
-.navigation-controls .btn{
+.navigation-controls .btn {
   height: 32px;
-
 }
-.mobile-sort-wrapper,.category-breadcrumb,.notifications-tracking-trigger{
+
+// 面包屑/通知在 common 已隐藏；此处仅隐藏本主题占位（与原先三选择器合并规则效果一致）
+.mobile-sort-wrapper {
   display: none;
 }
+
 .category-navigation {
   position: relative;
 }
@@ -29,6 +26,8 @@ body.category.navigation-category {
 .edit-category {
   margin: 0 1rem;
 }
+
+// 下拉菜单（移动端筛选）字体不加粗
 .mobile-sort-trigger {
   .select-kit-header {
     font-weight: normal !important;
@@ -119,22 +118,6 @@ body.category.navigation-category {
 .nav-pills>li:has(.list-control-toggle-link-trigger) {
   display: none;
 }
-
-
-// html,
-// body {
-//   height: 100%;
-//   overflow: hidden;
-//   /* 避免双层滚动 */
-// }
-
-// #main-outlet-wrapper {
-//   height: 100%;
-//   overflow-y: auto;
-//   -webkit-overflow-scrolling: touch;
-//   overscroll-behavior: contain;
-//   /* 阻止内容内部 overscroll */
-// }
 
 .d-header-wrap {
   // top: env(safe-area-inset-top);
@@ -411,7 +394,7 @@ body.category.navigation-category {
 
   .topic-footer {
     border-top: none;
-    padding-top: 0
+    padding-top: 0;
   }
 }
 
@@ -425,19 +408,11 @@ body.category.navigation-category {
   z-index: 100;
   margin: 0;
   margin-bottom: 0.5em;
-  // background: var(--secondary);
-  // border-bottom: 1px solid var(--primary-low);
   box-shadow: none;
   border-left: none;
   border-right: none;
   transform: translateZ(0);
   will-change: transform;
-  // border-radius: 14px 14px 0 0;
-  // // 确保在discovery-list-container-top位置时仍然粘性定位
-  // &.discovery-list-container-top {
-  //   position: sticky !important;
-  //   top: 3.66em !important;
-  // }
 
   .scroll-button {
     width: 28px;
