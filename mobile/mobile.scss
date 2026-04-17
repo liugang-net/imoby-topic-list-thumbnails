@@ -415,15 +415,14 @@ body.category.navigation-category {
   z-index: 100;
   margin: 0;
   margin-bottom: 0.5em;
-  padding: 0;
-  background: var(--secondary);
-  border-bottom: 1px solid var(--primary-low);
+  // background: var(--secondary);
+  // border-bottom: 1px solid var(--primary-low);
   box-shadow: none;
   border-left: none;
   border-right: none;
   transform: translateZ(0);
   will-change: transform;
-  border-radius: 14px 14px 0 0;
+  // border-radius: 14px 14px 0 0;
   // // 确保在discovery-list-container-top位置时仍然粘性定位
   // &.discovery-list-container-top {
   //   position: sticky !important;
@@ -451,40 +450,33 @@ body.category.navigation-category {
     min-width: 0;
   }
 
-  .nav-container__filter {
-    flex-shrink: 0;
-  }
-
   .nav-container__scroll {
     // 仅右侧分类区域横向滑动
     -webkit-overflow-scrolling: touch;
     touch-action: pan-x;
     overflow-x: auto;
-    overflow-y: hidden;
+    overflow-y: visible;
+    overflow-clip-margin: 6px 10px 14px 10px;
     flex: 1;
     min-width: 0;
   }
 
-  .nav-container__filter .fk-d-menu__trigger.scrolling-category-nav__filter-trigger {
-    padding: 0.55em 0.35em 0.55em 0.5em;
-    font-size: 1em;
-    font-weight: 600;
-    background: #ffffff !important;
+  .nav-items-scroll > .fk-d-menu__trigger.scrolling-category-nav__home-menu-trigger {
+    flex-shrink: 0;
+    padding: 0.25em 0.85em;
   }
 
   .nav-items {
     display: flex;
-    gap: 0.6em;
     min-width: max-content;
-    padding: 0 0 0.25em 0;
+    padding: 4px 0.5rem 4px 0.5rem;
   }
 
   .nav-item {
-    padding: 0.6em;
     border-radius: 0;
-    background: transparent;
-    border: none;
-    color: var(--primary-medium);
+    // background: transparent;
+    // border: none;
+    // color: var(--primary-medium);
     text-decoration: none;
     white-space: nowrap;
     transition: all 0.3s ease;
@@ -498,31 +490,8 @@ body.category.navigation-category {
     -ms-user-select: none;
     user-select: none;
 
-    &:hover {
-      color: var(--primary);
-      background: transparent;
-    }
+   
 
-    &.active {
-      background: transparent;
-      color: var(--primary);
-      border: none;
-      font-weight: 600;
-
-      // 添加蓝色下划线指示条
-      &::after {
-        content: '';
-        display: block;
-        position: absolute;
-        bottom: -0.3em;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 1em;
-        height: 5px;
-        border-radius: 9999px;
-        transition: all 0.3s ease;
-      }
-    }
 
     .count {
       font-size: 0.75em;

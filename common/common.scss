@@ -95,6 +95,14 @@
   font-family: "Alibaba PuHuiTi", "PingFang SC", "Microsoft YaHei", sans-serif;
 }
 
+.stroke-shadow {
+  text-shadow: 
+    -1px -1px 0 #000000,  
+     1px -1px 0 #000000,
+    -1px  1px 0 #000000,
+     1px  1px 0 #000000;
+}
+
 body {
   background-color: var(--bm-body-bg-color);
   // font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Segoe UI, Arial, Roboto, "PingFang SC", "miui", "Hiragino Sans GB", "Microsoft Yahei", sans-serif;
@@ -450,7 +458,6 @@ body {
   // 有轮播时去掉主内容区顶内边距，避免与轮播之间出现多余空白（覆盖 core .mobile-view #main-outlet 的 padding-top）
   #main-outlet-wrapper:has(> .ibomy-hero-carousel) #main-outlet {
     padding-top: 0;
-    margin-top: -14px;
   }
 }
 
@@ -1756,7 +1763,7 @@ body.category {
 }
 
 
-// 可滑动分类导航样式（左侧筛选下拉可主题化；右侧仅分类横向滚动）
+// 可滑动分类导航样式（「首页」带筛选下拉；右侧分类横向滚动）
 .scrolling-category-nav {
   --ibomy-filter-active-bg: #ff3cf8;
   --ibomy-filter-active-fg: #ffffff;
@@ -1765,13 +1772,16 @@ body.category {
   --ibomy-filter-inactive-icon: #6e6e6e;
   --ibomy-filter-menu-bg: #ffffff;
   --ibomy-filter-border-color: #e8e8e8;
+  // 导航 pill 斜切角度；内层用 calc(-1 *) 反向斜切以拉直文字
+  --scrolling-nav-skew: -8deg;
 
   display: flex;
   align-items: center;
-  background: var(--secondary);
-  border: 1px solid var(--primary-low);
-  border-radius: 12px;
-  padding: 0.5em;
+  background: #be41ff;
+  border-top: 2px solid #000000;
+  border-bottom: 2px solid #000000;
+  border-radius: 0;
+  padding: 0.5em 0;
   margin: 0 auto 1em auto;
 
   max-width: calc(var(--d-sidebar-width) + var(--d-max-width));
@@ -1822,18 +1832,14 @@ body.category {
     min-width: 0;
   }
 
-  .nav-container__filter {
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    z-index: 2;
-  }
-
   .nav-container__scroll {
     flex: 1;
     min-width: 0;
     overflow-x: auto;
-    overflow-y: hidden;
+    // 不要用 overflow-y: hidden：会与 overflow-x 形成滚动容器，把子级 box-shadow 裁掉（尤其 skew 后）
+    overflow-y: visible;
+    // 扩大裁剪外边距，避免 pill 的右/下硬阴影被裁切（不支持该属性的浏览器依赖 overflow-y: visible）
+    overflow-clip-margin: 6px 10px 14px 10px;
     scroll-behavior: smooth;
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -1843,60 +1849,51 @@ body.category {
     }
   }
 
-  // DMenu 默认用 DButton 作触发器：白底、常规下拉（modalForMobile=false）
-  .nav-container__filter .fk-d-menu__trigger.scrolling-category-nav__filter-trigger {
+  // 「首页」DMenu 触发器：与分类 pill 同系样式，内嵌下拉箭头（modalForMobile=false）
+  .nav-items-scroll > .fk-d-menu__trigger.scrolling-category-nav__home-menu-trigger {
+    flex-shrink: 0;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     margin: 0;
-    padding: 0.65em 0.55em 0.65em 0.75em;
     min-height: 0;
     font: inherit;
     font-size: 1em;
-    font-weight: 600;
-    color: var(--primary);
-    background: #ffffff !important;
-    border: none !important;
-    border-radius: 8px;
-    box-shadow: none !important;
+    font-weight: 400;
     cursor: pointer;
     white-space: nowrap;
     -webkit-tap-highlight-color: transparent;
-
-    &:hover,
-    &:focus,
-    &.hover {
-      background: #ffffff !important;
-      color: var(--primary);
-    }
+    // box-shadow: 4px 2px 0 rgba(0, 0, 0, 1) !important;
   }
 
-  .scrolling-category-nav__filter-trigger-inner {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25em;
+  .scrolling-category-nav__home-menu-trigger-inner {
+    gap: 0.35em;
   }
 
-  .scrolling-category-nav__filter-trigger-inner .d-icon {
+  .scrolling-category-nav__home-menu-trigger-inner .d-icon {
     font-size: 0.65em;
-    opacity: 0.65;
-    color: var(--primary-medium);
+    opacity: 0.85;
+    color: inherit;
   }
 
   .nav-items {
     display: flex;
     min-width: max-content;
+    gap: 10px;
+    align-items: center;
+    // 为 box-shadow 留出一点内边距，避免旧浏览器在横向滚动容器里仍裁切底部
+    padding: 4px 1rem 4px 1rem;
   }
 
   .nav-item {
     display: flex;
     align-items: center;
     gap: 0.5em;
-    padding: 0.75em 1em;
-    background: transparent;
-    border: none;
+    padding: 0.25em 1em;
+    background: #bb39fd;
+    border: 1px solid #000000;
     border-radius: 0;
-    color: var(--primary-medium);
+    color: #ffffff;
     text-decoration: none;
     font-size: 1em;
     font-weight: 400;
@@ -1904,6 +1901,8 @@ body.category {
     transition: all 0.3s ease;
     min-width: fit-content;
     position: relative;
+    transform: skewX(var(--scrolling-nav-skew));
+    box-shadow: 4px 3px 0 rgba(0, 0, 0, 1);
 
     // 去掉移动端点击时的蓝色系统颜色
     -webkit-tap-highlight-color: transparent;
@@ -1913,36 +1912,39 @@ body.category {
     -ms-user-select: none;
     user-select: none;
 
-    &:hover {
-      color: var(--primary);
-      background: transparent;
-      transform: none;
-      box-shadow: none;
-    }
+    // &:hover {
+    //   color: var(--primary);
+    //   background: transparent;
+    //   transform: none;
+    //   box-shadow: none;
+    // }
 
     &.active {
-      background: transparent;
-      color: var(--primary);
-      border: none;
-      font-weight: 600;
-      transform: none;
-      box-shadow: none;
-
-      // 添加蓝色下划线指示条
-      &::after {
-        content: '';
-        display: block;
-        position: absolute;
-        bottom: -0.5em;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 2em;
-        height: 3px;
-        background-color: #ff3cf8;
-        border-radius: 2px;
-        transition: all 0.3s ease;
-      }
+      background: #25f2eb;
+      color: #ffff00;
+      // // 添加蓝色下划线指示条
+      // &::after {
+      //   content: '';
+      //   display: block;
+      //   position: absolute;
+      //   bottom: -0.5em;
+      //   left: 50%;
+      //   transform: translateX(-50%);
+      //   width: 2em;
+      //   height: 3px;
+      //   background-color: #ff3cf8;
+      //   border-radius: 2px;
+      //   transition: all 0.3s ease;
+      // }
     }
+  }
+
+  // 分类链接需包一层 span.nav-item__unskew；首页触发器已有 .scrolling-category-nav__home-menu-trigger-inner
+  .nav-item > .nav-item__unskew,
+  .scrolling-category-nav__home-menu-trigger-inner {
+    display: inline-flex;
+    align-items: center;
+    transform: skewX(calc(-1 * var(--scrolling-nav-skew)));
   }
 
   .nav-item[href^="/c/"] {
@@ -1994,13 +1996,13 @@ body.category {
 }
 
 .fk-d-menu.scrolling-category-nav__filter-panel {
-  --ibomy-filter-active-bg: #ff3cf8;
-  --ibomy-filter-active-fg: #ffffff;
+  --ibomy-filter-active-bg: #25f2eb;
+  --ibomy-filter-active-fg: #000000;
   --ibomy-filter-row-bg: #ffffff;
-  --ibomy-filter-inactive-text: #3c3c3c;
-  --ibomy-filter-inactive-icon: #6e6e6e;
+  --ibomy-filter-inactive-text: #000000;
+  --ibomy-filter-inactive-icon: #000000;
   --ibomy-filter-menu-bg: #ffffff;
-  --ibomy-filter-border-color: #e8e8e8;
+  --ibomy-filter-border-color: #000000;
 
   .fk-d-menu__inner-content {
     animation: ibomy-filter-slide-up 0.22s ease-out;
@@ -2045,7 +2047,7 @@ body.category {
     gap: 0.75em;
     width: 100%;
     box-sizing: border-box;
-    padding: 0.8em 1em;
+    padding: 0 1em;
     min-height: 2.75em;
     color: var(--ibomy-filter-inactive-text);
     text-decoration: none;

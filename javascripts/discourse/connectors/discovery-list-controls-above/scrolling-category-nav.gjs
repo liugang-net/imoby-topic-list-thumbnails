@@ -9,10 +9,10 @@ import icon from "discourse/helpers/d-icon";
 import DMenu from "discourse/float-kit/components/d-menu";
 import { bind } from "discourse/lib/decorators";
 import getURL, { withoutPrefix } from "discourse/lib/get-url";
-import NavItem from "discourse/models/nav-item";
 import { i18n } from "discourse-i18n";
 
-const FILTER_TYPES = ["latest", "hot", "categories"];
+// 首页下拉：最新、最热、分类；链接固定为全站 / 、/hot 、/categories（不按当前分类适配）
+const HOME_DISCOVERY_FILTERS = ["latest", "hot", "categories"];
 
 // 仅允许在触发器上/下翻转，禁止 flip 到左侧或右侧（否则会在「最新」右边弹出）
 const FILTER_MENU_FALLBACK_PLACEMENTS = [
@@ -81,31 +81,21 @@ export default class ScrollingCategoryNav extends Component {
     return `background-color: ${this.backgroundColor};`;
   }
 
-  get pathContext() {
-    return {
-      category: this.args.category,
-      tag: this.args.tag,
-      noSubcategories: false,
-    };
-  }
-
   get filterMenuItems() {
     this.urlVersion;
     this.router?.currentURL;
     const current = this.currentFilter;
-    return FILTER_TYPES.map((name) => ({
+    const hrefByName = {
+      latest: getURL("/"),
+      hot: getURL("/hot"),
+      categories: getURL("/categories"),
+    };
+    return HOME_DISCOVERY_FILTERS.map((name) => ({
       name,
-      href: NavItem.pathFor(name, this.pathContext),
+      href: hrefByName[name],
       label: i18n(`filters.${name}.title`),
       isActive: current === name,
     }));
-  }
-
-  get filterTriggerLabel() {
-    this.urlVersion;
-    this.router?.currentURL;
-    const f = this.currentFilter;
-    return i18n(`filters.${f}.title`);
   }
 
   get currentFilter() {
@@ -256,10 +246,6 @@ export default class ScrollingCategoryNav extends Component {
     };
   }
 
-  get homeUrl() {
-    return getURL("/");
-  }
-
   get homeLabel() {
     return i18n("js.home");
   }
@@ -271,6 +257,19 @@ export default class ScrollingCategoryNav extends Component {
     }
     if (p === "/latest" || p.startsWith("/latest/")) {
       return true;
+    }
+    if (p === "/hot" || p.startsWith("/hot/")) {
+      return true;
+    }
+    if (p === "/categories" || p.startsWith("/categories/")) {
+      return true;
+    }
+    const lMatch = p.match(/\/l\/([^/]+)/);
+    if (lMatch) {
+      const seg = lMatch[1];
+      if (seg === "latest" || seg === "hot" || seg === "categories") {
+        return true;
+      }
     }
     return false;
   }
@@ -313,66 +312,59 @@ export default class ScrollingCategoryNav extends Component {
   <template>
     <div class="scrolling-category-nav" style={{this.navStyle}}>
       <div class="nav-container">
-        <div class="nav-container__filter">
-          <DMenu
-            @modalForMobile={{false}}
-            @placement="bottom-start"
-            @visibilityOptimizer="none"
-            @fallbackPlacements={{FILTER_MENU_FALLBACK_PLACEMENTS}}
-            @identifier="ibomy-scrolling-category-nav-filter"
-            @onRegisterApi={{this.onRegisterFilterMenuApi}}
-            @triggerClass="scrolling-category-nav__filter-trigger"
-            @contentClass="scrolling-category-nav__filter-panel"
-          >
-            <:trigger>
-              <span class="scrolling-category-nav__filter-trigger-inner">
-                <span
-                  class="scrolling-category-nav__filter-trigger-label"
-                >{{this.filterTriggerLabel}}</span>
-                {{icon "angle-down"}}
-              </span>
-            </:trigger>
-            <:content>
-              <div class="scrolling-category-nav__filter-dropdown">
-                <DropdownMenu
-                  class="scrolling-category-nav__filter-menu"
-                  {{on "click" this.closeFilterMenu}}
-                  as |dropdown|
-                >
-                  {{#each this.filterMenuItems key="name" as |item|}}
-                    <dropdown.item>
-                      <a
-                        href={{item.href}}
-                        data-filter-active={{if item.isActive "true" "false"}}
-                        class={{concatClass
-                          "scrolling-category-nav__filter-link"
-                          (if item.isActive "scrolling-category-nav__filter-link--active")
-                        }}
-                      >
-                        <span
-                          class="scrolling-category-nav__filter-link-label"
-                        >{{item.label}}</span>
-                        {{icon
-                          "chevron-right"
-                          class="scrolling-category-nav__filter-link-icon"
-                        }}
-                      </a>
-                    </dropdown.item>
-                  {{/each}}
-                </DropdownMenu>
-              </div>
-            </:content>
-          </DMenu>
-        </div>
-
         <div class="nav-container__scroll">
           <div class="nav-items nav-items-scroll">
-            <a href={{this.homeUrl}} class="nav-item nav-item--home">
-              {{this.homeLabel}}
-            </a>
+            <DMenu
+              @modalForMobile={{false}}
+              @placement="bottom-start"
+              @visibilityOptimizer="none"
+              @fallbackPlacements={{FILTER_MENU_FALLBACK_PLACEMENTS}}
+              @identifier="ibomy-scrolling-category-nav-home-menu"
+              @onRegisterApi={{this.onRegisterFilterMenuApi}}
+              @triggerClass="nav-item stroke-shadow nav-item--home scrolling-category-nav__home-menu-trigger"
+              @contentClass="scrolling-category-nav__filter-panel"
+            >
+              <:trigger>
+                <span class="scrolling-category-nav__home-menu-trigger-inner">
+                  <span
+                    class="scrolling-category-nav__home-menu-trigger-label"
+                  >{{this.homeLabel}}</span>
+                </span>
+              </:trigger>
+              <:content>
+                <div class="scrolling-category-nav__filter-dropdown">
+                  <DropdownMenu
+                    class="scrolling-category-nav__filter-menu"
+                    {{on "click" this.closeFilterMenu}}
+                    as |dropdown|
+                  >
+                    {{#each this.filterMenuItems key="name" as |item|}}
+                      <dropdown.item>
+                        <a
+                          href={{item.href}}
+                          data-filter-active={{if item.isActive "true" "false"}}
+                          class={{concatClass
+                            "scrolling-category-nav__filter-link"
+                            (if item.isActive "scrolling-category-nav__filter-link--active")
+                          }}
+                        >
+                          <span
+                            class="scrolling-category-nav__filter-link-label"
+                          >{{item.label}}</span>
+                          {{icon
+                            "chevron-right"
+                            class="scrolling-category-nav__filter-link-icon"
+                          }}
+                        </a>
+                      </dropdown.item>
+                    {{/each}}
+                  </DropdownMenu>
+                </div>
+              </:content>
+            </DMenu>
             {{#each this.categories as |category|}}
-              <a href={{this.categoryUrl category}} class="nav-item">
-                {{category.name}}
+              <a href={{this.categoryUrl category}} class="nav-item stroke-shadow">
+                <span class="nav-item__unskew">{{category.name}}</span>
               </a>
             {{/each}}
           </div>
