@@ -712,6 +712,7 @@ body.category.navigation-category {
 // 创建帖子按钮右下方悬浮
 .list-controls {
   #create-topic {
+    display: none;
     position: fixed;
     z-index: 299;
     bottom: 60px;
