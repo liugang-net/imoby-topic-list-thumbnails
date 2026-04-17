@@ -207,10 +207,6 @@ body {
 
 }
 
-.topic-list-body {
-
-}
-
 .topic-thumbnail-likes {
   display: none;
 }
@@ -1466,7 +1462,7 @@ body {
         display: inline-block; // 让容器适应图片尺寸
         max-width: 400px;
         max-height: 400px;
-        border: 2px solid #000000;
+        border: 1px solid #000000;
         border-radius: 5px;
         img {
           max-width: 400px;
@@ -1524,7 +1520,8 @@ body {
     &.multiple-images {
       display: grid;
       gap: 0.5em;
-      overflow: hidden;
+      // 不要裁剪容器：否则最后一列的边框容易被 grid 容器裁掉（移动端更明显）
+      overflow: visible;
       grid-template-columns: repeat(3, 1fr);
       max-width: 600px;
 
@@ -1550,7 +1547,8 @@ body {
         position: relative;
         overflow: hidden;
         aspect-ratio: 1; // 强制正方形显示
-        border: 2px solid #000000;
+        box-sizing: border-box;
+        border: 1px solid #000000;
         border-radius: 5px;
 
         img {
