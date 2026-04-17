@@ -1,7 +1,7 @@
 @charset "utf-8";
 
 :root {
-  --bm-body-bg-color: #f3f7fa;
+  --bm-body-bg-color: #ff3cf8;
   --bm-card-bg-color: #ffffff;
   --bm-bg-image: url("http://cdn.ibomy.com/forum/images/hero_bg_light.png");
   --header_background: #ff3cf8;
@@ -104,7 +104,8 @@
 }
 
 body {
-  background-color: var(--bm-body-bg-color);
+  background:var(--bm-body-bg-color) url(https://dev.gexing8.com/images/common/tile.png) repeat left top;
+  background-size: 10px 10px;
   // font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Segoe UI, Arial, Roboto, "PingFang SC", "miui", "Hiragino Sans GB", "Microsoft Yahei", sans-serif;
   font-family: "Alibaba PuHuiTi", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
 
@@ -207,7 +208,12 @@ body {
 }
 
 .topic-list-body {
-  background-color: var(--bm-body-bg-color);
+  background: #e7e7e7 url(https://dev.gexing8.com/images/common/tile.png) repeat left top;
+  background-size: 10px 10px;
+  border-top: 6px solid #000000;
+  border-bottom: 6px solid #000000;
+  border-left: 7px solid #000000;
+  border-right: 7px solid #000000;
 }
 
 .topic-thumbnail-likes {
@@ -1177,7 +1183,7 @@ body {
     display: flex;
     flex-direction: column;
     padding-top: 0;
-    border: 0;
+
   }
 
   .topic-list-item {
@@ -1185,13 +1191,13 @@ body {
     flex-direction: column;
     position: relative;
     min-width: 0;
-    background-color: var(--secondary);
+    background: #ffffff url(https://dev.gexing8.com/images/common/tile.png) repeat left top;
+    background-size: 10px 10px;
     padding: 2em;
     transition: box-shadow 0.2s ease, transform 0.2s ease;
     cursor: pointer; // 添加指针样式，表明可点击
     // border-bottom: none;
     margin-bottom: 1em;
-    border-radius: 1em;
 
 
 

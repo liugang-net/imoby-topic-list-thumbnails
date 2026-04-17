@@ -336,6 +336,7 @@ body.category.navigation-category {
 .topic-thumbnails-list {
   .topic-list-body .topic-list-item {
     padding: 1em 0;
+    
 
     .right {
       // 移除Grid布局，使用Flexbox布局
@@ -394,6 +395,11 @@ body.category.navigation-category {
 }
 
 .topic-thumbnails-feed {
+  // 这里是 topic list 的 table 容器，常见是 width:100% 且外层有 overflow-x:hidden，
+  // 直接用 margin 会把“右边距”推到可视区外（看起来像被挡住）。用缩宽 + 居中更稳定。
+  width: calc(100% - 14px);
+  max-width: 100%;
+  margin: 0 auto;
   .topic-user-header {
     border-bottom: none;
     padding-bottom: 0;
