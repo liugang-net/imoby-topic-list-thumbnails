@@ -300,7 +300,7 @@ body {
 
 }
 
-// 头图轮播 + 公告均在 before-main-outlet（announcement-scroll.gjs、ibomy-hero-carousel.gjs），DOM 顺序：公告在上、轮播在下，便于统一调样式与网格
+// 头图轮播 + 公告均在 before-main-outlet；连接器顺序：ibomy-hero-carousel → ibomy-scroll-announcement（轮播在上、公告在下，正常文档流）
 .ibomy-hero-carousel {
   position: relative;
   z-index: 1;
@@ -405,9 +405,18 @@ body {
   }
 }
 
-// 窄屏：有轮播时公告与轮播共用同一 grid「hero」格，公告 align-self:end 叠在轮播底部；仅公告时仍单独一行 hero-notice。
+// 窄屏：有轮播+公告时两行 hero / below-hero；仅轮播时仍三行；仅公告时 hero-notice。
 @media (width < 48rem) {
-  #main-outlet-wrapper:has(> .ibomy-hero-carousel) {
+  #main-outlet-wrapper:has(> .ibomy-hero-carousel):has(> .announcement-scroll) {
+    grid-template-rows: auto auto 1fr auto;
+    grid-template-areas:
+      "hero"
+      "below-hero"
+      "content"
+      "below-content";
+  }
+
+  #main-outlet-wrapper:has(> .ibomy-hero-carousel):not(:has(> .announcement-scroll)) {
     grid-template-rows: auto 1fr auto;
     grid-template-areas:
       "hero"
@@ -427,17 +436,17 @@ body {
     box-sizing: border-box;
   }
 
-  #main-outlet-wrapper:has(> .ibomy-hero-carousel) > .announcement-scroll {
-    grid-area: hero;
-    z-index: 2;
-    align-self: end;
+  #main-outlet-wrapper:has(> .ibomy-hero-carousel):has(> .announcement-scroll) > .announcement-scroll {
+    grid-area: below-hero;
+    align-self: stretch;
     justify-self: center;
     width: calc(100% - 2rem);
     max-width: min(calc(100% - 2rem), var(--d-max-width));
-    margin: 0 1rem 2rem;
+    margin: 0.5rem 1rem 0;
     box-sizing: border-box;
     border-radius: 8px;
-    box-shadow: 0 -2px 12px rgb(0 0 0 / 12%);
+    box-shadow: none;
+    z-index: auto;
   }
 
   #main-outlet-wrapper:has(> .announcement-scroll):not(:has(> .ibomy-hero-carousel)) {
@@ -461,9 +470,18 @@ body {
   }
 }
 
-// 桌面端：有轮播时公告叠在轮播底部；仅公告时单独 hero-notice 行。
+// 桌面端：有轮播+公告时两行 hero / below-hero；仅轮播时三行；仅公告时 hero-notice。
 @media (width >= 48rem) {
-  body.has-ibomy-hero-carousel #main-outlet-wrapper {
+  body.has-ibomy-hero-carousel #main-outlet-wrapper:has(> .announcement-scroll) {
+    grid-template-rows: auto auto 1fr auto;
+    grid-template-areas:
+      "sidebar hero"
+      "sidebar below-hero"
+      "sidebar content"
+      "sidebar below-content";
+  }
+
+  body.has-ibomy-hero-carousel #main-outlet-wrapper:not(:has(> .announcement-scroll)) {
     grid-template-rows: auto 1fr auto;
     grid-template-areas:
       "sidebar hero"
@@ -477,20 +495,26 @@ body {
     z-index: 1;
     justify-self: center;
     width: min(100%, var(--d-max-width));
-    margin-bottom: 0.75em;
+    margin-bottom: 0;
     box-sizing: border-box;
   }
 
-  body.has-ibomy-hero-carousel #main-outlet-wrapper > .announcement-scroll {
-    grid-area: hero;
-    z-index: 2;
-    align-self: end;
+  body.has-ibomy-hero-carousel
+    #main-outlet-wrapper:not(:has(> .announcement-scroll))
+    > .ibomy-hero-carousel {
+    margin-bottom: 0.75em;
+  }
+
+  body.has-ibomy-hero-carousel #main-outlet-wrapper:has(> .announcement-scroll) > .announcement-scroll {
+    grid-area: below-hero;
+    align-self: stretch;
     justify-self: center;
-    width: min(calc(100% - 20rem), var(--d-max-width));
-    margin: 0 1.2rem 3rem;
+    width: min(100%, var(--d-max-width));
+    margin: 0.75rem 0 0;
     box-sizing: border-box;
     border-radius: 8px;
-    box-shadow: 0 -2px 14px rgb(0 0 0 / 14%);
+    box-shadow: none;
+    z-index: auto;
   }
 
   body:not(.has-ibomy-hero-carousel) #main-outlet-wrapper:has(> .announcement-scroll) {
@@ -1781,9 +1805,8 @@ body.category {
   border-top: 2px solid #000000;
   border-bottom: 2px solid #000000;
   border-radius: 0;
-  padding: 0.5em 0;
   margin: 0 auto 1em auto;
-
+  padding: 5px 0;
   max-width: calc(var(--d-sidebar-width) + var(--d-max-width));
   position: relative;
   overflow: visible;
@@ -1882,14 +1905,14 @@ body.category {
     gap: 10px;
     align-items: center;
     // 为 box-shadow 留出一点内边距，避免旧浏览器在横向滚动容器里仍裁切底部
-    padding: 4px 1rem 4px 1rem;
+    padding: 4px 1rem;
   }
 
   .nav-item {
     display: flex;
     align-items: center;
     gap: 0.5em;
-    padding: 0.25em 1em;
+    padding: 4px 8px;
     background: #bb39fd;
     border: 1px solid #000000;
     border-radius: 0;
@@ -2003,6 +2026,7 @@ body.category {
   --ibomy-filter-inactive-icon: #000000;
   --ibomy-filter-menu-bg: #ffffff;
   --ibomy-filter-border-color: #000000;
+  --content-border-color: #000000;
 
   .fk-d-menu__inner-content {
     animation: ibomy-filter-slide-up 0.22s ease-out;
@@ -2013,7 +2037,7 @@ body.category {
     width: 100%;
 
     .dropdown-menu {
-      min-width: 12.5em;
+      min-width: 7em;
       gap: 0 !important;
       padding: 0 !important;
     }
@@ -2048,7 +2072,7 @@ body.category {
     width: 100%;
     box-sizing: border-box;
     padding: 0 1em;
-    min-height: 2.75em;
+    min-height: 2em;
     color: var(--ibomy-filter-inactive-text);
     text-decoration: none;
     font-size: 1em;

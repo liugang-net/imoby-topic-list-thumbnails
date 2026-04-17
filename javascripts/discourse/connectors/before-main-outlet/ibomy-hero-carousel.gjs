@@ -11,7 +11,7 @@ import dIcon from "discourse/helpers/d-icon";
 import { bind } from "discourse/lib/decorators";
 import getURL, { withoutPrefix } from "discourse/lib/get-url";
 
-// 与 before-main-outlet/announcement-scroll.gjs 一致：仅首页、最新、分类、标签相关页显示
+// 与 before-main-outlet/ibomy-scroll-announcement.gjs 一致：仅首页、最新、分类、标签相关页显示
 const HERO_CAROUSEL_EXCLUDED_PREFIXES = [
   "/login",
   "/admin",

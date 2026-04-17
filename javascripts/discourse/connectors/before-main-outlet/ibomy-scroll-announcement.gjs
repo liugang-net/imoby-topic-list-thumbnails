@@ -5,7 +5,7 @@ import { bind } from "discourse/lib/decorators";
 import { withoutPrefix } from "discourse/lib/get-url";
 import { and } from "discourse/truth-helpers";
 
-// 与 ibomy-hero-carousel.gjs 相同范围：仅首页、最新、分类、标签相关页（并排除话题/用户/后台等）
+// 与 ibomy-hero-carousel.gjs 相同范围；文件名 ibomy-scroll-* 保证在 before-main-outlet 中排在轮播之后（文档流：轮播在上、公告在下）
 const ANNOUNCEMENT_EXCLUDED_PREFIXES = [
   "/login",
   "/admin",
@@ -67,7 +67,7 @@ function isAnnouncementEligiblePath(path) {
   });
 }
 
-export default class AnnouncementScroll extends Component {
+export default class IbomyScrollAnnouncement extends Component {
   @service site;
   @service router;
 
