@@ -744,6 +744,8 @@ export default class TopicListThumbnail extends Component {
             </button>
           </div>
         </div>
+        <div class="topic-line">
+        </div>
 
         {{! 主题内容 }}
         <div class="topic-content">
