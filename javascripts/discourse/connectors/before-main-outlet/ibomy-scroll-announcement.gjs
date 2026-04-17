@@ -166,7 +166,8 @@ export default class IbomyScrollAnnouncement extends Component {
     const scrollInterval = 3000;
     let currentIndex = 0;
     const isMobile = window.innerWidth <= 768;
-    const itemHeight = isMobile ? 36 : 40;
+    // 须与样式一致：mobile.scss 单行 25px；common.scss 桌面 .announcement-item 40px
+    const itemHeight = isMobile ? 25 : 40;
 
     const scrollToNext = () => {
       currentIndex++;
@@ -207,24 +208,27 @@ export default class IbomyScrollAnnouncement extends Component {
   <template>
     {{#if (and this.announcements.length this.shouldShow)}}
       <div class="announcement-scroll">
+        <span
+          class="announcement-scroll__tag"
+          role="img"
+          aria-label="公告"
+        ></span>
         <div class="announcement-scroll-container">
           <div class="announcement-content">
             {{#each this.announcements as |announcement|}}
               <a href={{this.topicUrl announcement}} class="announcement-item">
-                <span class="announcement-badge">公告</span>
                 <span class="announcement-title">{{announcement.title}}</span>
               </a>
             {{/each}}
             {{#each this.announcements as |announcement|}}
               <a href={{this.topicUrl announcement}} class="announcement-item">
-                <span class="announcement-badge">公告</span>
                 <span class="announcement-title">{{announcement.title}}</span>
               </a>
             {{/each}}
           </div>
         </div>
         <div class="announcement-more">
-          <a href="/c/10/10" class="more-link">更多</a>
+          <a href="/c/10/10" class="more-link">更多&gt;</a>
         </div>
       </div>
     {{/if}}

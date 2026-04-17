@@ -20,6 +20,9 @@
   --tertiary-100:#ffd2fd;
   --d-selected:#ffd2fd;
 
+
+  --love:#ff3cf8;
+
   --title-color--header:#ffffff;
   --title-color:#1a0e0c;
   color-scheme: light !important;
@@ -222,16 +225,29 @@ body {
 
 // 公告滚动组件样式
 .announcement-scroll {
-  background-color: rgba(255, 255, 255, 0.95);
-  color: var(--tertiary);
-  overflow: hidden;
-  border-radius: 8px;
-  margin-bottom: 1em;
+  background: #212021 url("https://cdn.ibomy.com/forum/images/news_bg.png") no-repeat right -32px /105px 122px;
+  color: #ffffff;
+  height: 40px;
+  border-radius: 0;
   display: flex;
   align-items: center;
   position: relative;
+  z-index: 2;
+
+  .announcement-scroll__tag {
+    flex-shrink: 0;
+    width: 58px;
+    height: 25px;
+    margin-left: 14px;
+    margin-top: -8px;
+    background-image: url("https://cdn.ibomy.com/forum/images/news.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 58px 25px;
+  }
 
   .announcement-scroll-container {
+    overflow: hidden;
     position: relative;
     flex: 1;
     height: 40px; // 固定高度，显示一行
@@ -247,7 +263,7 @@ body {
   .announcement-item {
     display: flex;
     align-items: center;
-    color: var(--tertiary);
+    color: #ffffff;
     text-decoration: none;
     padding: 8px 20px;
     line-height: 24px;
@@ -263,22 +279,10 @@ body {
       text-decoration: none;
     }
 
-    .announcement-badge {
-      background-color: #ff3cf8;
-      color: #fcfb07;
-      padding: 0px 6px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 400;
-      margin-right: 8px;
-      flex-shrink: 0;
-      white-space: nowrap;
-    }
-
     .announcement-title {
       font-weight: 500;
       font-size: 14px;
-      color: #000000;
+      color: #ffffff;
     }
   }
 
@@ -295,7 +299,7 @@ body {
       font-size: 14px;
       font-weight: 500;
       transition: color 0.3s ease;
-      color: #c0c0c0;
+      color: #a4a4a4;
 
       &:hover {
         // color: var(--primary-high);
@@ -318,7 +322,7 @@ body {
   overflow: hidden;
   background: var(--primary-very-low, #f5f5f5);
   // 设计比例 393×170，宽度由布局决定，高度随宽按比例变化
-  aspect-ratio: 393 / 170;
+  aspect-ratio: 393 / 210;
   height: auto;
 
   &__viewport {
@@ -454,13 +458,9 @@ body {
     grid-area: below-hero;
     align-self: stretch;
     justify-self: center;
-    width: calc(100% - 2rem);
-    max-width: min(calc(100% - 2rem), var(--d-max-width));
-    margin: 0.5rem 1rem 0;
     box-sizing: border-box;
-    border-radius: 8px;
     box-shadow: none;
-    z-index: auto;
+    width: 100%;
   }
 
   #main-outlet-wrapper:has(> .announcement-scroll):not(:has(> .ibomy-hero-carousel)) {
@@ -513,22 +513,15 @@ body {
     box-sizing: border-box;
   }
 
-  body.has-ibomy-hero-carousel
-    #main-outlet-wrapper:not(:has(> .announcement-scroll))
-    > .ibomy-hero-carousel {
-    margin-bottom: 0.75em;
-  }
+
 
   body.has-ibomy-hero-carousel #main-outlet-wrapper:has(> .announcement-scroll) > .announcement-scroll {
     grid-area: below-hero;
     align-self: stretch;
     justify-self: center;
     width: min(100%, var(--d-max-width));
-    margin: 0.75rem 0 0;
     box-sizing: border-box;
-    border-radius: 8px;
     box-shadow: none;
-    z-index: auto;
   }
 
   body:not(.has-ibomy-hero-carousel) #main-outlet-wrapper:has(> .announcement-scroll) {
@@ -544,7 +537,6 @@ body {
     justify-self: center;
     width: min(100%, var(--d-max-width));
     box-sizing: border-box;
-    margin-bottom: 0.75em;
     box-shadow: none;
   }
 }
@@ -1991,7 +1983,7 @@ body.category {
     align-items: center;
     gap: 0.5em;
     padding: 4px 8px;
-    background: #bb39fd url(http://cdn.ibomy.com/forum/images/nav_item_bg.png?v=1.0.0) no-repeat left top;
+    background: #bb39fd url(https://cdn.ibomy.com/forum/images/nav_item_bg.png?v=1.0.0) no-repeat left top;
     background-size: 120% auto;
     border: 1px solid #000000;
     border-radius: 0;
