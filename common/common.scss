@@ -1195,13 +1195,15 @@ body {
   }
 
   .topic-list-item {
+    // 供底部「分享」胶囊贴右缘抵消横向 padding（与左右 padding 数值一致）
+    --ibomy-feed-inline-padding: 32px;
     display: flex;
     flex-direction: column;
     position: relative;
     min-width: 0;
     background: #ffffff url(https://dev.gexing8.com/images/common/tile.png) repeat left top;
     background-size: 10px 10px;
-    padding: 2em;
+    padding: 2em var(--ibomy-feed-inline-padding);
     transition: box-shadow 0.2s ease, transform 0.2s ease;
     cursor: pointer; // 添加指针样式，表明可点击
     // border-bottom: none;
@@ -1227,6 +1229,10 @@ body {
     &.last-visit.selected {
       border: 1px solid var(--quaternary);
       box-shadow: 0 0 0 2px var(--quaternary);
+    }
+
+    .topic-stats .stat-share.stat-share--pill {
+      margin-right: calc(-1 * var(--ibomy-feed-inline-padding));
     }
   }
 
@@ -1782,18 +1788,45 @@ body.category {
         }
       }
 
-      &.stat-share {
-        background: none;
+      &.stat-share.stat-share--pill {
+        gap: 0.35em;
+        align-items: center;
+        padding: 0.35em 0.85em 0.35em 0.65em;
         border: none;
-        padding: 0;
-        margin: 0;
-        font: inherit;
-        color: inherit;
         cursor: pointer;
+        font: inherit;
+        height: 30px;
+        font-weight: 400;
+        font-size: 0.9em;
+        line-height: 1.2;
+        color: #ffffff;
+        background: #ff3cf8;
+        border-radius: 999px 10px 10px 999px;
+        box-shadow: none;
+        white-space: nowrap;
+        flex-shrink: 0;
 
-   
+        .d-icon {
+          color: #ffffff;
+          font-size: 20px;
+          font-weight: 700;
+        }
 
-    
+        .stat-share__label {
+          color: #ffffff;
+        }
+
+        &:hover,
+        &:focus-visible {
+          color: #ffffff;
+          background: #e02ee0;
+          filter: none;
+
+          .d-icon,
+          .stat-share__label {
+            color: #ffffff;
+          }
+        }
       }
     }
 

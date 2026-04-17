@@ -829,12 +829,13 @@ export default class TopicListThumbnail extends Component {
             </button>
             <button
               type="button"
-              class="stat stat-share"
+              class="stat stat-share stat-share--pill"
               title={{i18n "topic.share.help"}}
               aria-label={{i18n "topic.share.help"}}
               {{on "click" this.handleShareClick}}
             >
               {{dIcon "ibomy-share"}}
+              <span class="stat-share__label">分享</span>
             </button>
             <a href={{this.url}} class="stat stat-views" aria-label="查看浏览">
               {{dIcon "eye"}}

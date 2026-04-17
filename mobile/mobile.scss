@@ -194,7 +194,8 @@ body.category.navigation-category {
 }
 .topic-thumbnails-feed {
   .topic-list-item {
-    padding: 1em;
+    --ibomy-feed-inline-padding: 16px;
+    padding: 1em var(--ibomy-feed-inline-padding);
   }
 
   .topic-images {
