@@ -207,9 +207,14 @@ body {
 
 }
 #navigation-bar {
-  visibility: hidden;
+  display: none;
 }
-
+#create-topic {
+  display: none;
+}
+.edit-category {
+  background-color: #ffffff;
+}
 .topic-thumbnail-likes {
   display: none;
 }

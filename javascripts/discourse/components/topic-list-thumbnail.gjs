@@ -790,7 +790,7 @@ export default class TopicListThumbnail extends Component {
           </div>
           <div class="topic-stats">
             <a href={{this.lastPostUrl}} class="stat" aria-label="查看回复">
-              {{dIcon "comment"}}
+              {{dIcon "ibomy-comment"}}
               <span class="number">{{this.replyCount}}</span>
             </a>
             {{#if this.canLike}}
@@ -800,14 +800,14 @@ export default class TopicListThumbnail extends Component {
                 aria-label="{{if this.isLiked '取消点赞' '点赞'}}"
                 title="{{if this.isLiked '点击取消点赞' '点击点赞'}}"
               >
-                {{dIcon "heart"}}
+                {{dIcon "ibomy-agree"}}
                 <span class="number">{{this.likeCount}}</span>
               </button>
             {{else}}
               <div class="stat stat-like disabled {{if this.isLiked 'liked'}}"
                {{on "click" this.handleLikeClick}} 
                 aria-label="无法操作" title="无法进行点赞操作">
-                {{dIcon "heart"}}
+                {{dIcon "ibomy-agree"}}
                 <span class="number">{{this.likeCount}}</span>
               </div>
             {{/if}}
@@ -832,7 +832,7 @@ export default class TopicListThumbnail extends Component {
               aria-label={{i18n "topic.share.help"}}
               {{on "click" this.handleShareClick}}
             >
-              {{dIcon "d-topic-share"}}
+              {{dIcon "ibomy-share"}}
             </button>
             <a href={{this.url}} class="stat stat-views" aria-label="查看浏览">
               {{dIcon "eye"}}
