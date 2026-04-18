@@ -294,7 +294,6 @@ body {
   overflow: hidden;
   background: #ffffff url("https://dev.gexing8.com/images/common/tile.png")  repeat center center;
   background-size: 10px 10px;
-  padding-block: 0.75rem 0.5rem;
 
   /* 硬投影：略小的右下偏移 + x≠y 时阴影带一点「斜向」感；bleed 需盖住 offset */
   --ibomy-hero-card-pop-x: 3px;
