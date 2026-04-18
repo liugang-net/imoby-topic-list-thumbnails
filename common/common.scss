@@ -1940,7 +1940,7 @@ body.category {
   border-bottom: 2px solid #000000;
   border-radius: 0;
   margin: 0 auto 1em auto;
-  padding: 5px 0;
+  padding: 4px;
   max-width: calc(var(--d-sidebar-width) + var(--d-max-width));
   position: relative;
   overflow: visible;
@@ -2046,7 +2046,7 @@ body.category {
     display: flex;
     align-items: center;
     gap: 0.5em;
-    padding: 4px 8px;
+    padding: 0 8px;
     background: #bb39fd url(https://cdn.ibomy.com/forum/images/nav_item_bg.png?v=1.0.0) no-repeat left top;
     background-size: 120% auto;
     border: 1px solid #000000;

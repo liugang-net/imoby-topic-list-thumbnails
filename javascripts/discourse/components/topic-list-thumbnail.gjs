@@ -308,6 +308,15 @@ export default class TopicListThumbnail extends Component {
     return this.totalImageCount > 3;
   }
 
+  get overflowImageCount() {
+    const total = this.totalImageCount;
+    return total > 3 ? total - 3 : 0;
+  }
+
+  get imageOverflowBadgeAriaLabel() {
+    return `共 ${this.totalImageCount} 张`;
+  }
+
   get imageLayoutClass() {
     if (this.imageCount === 1) {
       // 单张图片时，根据宽高比例添加形状类型
@@ -771,8 +780,11 @@ export default class TopicListThumbnail extends Component {
                 </div>
               {{/each}}
               {{#if this.showImageCount}}
-                <div class="images-total-badge">
-                  {{this.totalImageCount}}张
+                <div
+                  class="images-total-badge"
+                  aria-label={{this.imageOverflowBadgeAriaLabel}}
+                >
+                  +{{this.overflowImageCount}}
                 </div>
               {{/if}}
             </div>

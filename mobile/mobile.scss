@@ -408,6 +408,7 @@ body.category.navigation-category {
   z-index: 100;
   margin: 0;
   margin-bottom: 0.5em;
+  padding: 0;
   box-shadow: none;
   border-left: none;
   border-right: none;
@@ -448,6 +449,7 @@ body.category.navigation-category {
 
   .nav-items-scroll > .fk-d-menu__trigger.scrolling-category-nav__home-menu-trigger {
     flex-shrink: 0;
+    font-size: 10px;
   }
 
   .nav-items {
@@ -465,7 +467,9 @@ body.category.navigation-category {
     white-space: nowrap;
     transition: all 0.3s ease;
     position: relative;
-
+    font-size: 10px;
+    height: 20px;
+    box-shadow: 1px 1px 0 rgba(0, 0, 0, 1);
     // 去掉移动端点击时的蓝色系统颜色
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
