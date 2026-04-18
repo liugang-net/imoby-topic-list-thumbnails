@@ -4,6 +4,7 @@ import { modifier } from "ember-modifier";
 import { service } from "@ember/service";
 import discourseLater from "discourse/lib/later";
 import bodyClass from "discourse/helpers/body-class";
+import dIcon from "discourse/helpers/d-icon";
 import { bind } from "discourse/lib/decorators";
 import getURL, { withoutPrefix } from "discourse/lib/get-url";
 
@@ -223,6 +224,10 @@ export default class IbomyHeroCarousel extends Component {
     return Number.isFinite(n) && n >= 2 && n <= 60 ? n : 6;
   }
 
+  get showNav() {
+    return this.slides.length > 1;
+  }
+
   /** 多页时在 DOM 上铺三段相同序列，配合 initialSlide=n 与无动画跳回，替代 Swiper loop（与 auto+centered 不兼容）。 */
   get deckSlides() {
     const s = this.slides;
@@ -257,11 +262,14 @@ export default class IbomyHeroCarousel extends Component {
         return;
       }
 
+      const prevEl = element.querySelector(".ibomy-hero-swiper__button-prev");
+      const nextEl = element.querySelector(".ibomy-hero-swiper__button-next");
+
       swiper = new SwiperCtor(element, {
         slidesPerView: "auto",
         centeredSlides: true,
         slidesPerGroup: 1,
-        spaceBetween: 16,
+        spaceBetween: 0,
         speed: 450,
         initialSlide,
         watchOverflow: n === 1,
@@ -281,6 +289,13 @@ export default class IbomyHeroCarousel extends Component {
         a11y: {
           enabled: true,
         },
+        navigation:
+          n >= 2 && prevEl && nextEl
+            ? {
+                prevEl,
+                nextEl,
+              }
+            : false,
         on: {
           slideChangeTransitionEnd(s) {
             if (destroyed || !useTriple || s.destroyed) {
@@ -384,6 +399,23 @@ export default class IbomyHeroCarousel extends Component {
               </div>
             {{/each}}
           </div>
+
+          {{#if this.showNav}}
+            <button
+              type="button"
+              class="swiper-button-prev ibomy-hero-swiper__button-prev ibomy-hero-carousel__nav ibomy-hero-carousel__nav--prev"
+              aria-label="Previous slide"
+            >
+              {{dIcon "chevron-left"}}
+            </button>
+            <button
+              type="button"
+              class="swiper-button-next ibomy-hero-swiper__button-next ibomy-hero-carousel__nav ibomy-hero-carousel__nav--next"
+              aria-label="Next slide"
+            >
+              {{dIcon "chevron-right"}}
+            </button>
+          {{/if}}
         </div>
       </section>
     {{/if}}

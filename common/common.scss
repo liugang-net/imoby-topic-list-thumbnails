@@ -296,14 +296,25 @@ body {
   background-size: 10px 10px;
   padding-block: 0.75rem 0.5rem;
 
+  /* 硬投影：略小的右下偏移 + x≠y 时阴影带一点「斜向」感；bleed 需盖住 offset */
+  --ibomy-hero-card-pop-x: 3px;
+  --ibomy-hero-card-pop-y: 0px;
+  --ibomy-hero-card-pop-color: #0ff2ea;
+  --ibomy-hero-card-bleed-inline: 14px;
+  --ibomy-hero-card-bleed-block: 14px;
+  /* 整卡轻微旋转（与 scale 同写在 transform 里）；想更「斜切」可改 -1.2deg 或换成 skewX(-1deg)（会拉扁内容） */
+  --ibomy-hero-card-tilt: -0.85deg;
+
   &__viewport {
+    position: relative;
     width: 100%;
     overflow: hidden;
     /* 横向轮播必须用 pan-x；pan-y 会把横向滑走交给纵向，导致只能单向滑或很难换页 */
     touch-action: pan-x;
     -webkit-user-select: none;
     user-select: none;
-    padding-inline: 0.35rem;
+    padding-inline: calc(0.35rem + var(--ibomy-hero-card-bleed-inline));
+    padding-block: var(--ibomy-hero-card-bleed-block);
     box-sizing: border-box;
   }
 
@@ -340,8 +351,8 @@ body {
   }
 
   .ibomy-hero-swiper__slide.swiper-slide:not(.swiper-slide-active) .ibomy-hero-carousel__card {
-    transform: scale(0.92);
-    opacity: 0.9;
+    transform: scale(0.9);
+    opacity: 0.8;
   }
 
   .ibomy-hero-swiper__slide.swiper-slide.swiper-slide-active {
@@ -349,9 +360,8 @@ body {
   }
 
   .ibomy-hero-swiper__slide.swiper-slide.swiper-slide-active .ibomy-hero-carousel__card {
-    transform: scale(1.04);
+    transform: scale(1);
     opacity: 1;
-    box-shadow: 0 10px 28px rgb(0 0 0 / 22%);
   }
 
   &__card {
@@ -361,11 +371,18 @@ body {
     max-width: 100%;
     height: 100%;
     min-height: clamp(160px, 46vw, 248px);
-    border-radius: 14px;
-    border: 1px solid #000000;
+    border-radius: 8px;
+    border: 2px solid #000000;
     overflow: hidden;
     background: #ffffff;
     transform-origin: center center;
+    /* 无模糊「硬投影」右下偏移，仿参考图层次；全体卡片一致 */
+    box-shadow:
+      var(--ibomy-hero-card-pop-x)
+      var(--ibomy-hero-card-pop-y)
+      0
+      0
+      var(--ibomy-hero-card-pop-color);
     transition:
       transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
       opacity 0.35s ease,
@@ -412,6 +429,50 @@ body {
       rgb(255 255 255 / 22%) 0 6px,
       rgb(255 255 255 / 0%) 6px 12px
     );
+    border-bottom: 1px solid #ff8fff;
+  }
+
+  &__nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 12;
+    border: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    background: rgb(0 0 0 / 25%);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    &--prev {
+      left: 6px;
+    }
+
+    &--next {
+      right: 6px;
+    }
+
+    &:hover {
+      background: rgb(0 0 0 / 40%);
+    }
+
+    svg.d-icon {
+      color: #fff;
+      width: 14px;
+      height: 14px;
+      
+    }
+  }
+
+  .ibomy-hero-swiper .swiper-button-prev,
+  .ibomy-hero-swiper .swiper-button-next {
+    &::after {
+      display: none;
+    }
   }
 }
 
