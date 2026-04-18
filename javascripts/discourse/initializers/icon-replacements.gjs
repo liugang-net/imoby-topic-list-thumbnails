@@ -7,6 +7,7 @@ export default apiInitializer("0.8", (api) => {
   api.replaceIcon("share", "ibomy-share");
 
   api.replaceIcon("reply", "ibomy-comment");
+  api.replaceIcon("comment", "ibomy-comment");
   // api.replaceIcon("far-pen-to-square", "plus");
   api.replaceIcon("bookmark", "ibomy-bookmark");
   api.replaceIcon("far-bookmark", "ibomy-bookmark");
