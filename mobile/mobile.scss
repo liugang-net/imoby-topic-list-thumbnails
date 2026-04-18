@@ -177,7 +177,7 @@ body.category.navigation-category {
 }
 .topic-thumbnails-feed {
   .topic-list-item {
-    --ibomy-feed-inline-padding: 16px;
+    --ibomy-feed-inline-padding: 20px;
     padding: 1em var(--ibomy-feed-inline-padding);
   }
 
@@ -682,6 +682,7 @@ body.category.navigation-category {
 }
 
 // 创建帖子按钮右下方悬浮
+.mobile-view {
 .list-controls {
   #create-topic {
     display: none;
@@ -703,6 +704,7 @@ body.category.navigation-category {
       color: var(--d-button-primary-text-color);
     }
   }
+}
 }
 
 // 移动端回复按钮样式
