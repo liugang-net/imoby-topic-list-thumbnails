@@ -282,7 +282,7 @@ body {
 }
 
 // 头图轮播 + 公告均在 before-main-outlet；连接器顺序：ibomy-hero-carousel → ibomy-scroll-announcement（轮播在上、公告在下，正常文档流）
-// 居中「露边」卡片区：位移由 JS 按视口宽度计算；每张卡宽度约 78% 视口（见组件内 SLIDE_WIDTH_RATIO）
+// 居中「露边」：Swiper centeredSlides + slidesPerView auto；单张宽度见 .ibomy-hero-swiper__slide（约 78vw / 28rem）
 .ibomy-hero-carousel {
   position: relative;
   z-index: 4;
@@ -299,51 +299,57 @@ body {
   &__viewport {
     width: 100%;
     overflow: hidden;
-    touch-action: pan-y;
+    /* 横向轮播必须用 pan-x；pan-y 会把横向滑走交给纵向，导致只能单向滑或很难换页 */
+    touch-action: pan-x;
     -webkit-user-select: none;
     user-select: none;
-    // 给中间放大卡左右留一点余地，避免 scale 贴边被裁
     padding-inline: 0.35rem;
     box-sizing: border-box;
   }
 
-  &__track {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 16px;
-    width: max-content;
-    min-height: clamp(168px, 48vw, 260px);
-    box-sizing: border-box;
-    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
-    will-change: transform;
-  }
-
-  &__slide {
-    flex-shrink: 0;
+  &__slide-link {
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative;
-    z-index: 1;
-    min-width: min(78vw, 28rem);
+    width: 100%;
+    height: 100%;
     text-decoration: none;
     color: inherit;
     -webkit-tap-highlight-color: transparent;
   }
 
-  &__slide:not(.is-active) .ibomy-hero-carousel__card {
-    transform: scale(0.88);
-    opacity: 0.88;
+  .ibomy-hero-swiper {
+    min-height: clamp(168px, 48vw, 260px);
   }
 
-  &__slide.is-active {
+  /* 三段铺轨边界无动画跳回中间段：同时关掉 wrapper 与卡片过渡，避免 translate + scale 叠出一帧抖动 */
+  .ibomy-hero-swiper.ibomy-hero-swiper--deck-snap .swiper-wrapper {
+    transition: none !important;
+  }
+
+  .ibomy-hero-swiper.ibomy-hero-swiper--deck-snap .ibomy-hero-carousel__card {
+    transition: none;
+  }
+
+  .ibomy-hero-swiper__slide.swiper-slide {
+    box-sizing: border-box;
+    width: min(78vw, 28rem);
+    height: auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ibomy-hero-swiper__slide.swiper-slide:not(.swiper-slide-active) .ibomy-hero-carousel__card {
+    transform: scale(0.92);
+    opacity: 0.9;
+  }
+
+  .ibomy-hero-swiper__slide.swiper-slide.swiper-slide-active {
     z-index: 2;
   }
 
-  &__slide.is-active .ibomy-hero-carousel__card {
-    transform: scale(1.06);
+  .ibomy-hero-swiper__slide.swiper-slide.swiper-slide-active .ibomy-hero-carousel__card {
+    transform: scale(1.04);
     opacity: 1;
     box-shadow: 0 10px 28px rgb(0 0 0 / 22%);
   }
@@ -406,67 +412,6 @@ body {
       rgb(255 255 255 / 22%) 0 6px,
       rgb(255 255 255 / 0%) 6px 12px
     );
-  }
-
-  &__dots {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 10px;
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    z-index: 11;
-    pointer-events: none;
-
-    .ibomy-hero-carousel__dot {
-      pointer-events: auto;
-      width: 8px;
-      height: 8px;
-      padding: 0;
-      border-radius: 999px;
-      border: 0;
-      background: rgb(255 255 255 / 55%);
-      cursor: pointer;
-
-      &.is-active {
-        background: #fff;
-        width: 22px;
-      }
-    }
-  }
-
-  &__nav {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 2;
-    border: 0;
-    width: 36px;
-    height: 36px;
-    border-radius: 999px;
-    background: rgb(0 0 0 / 25%);
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-
-    &--prev {
-      left: 10px;
-    }
-
-    &--next {
-      right: 10px;
-    }
-
-    &:hover {
-      background: rgb(0 0 0 / 40%);
-    }
-
-    .d-icon {
-      color: #fff;
-    }
   }
 }
 
@@ -597,10 +542,12 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ibomy-hero-carousel__track,
-  .ibomy-hero-carousel__track--instant,
   .ibomy-hero-carousel__card {
     transition: none;
+  }
+
+  .ibomy-hero-swiper .swiper-wrapper {
+    transition-duration: 0.01ms !important;
   }
 }
 
