@@ -6,8 +6,8 @@ export default apiInitializer("0.8", (api) => {
   api.replaceIcon("d-post-share", "ibomy-share");
   api.replaceIcon("reply", "ibomy-comment");
   // api.replaceIcon("far-pen-to-square", "plus");
-  api.replaceIcon("bookmark", "star");
-  api.replaceIcon("far-bookmark", "far-star");
+  api.replaceIcon("bookmark", "ibomy-bookmark");
+  api.replaceIcon("far-bookmark", "ibomy-bookmark");
 
   // api.replaceIcon("chevron-down", "far-file-lines");
 });
