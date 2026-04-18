@@ -664,7 +664,7 @@ export default class MobileInlineSearch extends Component {
       >
         <div class="ibomy-mobile-inline-search__pill">
           <DButton
-            @icon="magnifying-glass"
+            @icon="ibomy-search"
             @title="搜索"
             class="btn search-icon ibomy-mobile-inline-search__icon-btn"
             @action={{this.submitSearch}}

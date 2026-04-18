@@ -749,7 +749,7 @@ export default class TopicListThumbnail extends Component {
           </div>
           <div class="post-actions">
             <button class="action-button" title="更多选项">
-              {{dIcon "ellipsis-h"}}
+              {{dIcon "ellipsis"}}
             </button>
           </div>
         </div>
