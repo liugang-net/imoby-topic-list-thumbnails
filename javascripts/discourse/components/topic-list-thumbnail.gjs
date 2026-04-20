@@ -243,6 +243,11 @@ export default class TopicListThumbnail extends Component {
     return this.topic.video_thumbnail;
   }
 
+  get topicImages() {
+    const images = this.topic?.images;
+    return Array.isArray(images) ? images : [];
+  }
+
   get images() {
     // 在信息流模式下，只使用新的images数组，不回退到thumbnails
     if (this.topicThumbnails.displayFeed) {
@@ -251,8 +256,8 @@ export default class TopicListThumbnail extends Component {
         return [this.videoThumbnail];
       }
       
-      if (this.topic.images && this.topic.images.length > 0) {
-        return this.topic.images
+      if (this.topicImages.length > 0) {
+        return this.topicImages
           .filter(img => img.url)
           .slice(0, 3)
           .map(img => this.getOptimizedImageUrl(img));
@@ -261,8 +266,8 @@ export default class TopicListThumbnail extends Component {
     }
     
     // 其他模式：优先使用新的images数组，如果没有则使用thumbnails
-    if (this.topic.images && this.topic.images.length > 0) {
-      return this.topic.images
+    if (this.topicImages.length > 0) {
+      return this.topicImages
         .filter(img => img.url)
         .slice(0, 3)
         .map(img => this.getOptimizedImageUrl(img));
@@ -302,15 +307,15 @@ export default class TopicListThumbnail extends Component {
   get totalImageCount() {
     // 在信息流模式下，只使用新的images数组
     if (this.topicThumbnails.displayFeed) {
-      if (this.topic.images && this.topic.images.length > 0) {
-        return this.topic.images.filter(img => img.url).length;
+      if (this.topicImages.length > 0) {
+        return this.topicImages.filter(img => img.url).length;
       }
       return 0;
     }
     
     // 其他模式：获取实际的总图片数量
-    if (this.topic.images && this.topic.images.length > 0) {
-      return this.topic.images.filter(img => img.url).length;
+    if (this.topicImages.length > 0) {
+      return this.topicImages.filter(img => img.url).length;
     }
     if (this.topic.thumbnails) {
       return this.topic.thumbnails.filter(t => t.url).length;
@@ -344,7 +349,7 @@ export default class TopicListThumbnail extends Component {
 
   getImageShape() {
     // 从topic.images数组中获取第一张图片的尺寸信息
-    const firstImage = this.topic.images?.[0];
+    const firstImage = this.topicImages[0];
     if (!firstImage) return "normal";
     
     // 检查firstImage是否是对象
