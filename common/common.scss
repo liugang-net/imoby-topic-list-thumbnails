@@ -2654,8 +2654,18 @@ body.category {
 }
 
 // 用户资料页：隐藏默认折叠信息区（与主题布局一致）
-#collapsed-info-panel {
+#collapsed-info-panel,.collapsed-info,.user-navigation {
   display: none;
+}
+.new-user-wrapper .user-navigation-secondary{
+  display: none;
+}
+.container:has(.user-main){
+  padding-top: 0;
+}
+.user-content{
+  margin-top: 1rem;
+
 }
 
 // 维护模式样式
