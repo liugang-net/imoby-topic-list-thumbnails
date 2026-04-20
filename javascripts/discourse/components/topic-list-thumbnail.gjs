@@ -210,6 +210,20 @@ export default class TopicListThumbnail extends Component {
     return this.user?.title;
   }
 
+  get userTrustLevelLabel() {
+    const raw = this.user?.trust_level;
+    const tl =
+      typeof raw === "number"
+        ? raw
+        : typeof raw === "string"
+          ? parseInt(raw, 10)
+          : NaN;
+    if (!Number.isFinite(tl) || tl < 0) {
+      return null;
+    }
+    return `Lv.${tl}`;
+  }
+
   get postTime() {
     // 使用主题创建时间，如果没有则使用最后回复时间
     return this.topic.created_at || this.topic.bumpedAt;
@@ -739,6 +753,9 @@ export default class TopicListThumbnail extends Component {
               <div class="user-info">
                 <div class="user-name">
                   <span class="user-link">{{this.userName}}</span>
+                  {{#if this.userTrustLevelLabel}}
+                    <span class="user-trust-level" aria-hidden="true">{{this.userTrustLevelLabel}}</span>
+                  {{/if}}
                 </div>
                 <div class="post-time">{{this.postTimeFormatted}}</div>
                 {{#if this.userTitle}}
