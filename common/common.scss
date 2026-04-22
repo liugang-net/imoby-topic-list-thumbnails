@@ -26,7 +26,7 @@
   --title-color--header:#ffffff;
   --title-color:#1a0e0c;
   color-scheme: light !important;
-  --heading-font-family:"Alibaba PuHuiTi", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --heading-font-family:"Source Han Sans CN", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
   --tile-background: url('https://dev.gexing8.com/images/common/tile.png') left top repeat;
   /** 搜索*/
  
@@ -81,10 +81,67 @@
   font-display: swap;
 }
 
+/* 思源黑体（Source Han Sans CN）— CDN；正文/标题已切到本字体，普惠体 @font-face 仍保留 */
+@font-face {
+  font-family: "Source Han Sans CN";
+  src: url("https://cdn.ibomy.com/static/fonts/SourceHanSansCN-ExtraLight.woff2") format("woff2");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Source Han Sans CN";
+  src: url("https://cdn.ibomy.com/static/fonts/SourceHanSansCN-Light.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Source Han Sans CN";
+  src: url("https://cdn.ibomy.com/static/fonts/SourceHanSansCN-Normal.woff2") format("woff2");
+  font-weight: 350;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Source Han Sans CN";
+  src: url("https://cdn.ibomy.com/static/fonts/SourceHanSansCN-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Source Han Sans CN";
+  src: url("https://cdn.ibomy.com/static/fonts/SourceHanSansCN-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Source Han Sans CN";
+  src: url("https://cdn.ibomy.com/static/fonts/SourceHanSansCN-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Source Han Sans CN";
+  src: url("https://cdn.ibomy.com/static/fonts/SourceHanSansCN-Heavy.woff2") format("woff2");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 .imoby-dfpyuan-w7,
 .imoby-dfpyuan-w9,
 .imoby-alibaba-puhuiti {
-  font-family: "Alibaba PuHuiTi", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-family: "Source Han Sans CN", "Alibaba PuHuiTi", "PingFang SC", "Microsoft YaHei", sans-serif;
 }
 
 .stroke-shadow {
@@ -99,7 +156,7 @@ body {
   background:var(--bm-body-bg-color) url(https://dev.gexing8.com/images/common/tile.png) repeat left top;
   background-size: 10px 10px;
   // font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Segoe UI, Arial, Roboto, "PingFang SC", "miui", "Hiragino Sans GB", "Microsoft Yahei", sans-serif;
-  font-family: "Alibaba PuHuiTi", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  font-family: "Source Han Sans CN", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
 
 }
 * {
