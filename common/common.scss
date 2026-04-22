@@ -1466,9 +1466,13 @@ body {
       .user-trust-level {
         flex: 0 0 auto;
         font-size: var(--font-down-2);
-        font-weight: 500;
-        color: #8a8a8a;
-        letter-spacing: 0.02em;
+        font-weight: 400;
+        background-color: #d7f3ff;
+        color: #0048a6;
+        padding: 2px 4px;
+        border-radius: 2px;
+        font-style: italic;
+        display: inline-block;
       }
     }
 
