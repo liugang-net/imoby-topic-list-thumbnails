@@ -3420,6 +3420,10 @@ html.mobile-view body.ibomy-mobile-inline-search--enabled .ibomy-mobile-inline-s
     box-sizing: border-box;
   }
 }
+
+#outlet:has(.private_message.ember-view) { 
+  padding-top: 0;
+}
 .private_message {
   &>.container {
     padding-top: 0;
