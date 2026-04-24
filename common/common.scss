@@ -3421,7 +3421,7 @@ html.mobile-view body.ibomy-mobile-inline-search--enabled .ibomy-mobile-inline-s
   }
 }
 
-#outlet:has(.private_message.ember-view) { 
+#outlet:has(#main-container>.private_message) { 
   padding-top: 0;
 }
 .private_message {
