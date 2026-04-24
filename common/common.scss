@@ -3420,3 +3420,18 @@ html.mobile-view body.ibomy-mobile-inline-search--enabled .ibomy-mobile-inline-s
     box-sizing: border-box;
   }
 }
+.private_message {
+  &>.container {
+    padding-top: 0;
+  }
+  .topic-statuses{
+    display: inline;
+  }
+
+#topic-title .title-wrapper {
+  padding: 0 10px;
+  .fancy-title {
+    display: inline;
+  }
+}
+}
