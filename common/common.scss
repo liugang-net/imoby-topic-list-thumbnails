@@ -223,7 +223,9 @@ body {
     }
   }
 }
-
+#main-outlet:has(.full-page-chat) {
+margin-bottom: 0;
+}
 
 .admin-content {
   padding: 1em;
