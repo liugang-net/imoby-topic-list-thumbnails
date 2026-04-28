@@ -3448,6 +3448,10 @@ html.mobile-view body.ibomy-mobile-inline-search--enabled .ibomy-mobile-inline-s
 .full-page-chat {
   background: #fff;
 }
+
+body.has-full-page-chat .d-header {
+  display: none;
+}
 .chat-header-icon{
   display: none;
 }
