@@ -1770,6 +1770,11 @@ body.category {
       &.pinned:not(:has(+ .pinned)) {
         margin-bottom: 0.5em;
       }
+      &.pinned{
+        .topic-line {
+          display: none;
+        }
+      }
     }
   }
 }
