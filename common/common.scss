@@ -3446,3 +3446,40 @@ html.mobile-view body.ibomy-mobile-inline-search--enabled .ibomy-mobile-inline-s
 .chat-header-icon{
   display: none;
 }
+.chat-message-container:not(.is-by-current-user) {
+  .chat-message-text {
+    align-self: flex-start;
+    display: inline-block;
+    max-width: 75%;
+    padding: 8px 12px;
+    border-radius: 0 12px 12px 12px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 6%);
+  }
+}
+
+.chat-message-container.is-by-current-user {
+  .chat-message {
+    flex-direction: row-reverse;
+    .chat-user-avatar{
+      justify-content: flex-end;
+    }
+  }
+
+  .chat-message-content {
+    align-items: flex-end;
+  }
+
+  .chat-message-info {
+    justify-content: flex-end;
+  }
+
+  .chat-message-text {
+    align-self: flex-end;
+    display: inline-block;
+    max-width: 75%;
+    padding: 8px 12px;
+    border-radius: 12px 0 12px 12px;
+    background: #95ec69;
+  }
+}
