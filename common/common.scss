@@ -3457,15 +3457,20 @@ body.has-full-page-chat .d-header {
 .chat-header-icon{
   display: none;
 }
+.chat-message-info{
+  display: none;
+}
+.chat-message .chat-message-text {
+  width: fit-content;
+  border-radius: 5px;
+  display: inline-block;
+  max-width: 75%;
+  padding: 8px 12px;
+}
 .chat-message-container:not(.is-by-current-user) {
   .chat-message-text {
     align-self: flex-start;
-    display: inline-block;
-    max-width: 75%;
-    padding: 8px 12px;
-    border-radius: 0 12px 12px 12px;
-    background: #fff;
-    box-shadow: 0 1px 2px rgb(0 0 0 / 6%);
+    background: #eeeef0;
   }
 }
 
@@ -3487,10 +3492,6 @@ body.has-full-page-chat .d-header {
 
   .chat-message-text {
     align-self: flex-end;
-    display: inline-block;
-    max-width: 75%;
-    padding: 8px 12px;
-    border-radius: 12px 0 12px 12px;
-    background: #95ec69;
+    background: #9df29f;
   }
 }
