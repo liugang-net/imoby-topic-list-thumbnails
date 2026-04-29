@@ -3460,12 +3460,18 @@ body.has-full-page-chat .d-header {
 .chat-message-info{
   display: none;
 }
+.c-navbar__back-button {
+  min-width: 16px;
+}
 .chat-message .chat-message-text {
   width: fit-content;
   border-radius: 5px;
   display: inline-block;
-  max-width: 75%;
+  max-width: 80%;
   padding: 4px 8px;
+}
+.chat-message-container {
+  --message-left-width: 38px;
 }
 .chat-message-container:not(.is-by-current-user) {
   .chat-message-text {
