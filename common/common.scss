@@ -3470,8 +3470,12 @@ body.has-full-page-chat .d-header {
   max-width: 80%;
   padding: 4px 8px;
 }
-.chat-message-container {
-  --message-left-width: 38px;
+// .chat-message-container {
+//   --message-left-width: 38px;
+// }
+.chat-message .chat-message-avatar .chat-user-avatar .chat-user-avatar__container .avatar{
+  width: 36px;
+  height: 36px;
 }
 .all-loaded-message {
   display: none;
