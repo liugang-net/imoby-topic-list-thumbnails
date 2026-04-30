@@ -3504,3 +3504,12 @@ body.has-full-page-chat .d-header {
     background: #9df29f;
   }
 }
+
+@media (min-width: 600px) {
+.channels-list-container{
+  margin: 0 10px 10px 10px;
+    .chat-channel-row {
+      padding: 5px 0;
+    }
+  }
+}
