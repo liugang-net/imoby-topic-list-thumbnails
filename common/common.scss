@@ -3472,9 +3472,9 @@ body.has-full-page-chat .d-header {
 }
 .chat-message-container {
   --message-left-width: 38px;
-  .all-loaded-message {
-    display: none;
-  }
+}
+.all-loaded-message {
+  display: none;
 }
 .chat-message-container:not(.is-by-current-user) {
   .chat-message-text {
