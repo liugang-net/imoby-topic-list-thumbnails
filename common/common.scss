@@ -3517,3 +3517,21 @@ body.has-full-page-chat .d-header {
     }
   }
 }
+.chat-composer-upload__remove-btn{
+  width: 30px;
+}
+
+.chat-message-collapser {
+  .chat-uploads {
+  video.chat-video-upload {
+    display: block;
+    width: fit-content;
+    max-height: 300px;
+    height: auto;
+
+  }
+  img.chat-img-upload:not(.emoji) {
+
+  }
+}}
+
