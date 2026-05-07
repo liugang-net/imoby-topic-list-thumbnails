@@ -3524,20 +3524,20 @@ body.has-full-page-chat .d-header {
 .chat-message-collapser {
   .chat-uploads {
   video.chat-video-upload {
-    display: block;
-    width: fit-content;
-    max-height: 260px;
-    height: auto;
+    display: block !important;
+    width: fit-content !important;
+    max-height: 260px !important;
+    height: auto !important;
     border-radius: 4px;
 
   }
   img.chat-img-upload:not(.emoji) {
-    display: block;
+    display: block !important;
     border-radius: 4px;
-    max-height: 260px;
-    min-width: 90px;
-    width: fit-content;
-    height: auto;
+    max-height: 260px !important;
+    min-width: 90px !important;
+    width: fit-content !important;
+    height: auto !important;
   }
 }}
 
