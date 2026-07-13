@@ -1496,29 +1496,33 @@ margin-bottom: 0;
   }
 
   .topic-line {
-    // 整条斜切：前段实色 + 后段条纹；条纹在本地用竖向条，skew 后与分界边平行（角度一致）
+    // 一条细点线贯穿，左侧叠一个斜切的粗矩形
     --topic-line-skew: -45deg;
-    --topic-line-solid: clamp(2.5rem, 10%, 7rem);
+    --topic-line-solid: clamp(2.5rem, 12%, 7rem);
+    --topic-line-thick: 3px;
+    position: relative;
     width: 100%;
-    height: 2px;
+    height: 1px;
     margin-top: 10px;
     margin-bottom: 10px;
     box-sizing: border-box;
-    transform: skewX(var(--topic-line-skew));
-    transform-origin: left center;
 
-    background-image:
-      linear-gradient(#000, #000),
-      repeating-linear-gradient(
-        90deg,
-        #000 0 4px,
-        #fff 4px 6px
-      );
-    background-size:
-      var(--topic-line-solid) 100%,
-      100% 100%;
-    background-position: 0 0, 2px 0;
-    background-repeat: no-repeat, repeat;
+    background-image: linear-gradient(#000, #000);
+    background-size: 100% 1px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: var(--topic-line-solid);
+      height: var(--topic-line-thick);
+      background: #000;
+      transform: skewX(var(--topic-line-skew));
+      transform-origin: left bottom;
+    }
   }
 
   // 主题内容区域
