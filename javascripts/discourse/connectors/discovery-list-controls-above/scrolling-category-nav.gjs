@@ -321,7 +321,7 @@ export default class ScrollingCategoryNav extends Component {
               @fallbackPlacements={{FILTER_MENU_FALLBACK_PLACEMENTS}}
               @identifier="ibomy-scrolling-category-nav-home-menu"
               @onRegisterApi={{this.onRegisterFilterMenuApi}}
-              @triggerClass="nav-item stroke-shadow nav-item--home scrolling-category-nav__home-menu-trigger"
+              @triggerClass="nav-item nav-item--home scrolling-category-nav__home-menu-trigger"
               @contentClass="scrolling-category-nav__filter-panel"
             >
               <:trigger>
@@ -363,7 +363,7 @@ export default class ScrollingCategoryNav extends Component {
               </:content>
             </DMenu>
             {{#each this.categories as |category|}}
-              <a href={{this.categoryUrl category}} class="nav-item stroke-shadow">
+              <a href={{this.categoryUrl category}} class="nav-item">
                 <span class="nav-item__unskew">{{category.name}}</span>
               </a>
             {{/each}}
