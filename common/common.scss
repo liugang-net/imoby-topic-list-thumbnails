@@ -1350,7 +1350,7 @@ margin-bottom: 0;
     }
 
     .topic-stats .stat-share.stat-share--pill {
-      margin-right: calc(-1 * var(--ibomy-feed-inline-padding));
+      margin-right: 0;
     }
   }
 
@@ -1814,9 +1814,9 @@ body.category {
 
   .topic-stats {
     display: flex;
-    gap: 1.5em;
+    gap: 2.25em;
     align-items: center;
-    color: #545455;
+    color: #979b9e;
     font-size: 0.9em;
 
     .stat {
@@ -1832,6 +1832,7 @@ body.category {
 
       .d-icon {
         font-size: 1.25em;
+        color: #82878c;
       }
 
       .number {
@@ -1855,7 +1856,12 @@ body.category {
         }
 
         &.disabled {
-          color: var(--primary-300);
+          color: #c7cbce;
+          cursor: default;
+
+          .d-icon {
+            color: #c7cbce;
+          }
         }
 
         &.liked {
@@ -1919,40 +1925,38 @@ body.category {
       &.stat-share.stat-share--pill {
         gap: 0.35em;
         align-items: center;
-        padding: 0.35em 0.85em 0.35em 0.65em;
+        padding: 0;
         border: none;
         cursor: pointer;
         font: inherit;
-        height: 30px;
         font-weight: 400;
         font-size: 0.9em;
         line-height: 1.2;
-        color: #ffffff;
-        background: #ff3cf8;
-        border-radius: 999px 10px 10px 999px;
+        color: #979b9e;
+        background: none;
+        border-radius: 0;
         box-shadow: none;
         white-space: nowrap;
         flex-shrink: 0;
 
         .d-icon {
-          color: #ffffff;
-          font-size: 20px;
-          font-weight: 700;
+          color: #82878c;
+          font-size: 1.25em;
         }
 
         .stat-share__label {
-          color: #ffffff;
+          color: #979b9e;
         }
 
         &:hover,
         &:focus-visible {
-          color: #ffffff;
-          background: #e02ee0;
+          color: var(--primary);
+          background: none;
           filter: none;
 
           .d-icon,
           .stat-share__label {
-            color: #ffffff;
+            color: var(--primary);
           }
         }
       }
@@ -1965,7 +1969,7 @@ body.category {
 
     a,
     a:visited {
-      color: #545455;
+      color: #979b9e;
     }
 
     a:hover,
