@@ -696,7 +696,7 @@ export default class MobileInlineSearch extends Component {
                   {{#if this.hotItems.length}}
                     <div class="ibomy-mobile-inline-search__section">
                       <div class="ibomy-mobile-inline-search__section-head">
-                        <span class="ibomy-mobile-inline-search__section-title">bomi热搜</span>
+                        <span class="ibomy-mobile-inline-search__section-title">Bomi热搜</span>
                       </div>
                       <div class="ibomy-mobile-inline-search__hot-grid">
                         {{#each this.hotItems as |item|}}
@@ -729,6 +729,10 @@ export default class MobileInlineSearch extends Component {
                             class="btn-flat ibomy-mobile-inline-search__icon-action"
                             @action={{this.clearHistory}}
                           />
+                          <span
+                            class="ibomy-mobile-inline-search__section-actions-divider"
+                            aria-hidden="true"
+                          ></span>
                           <DButton
                             @icon={{if this.historyExpanded "angle-down" "angle-right"}}
                             @title={{if this.historyExpanded "收起" "展开"}}
