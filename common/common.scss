@@ -3339,22 +3339,39 @@ body.ibomy-mobile-inline-search--enabled .ibomy-mobile-inline-search {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    box-sizing: border-box;
     min-width: 1.1em;
     padding: 0.05em 0.2em;
     font-size: 0.7em;
     font-weight: 700;
-    line-height: 1.2;
+    line-height: 1;
     border-radius: 3px;
     color: var(--secondary);
   }
 
+  // PS 导出 SVG（82×66，右缘斜切）；热/新共用 path，仅 fill/stroke 不同
+  // 注意：min-width/height/padding 用 em 相对本元素 font-size，
+  // 调字背景比例只改这些倍数，不要改 font-size（否则整体等比缩放，比例不变）
+  .ibomy-mobile-inline-search__hot-badge--hot,
+  .ibomy-mobile-inline-search__hot-badge--new {
+    min-width: 3em;
+    height: 2.15em;
+    padding: 0 0.75em 0 0.6em;
+    border-radius: 0;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: center;
+  }
+
   .ibomy-mobile-inline-search__hot-badge--hot {
-    background: #fd3bfb;
+    color: #fff;
+    background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2082%2066%27%3E%3Cpath%20fill-rule%3D%27evenodd%27%20stroke-width%3D%274%27%20stroke%3D%27rgb%28218%2C21%2C211%29%27%20fill%3D%27rgb%28254%2C60%2C247%29%27%20d%3D%27M17.1%2C8%20L64%2C8%20C69.523%2C8%2074%2C11.86%2074%2C16.621%20C74%2C16.621%2063.174%2C46.579%2062%2C49.379%20C60.826%2C52.18%2058.101%2C57.1%2051%2C57.1%20L17.1%2C57.1%20C12.477%2C57.1%207.1%2C54.14%207.1%2C49.379%20L7.1%2C16.621%20C7.1%2C11.86%2012.477%2C8%2017.1%2C8%20Z%27%2F%3E%3C%2Fsvg%3E");
   }
 
   .ibomy-mobile-inline-search__hot-badge--new {
-    background: #05f8f6;
-    color: #fe3dfa !important;
+    color: #000;
+    background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2082%2066%27%3E%3Cpath%20fill-rule%3D%27evenodd%27%20stroke-width%3D%274%27%20stroke%3D%27rgb%2817%2C221%2C214%29%27%20fill%3D%27rgb%2837%2C242%2C235%29%27%20d%3D%27M17.1%2C8%20L64%2C8%20C69.523%2C8%2074%2C11.86%2074%2C16.621%20C74%2C16.621%2063.174%2C46.579%2062%2C49.379%20C60.826%2C52.18%2058.101%2C57.1%2051%2C57.1%20L17.1%2C57.1%20C12.477%2C57.1%207.1%2C54.14%207.1%2C49.379%20L7.1%2C16.621%20C7.1%2C11.86%2012.477%2C8%2017.1%2C8%20Z%27%2F%3E%3C%2Fsvg%3E");
   }
 
   .ibomy-mobile-inline-search__hot-badge--exclusive {
