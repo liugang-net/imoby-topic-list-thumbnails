@@ -331,6 +331,7 @@ export default class ScrollingCategoryNav extends Component {
                   <span
                     class="scrolling-category-nav__home-menu-trigger-label"
                   >{{this.triggerLabel}}</span>
+                  <span class="scrolling-category-nav__home-menu-trigger-caret"></span>
                 </span>
               </:trigger>
               <:content>

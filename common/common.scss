@@ -2104,13 +2104,25 @@ body.category {
   }
 
   .scrolling-category-nav__home-menu-trigger-inner {
-    gap: 0.35em;
+    gap: 0.15em;
   }
 
   .scrolling-category-nav__home-menu-trigger-inner .d-icon {
     font-size: 0.65em;
     opacity: 0.85;
     color: inherit;
+  }
+
+  // 下拉指示三角，纯 CSS 三角形（border 技巧），不用图标字体
+  // 颜色跟随文字色（currentColor）：未选中白色，选中态（.active）黑色
+  .scrolling-category-nav__home-menu-trigger-caret {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: 1px;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 5px solid currentColor;
   }
 
   .nav-items {
