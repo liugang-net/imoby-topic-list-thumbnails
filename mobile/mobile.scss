@@ -454,8 +454,12 @@ body.category.navigation-category {
 
   .nav-items {
     display: flex;
+    align-items: center;
     min-width: max-content;
-    padding: 4px 0.5rem 4px 0.5rem;
+    // 固定行高（容纳选中态 30px + 1px 上下边框），避免选中/取消选中时
+    // .nav-item 高度动画（26px<->30px）撑大或缩小整条导航栏，引发下方内容抖动
+    height: 34px;
+    padding: 0 0.5rem;
   }
 
   .nav-item {
@@ -710,6 +714,10 @@ body.category.navigation-category {
       color: var(--d-button-primary-text-color);
     }
   }
+  .container {
+    height: 0;
+  }
+  
 }
 }
 
