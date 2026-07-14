@@ -204,7 +204,8 @@ body {
 
 .list-controls {
   .container {
-    background-color: transparent;
+    background: #fff url(https://dev.gexing8.com/images/common/tile.png) repeat left top;
+    background-size: 10px 10px;
     padding: 0;
   }
 }
@@ -2015,7 +2016,7 @@ body.category {
   border-top: 2px solid #000000;
   border-bottom: 2px solid #000000;
   border-radius: 0;
-  margin: 0 auto 1em auto;
+  // margin: 0 auto 1em auto;
   padding: 4px;
   max-width: calc(var(--d-sidebar-width) + var(--d-max-width));
   position: relative;
@@ -2443,7 +2444,8 @@ body.category {
   position: relative;
   padding: 1em 1em 0 1em;
   min-height: 150px; // 预设最小高度，避免抖动
-  background-color: var(--bm-card-bg-color);
+  background: #fff url(https://dev.gexing8.com/images/common/tile.png) repeat left top;
+  background-size: 10px 10px;
 
   .cfc-nav {
     position: absolute;
