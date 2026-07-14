@@ -412,6 +412,7 @@ body.category.navigation-category {
   box-shadow: none;
   border-left: none;
   border-right: none;
+  border-bottom: 5px solid #fcf905;
   transform: translateZ(0);
   will-change: transform;
 
@@ -450,6 +451,9 @@ body.category.navigation-category {
   .nav-items-scroll > .fk-d-menu__trigger.scrolling-category-nav__home-menu-trigger {
     flex-shrink: 0;
     font-size: 10px;
+    // 核心 .btn 是 border-box，边框会从 height 里扣掉，导致比旁边 <a> 分类项（content-box）矮；
+    // 改回 content-box 让边框加在 height 外面，和分类项保持同样的视觉高度
+    box-sizing: content-box;
   }
 
   .nav-items {

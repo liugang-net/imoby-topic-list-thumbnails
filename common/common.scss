@@ -2012,8 +2012,9 @@ body.category {
 
   display: flex;
   align-items: center;
+  background: #ff3cf8;
 
-  // border-bottom: 7px solid #FCF905;
+  border-bottom: 5px solid #fcf905;
   border-radius: 0;
   // margin: 0 auto 1em auto;
   padding: 4px;
@@ -2063,6 +2064,9 @@ body.category {
     align-items: stretch;
     gap: 0.35em;
     min-width: 0;
+    // 整体下移，叠在导航栏底部的黄线上；放在 .nav-container__scroll 外层平移，
+    // 避免在内部横向滚动容器（overflow-x: auto）里被裁切
+    transform: translateY(14px);
   }
 
   .nav-container__scroll {
@@ -2154,7 +2158,7 @@ body.category {
     // }
 
     &.active {
-      background: #ffeb00;
+      background: #fcf905;
       color: #000000;
       // // 添加蓝色下划线指示条
       // &::after {

@@ -246,8 +246,9 @@ export default class ScrollingCategoryNav extends Component {
     };
   }
 
-  get homeLabel() {
-    return i18n("js.home");
+  // 触发器文字跟随当前所选项：默认"最新"，切到热门/分类后显示对应文字
+  get triggerLabel() {
+    return i18n(`filters.${this.currentFilter}.title`);
   }
 
   isHomeActivePath(pathname) {
@@ -317,6 +318,7 @@ export default class ScrollingCategoryNav extends Component {
             <DMenu
               @modalForMobile={{false}}
               @placement="bottom-start"
+              @offset={{0}}
               @visibilityOptimizer="none"
               @fallbackPlacements={{FILTER_MENU_FALLBACK_PLACEMENTS}}
               @identifier="ibomy-scrolling-category-nav-home-menu"
@@ -328,7 +330,7 @@ export default class ScrollingCategoryNav extends Component {
                 <span class="scrolling-category-nav__home-menu-trigger-inner">
                   <span
                     class="scrolling-category-nav__home-menu-trigger-label"
-                  >{{this.homeLabel}}</span>
+                  >{{this.triggerLabel}}</span>
                 </span>
               </:trigger>
               <:content>
