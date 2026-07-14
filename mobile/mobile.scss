@@ -469,7 +469,7 @@ body.category.navigation-category {
     transition: all 0.3s ease;
     position: relative;
     font-size: 10px;
-    height: 20px;
+    height: 26px;
     box-shadow: 1px 1px 0 rgba(0, 0, 0, 1);
     // 去掉移动端点击时的蓝色系统颜色
     -webkit-tap-highlight-color: transparent;
@@ -479,8 +479,9 @@ body.category.navigation-category {
     -ms-user-select: none;
     user-select: none;
 
-   
-
+    &.active {
+      height: 30px;
+    }
 
     .count {
       font-size: 0.75em;
