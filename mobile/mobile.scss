@@ -450,10 +450,14 @@ body.category.navigation-category {
 
   .nav-items-scroll > .fk-d-menu__trigger.scrolling-category-nav__home-menu-trigger {
     flex-shrink: 0;
-    font-size: 10px;
+    font-size: 14px;
     // 核心 .btn 是 border-box，边框会从 height 里扣掉，导致比旁边 <a> 分类项（content-box）矮；
     // 改回 content-box 让边框加在 height 外面，和分类项保持同样的视觉高度
     box-sizing: content-box;
+
+    &.active {
+      font-size: 16px;
+    }
   }
 
   .nav-items {
@@ -476,7 +480,7 @@ body.category.navigation-category {
     white-space: nowrap;
     transition: all 0.3s ease;
     position: relative;
-    font-size: 10px;
+    font-size: 14px;
     height: 26px;
     box-shadow: 1px 1px 0 rgba(0, 0, 0, 1);
     // 去掉移动端点击时的蓝色系统颜色
@@ -488,6 +492,7 @@ body.category.navigation-category {
     user-select: none;
 
     &.active {
+      font-size: 16px;
       height: 30px;
     }
 
@@ -775,5 +780,4 @@ body.category.navigation-category {
     padding: 1em 1em;
   }
 }
-
 
