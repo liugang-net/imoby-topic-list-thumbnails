@@ -124,11 +124,6 @@ scrolling_nav_show_on_mobile:
   default: true
   type: bool
 
-announcement_background_color:
-  default: "#e3f2fd"
-  type: string
-  client: true
-
 hero_carousel_enabled:
   default: false
   type: bool
@@ -145,19 +140,18 @@ hero_carousel_slides:
   schema:
     name: slide
     properties:
-      image_url:
+      background_image_url:
+        type: string
+      character_image_url:
+        type: string
+      copy_image_url:
+        type: string
+      panel_title:
         type: string
       link_url:
         type: string
       alt_text:
         type: string
-      caption:
-        type: string
-
-hero_carousel_items:
-  default: ""
-  type: string
-  client: true
 
 # 维护模式设置
 maintenance_mode_enabled:

@@ -1,12 +1,15 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
-import { modifier } from "ember-modifier";
+import { fn } from "@ember/helper";
+import { on } from "@ember/modifier";
 import { service } from "@ember/service";
+import { modifier } from "ember-modifier";
 import discourseLater from "discourse/lib/later";
 import bodyClass from "discourse/helpers/body-class";
 import dIcon from "discourse/helpers/d-icon";
 import { bind } from "discourse/lib/decorators";
 import getURL, { withoutPrefix } from "discourse/lib/get-url";
+import { eq, gt } from "discourse/truth-helpers";
 
 const HERO_CAROUSEL_EXCLUDED_PREFIXES = [
   "/login",
@@ -58,23 +61,7 @@ function isHeroCarouselPath(pathname) {
   });
 }
 
-function normalizeCaption(row) {
-  if (!row || typeof row !== "object") {
-    return "";
-  }
-  const c =
-    row.caption ??
-    row.title ??
-    row.label ??
-    row.heading ??
-    row.subtitle;
-  if (typeof c !== "string") {
-    return "";
-  }
-  return c.trim();
-}
-
-function parseObjectSlides(raw) {
+function parseSlides(raw) {
   if (!Array.isArray(raw) || raw.length === 0) {
     return [];
   }
@@ -83,75 +70,33 @@ function parseObjectSlides(raw) {
       if (!row || typeof row !== "object") {
         return null;
       }
-      const image = row.image_url ?? row.image ?? row.img ?? row.src;
-      if (image == null || String(image).trim() === "") {
+      const background = row.background_image_url;
+      if (background == null || String(background).trim() === "") {
         return null;
       }
-      let href = row.link_url ?? row.href ?? row.link ?? "/";
-      if (typeof href !== "string") {
+      let href = row.link_url;
+      if (typeof href !== "string" || !href.trim()) {
         href = "/";
       }
-      const alt =
-        typeof row.alt_text === "string"
-          ? row.alt_text
-          : typeof row.alt === "string"
-            ? row.alt
-            : "";
-      const caption = normalizeCaption(row);
+      const alt = typeof row.alt_text === "string" ? row.alt_text : "";
+      const title =
+        typeof row.panel_title === "string" ? row.panel_title.trim() : "";
+      const character =
+        typeof row.character_image_url === "string"
+          ? row.character_image_url.trim()
+          : "";
+      const copy =
+        typeof row.copy_image_url === "string"
+          ? row.copy_image_url.trim()
+          : "";
       return {
-        image: String(image).trim(),
-        href: href.trim(),
+        background: String(background).trim(),
+        character,
+        copy,
+        title,
         alt,
-        caption,
+        href: href.trim(),
       };
-    })
-    .filter(Boolean);
-}
-
-function parseHeroItems(raw) {
-  if (!raw || typeof raw !== "string" || !raw.trim()) {
-    return [];
-  }
-  const t = raw.trim();
-  try {
-    const j = JSON.parse(t);
-    if (Array.isArray(j)) {
-      return j
-        .map((row) => {
-          if (!row || typeof row !== "object") {
-            return null;
-          }
-          const image = row.image || row.img || row.src;
-          if (!image || typeof image !== "string") {
-            return null;
-          }
-          let href = row.href || row.link || "/";
-          if (typeof href !== "string") {
-            href = "/";
-          }
-          const alt = typeof row.alt === "string" ? row.alt : "";
-          const caption = normalizeCaption(row);
-          return { image: image.trim(), href: href.trim(), alt, caption };
-        })
-        .filter(Boolean);
-    }
-  } catch {
-    // fall through to line format
-  }
-  return t
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line) => {
-      const parts = line.split("|").map((s) => s.trim());
-      const image = parts[0];
-      if (!image) {
-        return null;
-      }
-      const href = parts[1] || "/";
-      const alt = parts[2] || "";
-      const caption = parts[3] || "";
-      return { image, href, alt, caption };
     })
     .filter(Boolean);
 }
@@ -183,168 +128,15 @@ function waitForSwiper(onReady, attempt = 0) {
 
 export default class IbomyHeroCarousel extends Component {
   @service router;
+  @service site;
 
   @tracked _routeEpoch = 0;
+  @tracked activeIndex = 0;
 
   constructor() {
     super(...arguments);
     this.router?.on("routeDidChange", this, this.onHeroRouteDidChange);
   }
-
-  get rawItems() {
-    const fromObjects = parseObjectSlides(settings.hero_carousel_slides);
-    if (fromObjects.length > 0) {
-      return fromObjects;
-    }
-    return parseHeroItems(settings.hero_carousel_items || "");
-  }
-
-  get slides() {
-    return this.rawItems.map((s) => ({
-      ...s,
-      resolvedHref: resolveHref(s.href),
-    }));
-  }
-
-  get shouldShow() {
-    this._routeEpoch;
-    if (!settings.hero_carousel_enabled || this.slides.length === 0) {
-      return false;
-    }
-    return isHeroCarouselPath(withoutPrefix(window.location.pathname) || "/");
-  }
-
-  get intervalSec() {
-    const n = parseInt(String(settings.hero_carousel_interval_seconds), 10);
-    return Number.isFinite(n) && n >= 2 && n <= 60 ? n : 6;
-  }
-
-  get intervalSecForSwiper() {
-    const n = Number(this.intervalSec);
-    return Number.isFinite(n) && n >= 2 && n <= 60 ? n : 6;
-  }
-
-  get showNav() {
-    return this.slides.length > 1;
-  }
-
-  /** 多页时在 DOM 上铺三段相同序列，配合 initialSlide=n 与无动画跳回，替代 Swiper loop（与 auto+centered 不兼容）。 */
-  get deckSlides() {
-    const s = this.slides;
-    if (s.length === 0) {
-      return [];
-    }
-    const tag = (it, i) => ({ ...it, __deckKey: `${i}-${it.image}-${it.resolvedHref}` });
-    if (s.length === 1) {
-      return [tag(s[0], 0)];
-    }
-    return [...s, ...s, ...s].map((it, i) => tag(it, i));
-  }
-
-  // _routeEpoch / 逻辑张数 / deck 张数 / 间隔：变化则 modifier teardown 并重建 Swiper。
-  swiperInit = modifier((element, [epoch, logicalLen, deckLen, intervalSec]) => {
-    void epoch;
-    const n = Number(logicalLen);
-    const total = Number(deckLen);
-    if (!element || !Number.isFinite(n) || n < 1 || !Number.isFinite(total) || total < 1) {
-      return;
-    }
-
-    let swiper = null;
-    let destroyed = false;
-
-    const intervalMs = Number(intervalSec) * 1000;
-    const useTriple = n > 1 && total === n * 3;
-    const initialSlide = useTriple ? n : 0;
-
-    const mount = (SwiperCtor) => {
-      if (destroyed || !element.isConnected) {
-        return;
-      }
-
-      const prevEl = element.querySelector(".ibomy-hero-swiper__button-prev");
-      const nextEl = element.querySelector(".ibomy-hero-swiper__button-next");
-
-      swiper = new SwiperCtor(element, {
-        slidesPerView: "auto",
-        centeredSlides: true,
-        slidesPerGroup: 1,
-        spaceBetween: 0,
-        speed: 450,
-        initialSlide,
-        watchOverflow: n === 1,
-        loop: false,
-        rewind: false,
-        slideToClickedSlide: n >= 2,
-        preventClicks: false,
-        preventClicksPropagation: false,
-        autoplay:
-          n >= 2
-            ? {
-                delay: intervalMs,
-                disableOnInteraction: false,
-                pauseOnMouseEnter: true,
-              }
-            : false,
-        a11y: {
-          enabled: true,
-        },
-        navigation:
-          n >= 2 && prevEl && nextEl
-            ? {
-                prevEl,
-                nextEl,
-              }
-            : false,
-        on: {
-          slideChangeTransitionEnd(s) {
-            if (destroyed || !useTriple || s.destroyed) {
-              return;
-            }
-            const i = s.activeIndex;
-            if (i >= n && i < 2 * n) {
-              return;
-            }
-            // 无动画 jump：关 wrapper + 卡片过渡；slideTo 关回调避免连锁 transitionEnd；稍晚再恢复过渡以免首帧抖
-            element.classList.add("ibomy-hero-swiper--deck-snap");
-            if (i < n) {
-              s.slideTo(i + n, 0, false);
-            } else if (i >= 2 * n) {
-              s.slideTo(i - n, 0, false);
-            }
-            s.update?.();
-            requestAnimationFrame(() => {
-              requestAnimationFrame(() => {
-                if (destroyed || !element.isConnected) {
-                  return;
-                }
-                discourseLater(() => {
-                  if (!destroyed && element.isConnected) {
-                    element.classList.remove("ibomy-hero-swiper--deck-snap");
-                  }
-                }, 48);
-              });
-            });
-          },
-        },
-      });
-    };
-
-    waitForSwiper((SwiperCtor) => {
-      if (destroyed) {
-        return;
-      }
-      discourseLater(() => mount(SwiperCtor), 0);
-    });
-
-    return () => {
-      destroyed = true;
-      if (swiper) {
-        swiper.destroy(true, true);
-        swiper = null;
-      }
-    };
-  });
 
   willDestroy() {
     super.willDestroy(...arguments);
@@ -356,6 +148,188 @@ export default class IbomyHeroCarousel extends Component {
     this._routeEpoch++;
   }
 
+  get rawSlides() {
+    return parseSlides(settings.hero_carousel_slides);
+  }
+
+  get slides() {
+    return this.rawSlides.map((s, i) => ({
+      ...s,
+      resolvedHref: resolveHref(s.href),
+      number: String(i + 1).padStart(2, "0"),
+      __key: `${i}-${s.background}`,
+    }));
+  }
+
+  get shouldShow() {
+    this._routeEpoch;
+    if (!settings.hero_carousel_enabled || this.slides.length === 0) {
+      return false;
+    }
+    return isHeroCarouselPath(withoutPrefix(window.location.pathname) || "/");
+  }
+
+  get intervalSecForSwiper() {
+    const n = parseInt(String(settings.hero_carousel_interval_seconds), 10);
+    return Number.isFinite(n) && n >= 2 && n <= 60 ? n : 6;
+  }
+
+  get showPagination() {
+    return this.slides.length > 1;
+  }
+
+  get activeSlide() {
+    return this.slides[this.activeIndex] || this.slides[0] || null;
+  }
+
+  get announcements() {
+    return this.site?.category_announcements || [];
+  }
+
+  get showNotice() {
+    return this.announcements.length > 0;
+  }
+
+  get noticeUrl() {
+    return (announcement) => getURL(`/t/${announcement.slug}/${announcement.id}`);
+  }
+
+  swiperInit = modifier((element, [epoch, slideCount, intervalSec]) => {
+    void epoch;
+    const n = Number(slideCount);
+    if (!element || !Number.isFinite(n) || n < 1) {
+      return;
+    }
+
+    let swiper = null;
+    let destroyed = false;
+    const intervalMs = Number(intervalSec) * 1000;
+
+    const mount = (SwiperCtor) => {
+      if (destroyed || !element.isConnected) {
+        return;
+      }
+      swiper = new SwiperCtor(element, {
+        loop: n > 1,
+        speed: 700,
+        effect: "fade",
+        fadeEffect: { crossFade: true },
+        parallax: true,
+        allowTouchMove: n > 1,
+        a11y: { enabled: true },
+        autoplay:
+          n > 1
+            ? {
+                delay: intervalMs,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true,
+              }
+            : false,
+        on: {
+          slideChange: (s) => {
+            if (destroyed) {
+              return;
+            }
+            this.activeIndex = s.realIndex ?? 0;
+          },
+        },
+      });
+      this._swiper = swiper;
+      this.activeIndex = swiper.realIndex ?? 0;
+    };
+
+    waitForSwiper((SwiperCtor) => {
+      if (destroyed) {
+        return;
+      }
+      discourseLater(() => mount(SwiperCtor), 0);
+    });
+
+    return () => {
+      destroyed = true;
+      this._swiper = null;
+      if (swiper) {
+        swiper.destroy(true, true);
+        swiper = null;
+      }
+    };
+  });
+
+  panelSwap = modifier((element, [key]) => {
+    void key;
+    element.classList.remove("ibomy-hero-carousel__panel-fade");
+    void element.offsetWidth;
+    element.classList.add("ibomy-hero-carousel__panel-fade");
+  });
+
+  // 通知条内容整行上下滚动切换；每 3s 滚动一条，到末尾无动画跳回开头，鼠标悬停暂停
+  noticeScroll = modifier((element, [count]) => {
+    const n = Number(count);
+    const list = element?.querySelector(".ibomy-hero-carousel__notice-list");
+    if (!element || !list || !Number.isFinite(n) || n <= 1) {
+      return;
+    }
+
+    let index = 0;
+    let timer = null;
+    let destroyed = false;
+
+    const scrollToNext = () => {
+      index++;
+      const itemHeight = element.getBoundingClientRect().height;
+      list.style.transform = `translateY(${-index * itemHeight}px)`;
+
+      if (index >= n) {
+        discourseLater(() => {
+          if (destroyed) {
+            return;
+          }
+          index = 0;
+          list.style.transition = "none";
+          list.style.transform = "translateY(0)";
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              if (!destroyed) {
+                list.style.transition = "";
+              }
+            });
+          });
+        }, 500);
+      }
+    };
+
+    const start = () => {
+      if (!timer) {
+        timer = setInterval(scrollToNext, 3000);
+      }
+    };
+    const stop = () => {
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+    };
+
+    start();
+    element.addEventListener("mouseenter", stop);
+    element.addEventListener("mouseleave", start);
+
+    return () => {
+      destroyed = true;
+      stop();
+      element.removeEventListener("mouseenter", stop);
+      element.removeEventListener("mouseleave", start);
+    };
+  });
+
+  goToSlide = (index) => {
+    if (this._swiper) {
+      this._swiper.slideToLoop(index);
+    } else {
+      this.activeIndex = index;
+    }
+  };
+
   <template>
     {{#if this.shouldShow}}
       {{bodyClass "has-ibomy-hero-carousel"}}
@@ -364,57 +338,141 @@ export default class IbomyHeroCarousel extends Component {
         aria-roledescription="carousel"
         aria-label="Hero"
       >
-        <div
-          class="swiper ibomy-hero-carousel__viewport ibomy-hero-swiper"
-          {{this.swiperInit
-            this._routeEpoch
-            this.slides.length
-            this.deckSlides.length
-            this.intervalSecForSwiper
-          }}
-        >
-          <div class="swiper-wrapper">
-            {{#each this.deckSlides key="__deckKey" as |item|}}
-              <div class="swiper-slide ibomy-hero-swiper__slide">
+        <div class="ibomy-hero-carousel__box">
+          {{#if this.showPagination}}
+            <div class="ibomy-hero-carousel__pagination" role="tablist">
+              {{#each this.slides as |slide index|}}
+                <button
+                  type="button"
+                  class="ibomy-hero-carousel__pagination-mark
+                    {{if
+                      (eq index this.activeIndex)
+                      'ibomy-hero-carousel__pagination-mark--active'
+                    }}"
+                  aria-label="{{slide.number}}"
+                  {{on "click" (fn this.goToSlide index)}}
+                ></button>
+              {{/each}}
+            </div>
+          {{/if}}
+
+          <div
+            class="ibomy-hero-carousel__stage swiper ibomy-hero-swiper"
+            {{this.swiperInit
+              this._routeEpoch
+              this.slides.length
+              this.intervalSecForSwiper
+            }}
+          >
+            <div class="ibomy-hero-carousel__side">
+              <div
+                class="ibomy-hero-carousel__panel"
+                {{this.panelSwap this.activeIndex}}
+              >
+                <span
+                  class="ibomy-hero-carousel__panel-title"
+                >{{this.activeSlide.title}}</span>
+                <span
+                  class="ibomy-hero-carousel__panel-number"
+                >{{this.activeSlide.number}}</span>
+              </div>
+            </div>
+
+            <div class="swiper-wrapper">
+              {{#each this.slides key="__key" as |slide|}}
                 <a
-                  class="ibomy-hero-carousel__slide-link"
-                  href={{item.resolvedHref}}
+                  class="swiper-slide ibomy-hero-carousel__slide"
+                  href={{slide.resolvedHref}}
                   draggable="false"
                 >
-                  <span class="ibomy-hero-carousel__card">
-                    <span class="ibomy-hero-carousel__media">
+                  <span class="ibomy-hero-carousel__slide-bg">
+                    <img
+                      class="ibomy-hero-carousel__slide-bg-media"
+                      src={{slide.background}}
+                      alt={{slide.alt}}
+                      loading="lazy"
+                      draggable="false"
+                      data-swiper-parallax="-8%"
+                    />
+                  </span>
+                  <svg
+                    class="ibomy-hero-carousel__slide-frame"
+                    viewBox="0 0 1080 480"
+                    preserveAspectRatio="none"
+                    aria-hidden="true"
+                  >
+                    <polyline
+                      points="1080,0.5 374,0.5 20,480"
+                      fill="none"
+                      stroke="#000000"
+                      stroke-width="1"
+                      vector-effect="non-scaling-stroke"
+                    />
+                  </svg>
+                  <span class="ibomy-hero-carousel__slide-edge-bottom"></span>
+                  {{#if slide.character}}
+                    <span
+                      class="ibomy-hero-carousel__layer ibomy-hero-carousel__layer--character"
+                    >
                       <img
-                        class="ibomy-hero-carousel__img"
-                        src={{item.image}}
-                        alt={{item.alt}}
+                        src={{slide.character}}
+                        alt=""
                         loading="lazy"
                         draggable="false"
+                        data-swiper-parallax="-18%"
+                        data-swiper-parallax-opacity="0.2"
                       />
                     </span>
-                    {{#if item.caption}}
-                      <span class="ibomy-hero-carousel__caption">{{item.caption}}</span>
-                    {{/if}}
-                  </span>
+                  {{/if}}
+                  {{#if slide.copy}}
+                    <span
+                      class="ibomy-hero-carousel__layer ibomy-hero-carousel__layer--copy"
+                    >
+                      <img
+                        src={{slide.copy}}
+                        alt=""
+                        loading="lazy"
+                        draggable="false"
+                        data-swiper-parallax="-32%"
+                        data-swiper-parallax-opacity="0.1"
+                      />
+                    </span>
+                  {{/if}}
                 </a>
-              </div>
-            {{/each}}
+              {{/each}}
+            </div>
           </div>
 
-          {{#if this.showNav}}
-            <button
-              type="button"
-              class="swiper-button-prev ibomy-hero-swiper__button-prev ibomy-hero-carousel__nav ibomy-hero-carousel__nav--prev"
-              aria-label="Previous slide"
-            >
-              {{dIcon "chevron-left"}}
-            </button>
-            <button
-              type="button"
-              class="swiper-button-next ibomy-hero-swiper__button-next ibomy-hero-carousel__nav ibomy-hero-carousel__nav--next"
-              aria-label="Next slide"
-            >
-              {{dIcon "chevron-right"}}
-            </button>
+          {{#if this.showNotice}}
+            <div class="ibomy-hero-carousel__notice">
+              <span class="ibomy-hero-carousel__notice-icon">
+                {{dIcon "bell"}}
+              </span>
+              <div
+                class="ibomy-hero-carousel__notice-viewport"
+                {{this.noticeScroll this.announcements.length}}
+              >
+                <div class="ibomy-hero-carousel__notice-list">
+                  {{#each this.announcements as |announcement|}}
+                    <a
+                      class="ibomy-hero-carousel__notice-item"
+                      href={{this.noticeUrl announcement}}
+                    >{{announcement.title}}</a>
+                  {{/each}}
+                  {{#if (gt this.announcements.length 1)}}
+                    {{#each this.announcements as |announcement|}}
+                      <a
+                        class="ibomy-hero-carousel__notice-item"
+                        href={{this.noticeUrl announcement}}
+                        aria-hidden="true"
+                        tabindex="-1"
+                      >{{announcement.title}}</a>
+                    {{/each}}
+                  {{/if}}
+                </div>
+              </div>
+              <a class="ibomy-hero-carousel__notice-more" href="/c/10/10">更多&gt;</a>
+            </div>
           {{/if}}
         </div>
       </section>

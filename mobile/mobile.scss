@@ -501,35 +501,6 @@ body.category.navigation-category {
   }
 }
 
-// 移动端公告滚动组件样式
-.announcement-scroll {
-  height: 25px;
-  .announcement-scroll-container {
-    height: 25px;
-    margin-right: 50px;
-  }
-
-  .announcement-item {
-    padding: 2px 10px;
-    line-height: 20px;
-    height: 25px;
-    display: flex;
-    align-items: center;
-
-    .announcement-title {
-      font-size: 12px;
-    }
-  }
-
-  .announcement-more {
-    right: 10px;
-
-    .more-link {
-      font-size: 13px;
-    }
-  }
-}
-
 .topic-thumbnails-list {
   .topic-list-item {
 
