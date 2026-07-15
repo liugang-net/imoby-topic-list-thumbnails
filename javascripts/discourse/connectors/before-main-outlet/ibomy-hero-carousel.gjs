@@ -255,6 +255,41 @@ export default class IbomyHeroCarousel extends Component {
     };
   });
 
+  // 部分机型自带浏览器的 calc() 不支持"长度 ÷ 长度"得到无单位数值，导致通知条斜切偏移量算不出来；
+  // 这里直接用 JS 量出容器宽度重新算一遍，把结果以像素值写回自定义属性，绕开该 calc() 兼容性问题
+  heroGeometry = modifier((element) => {
+    const recalc = () => {
+      const width = element.getBoundingClientRect().width;
+      if (!width) {
+        return;
+      }
+      const bannerH = (width * 480) / 1080;
+      const sideW = (bannerH * 426) / 578;
+      const sideGap = (width * 20) / 1080;
+      const frameLeftTop = sideW + sideGap - width * 0.001;
+      const frameLeftBottom = sideGap - width * 0.001;
+      const noticeH = Math.min(44, Math.max(32, width * 0.036));
+      const ratio = bannerH > 0 ? noticeH / bannerH : 0;
+      const noticeLeftTop =
+        frameLeftTop * ratio + frameLeftBottom * (1 - ratio);
+      element.style.setProperty(
+        "--ibomy-hero-notice-left-top",
+        `${noticeLeftTop}px`
+      );
+    };
+
+    recalc();
+
+    if (typeof ResizeObserver === "undefined") {
+      window.addEventListener("resize", recalc);
+      return () => window.removeEventListener("resize", recalc);
+    }
+
+    const observer = new ResizeObserver(recalc);
+    observer.observe(element);
+    return () => observer.disconnect();
+  });
+
   panelSwap = modifier((element, [key]) => {
     void key;
     element.classList.remove("ibomy-hero-carousel__panel-fade");
@@ -338,7 +373,7 @@ export default class IbomyHeroCarousel extends Component {
         aria-roledescription="carousel"
         aria-label="Hero"
       >
-        <div class="ibomy-hero-carousel__box">
+        <div class="ibomy-hero-carousel__box" {{this.heroGeometry}}>
           {{#if this.showPagination}}
             <div class="ibomy-hero-carousel__pagination" role="tablist">
               {{#each this.slides as |slide index|}}
