@@ -303,12 +303,14 @@ margin-bottom: 0;
     --ibomy-hero-frame-left-bottom: calc(var(--ibomy-hero-side-gap) - 0.1cqw);
     /* 通知条比主图矮很多，斜切点须按高度比例在 frame-left-top / frame-left-bottom 间插值，斜率才会跟主图一致 */
     --ibomy-hero-notice-h: clamp(32px, 3.6cqw, 44px);
+    /* 先把高度比例算成无单位数值，避免 长度*长度 再相除的写法在部分移动端浏览器里 calc() 失效 */
+    --ibomy-hero-notice-ratio: calc(
+      var(--ibomy-hero-notice-h) / var(--ibomy-hero-banner-h)
+    );
     --ibomy-hero-notice-left-top: calc(
-      var(--ibomy-hero-frame-left-top) * var(--ibomy-hero-notice-h) /
-        var(--ibomy-hero-banner-h) +
+      var(--ibomy-hero-frame-left-top) * var(--ibomy-hero-notice-ratio) +
         var(--ibomy-hero-frame-left-bottom) *
-        (var(--ibomy-hero-banner-h) - var(--ibomy-hero-notice-h)) /
-        var(--ibomy-hero-banner-h)
+        (1 - var(--ibomy-hero-notice-ratio))
     );
   }
 
