@@ -352,7 +352,8 @@ margin-bottom: 0;
     cursor: pointer;
 
     .swiper-wrapper {
-      z-index: 1;
+      // 高于左侧编号面板，让人物/文案可压过左侧固定文字
+      z-index: 25;
       height: 100%;
       overflow: visible;
     }
@@ -428,28 +429,35 @@ margin-bottom: 0;
   }
 
   &__layer--character {
-    right: 2%;
-    bottom: -5.83%;
-    width: 42%;
-    height: 118%;
+    // 参照设计稿：人物偏中偏右贴底，高度铺满主图，宽度随图比例自适应
+    right: var(--ibomy-hero-char-right, 50%);
+    bottom: var(--ibomy-hero-char-bottom, 0);
+    width: auto;
+    height: var(--ibomy-hero-char-height, 100%);
     z-index: 5;
     filter: drop-shadow(1.25cqh 1.67cqh 0 rgb(0 0 0 / 28%));
 
     img {
+      width: auto;
+      height: 100%;
+      object-fit: contain;
       object-position: bottom center;
     }
   }
 
   &__layer--copy {
-    right: 5%;
-    top: 8%;
-    width: 36%;
-    height: auto;
+    // 参照设计稿：文案靠右、压在人物之上，底边略高于通知条
+    right: var(--ibomy-hero-copy-right, 3%);
+    bottom: var(--ibomy-hero-copy-bottom, 14%);
+    width: auto;
+    height: var(--ibomy-hero-copy-height, 50%);
     z-index: 6;
     filter: drop-shadow(0.625cqh 0.625cqh 0 rgb(0 0 0 / 35%));
 
     img {
-      height: auto;
+      width: auto;
+      height: 100%;
+      object-fit: contain;
     }
   }
 

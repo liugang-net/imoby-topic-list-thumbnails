@@ -144,7 +144,21 @@ hero_carousel_slides:
         type: string
       character_image_url:
         type: string
+      # 位置/尺寸可选；统一 right + bottom + height（宽度自适应），空则用 CSS 默认
+      # 默认（对照设计稿）：人物 right 50% / bottom 0 / height 100%；文案 right 3% / bottom 14% / height 50%
+      character_right:
+        type: string
+      character_bottom:
+        type: string
+      character_height:
+        type: string
       copy_image_url:
+        type: string
+      copy_right:
+        type: string
+      copy_bottom:
+        type: string
+      copy_height:
         type: string
       panel_title:
         type: string

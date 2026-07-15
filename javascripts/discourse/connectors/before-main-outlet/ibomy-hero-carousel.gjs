@@ -5,6 +5,7 @@ import { on } from "@ember/modifier";
 import { service } from "@ember/service";
 import { modifier } from "ember-modifier";
 import { cancel } from "@ember/runloop";
+import { htmlSafe } from "@ember/template";
 import discourseLater from "discourse/lib/later";
 import bodyClass from "discourse/helpers/body-class";
 import dIcon from "discourse/helpers/d-icon";
@@ -62,6 +63,32 @@ function isHeroCarouselPath(pathname) {
   });
 }
 
+function sanitizeCssLength(value) {
+  if (typeof value !== "string") {
+    return "";
+  }
+  const v = value.trim();
+  if (!v) {
+    return "";
+  }
+  // 只允许简单长度值，防止注入；可写 4% / -5.83% / 42px 等
+  if (!/^-?\d+(\.\d+)?(%|px|cqw|cqh|em|rem|vh|vw)$/i.test(v)) {
+    return "";
+  }
+  return v;
+}
+
+function buildLayerStyle(map) {
+  const parts = [];
+  for (const [key, raw] of Object.entries(map)) {
+    const value = sanitizeCssLength(raw);
+    if (value) {
+      parts.push(`${key}:${value}`);
+    }
+  }
+  return parts.length > 0 ? htmlSafe(parts.join(";")) : null;
+}
+
 function parseSlides(raw) {
   if (!Array.isArray(raw) || raw.length === 0) {
     return [];
@@ -97,6 +124,16 @@ function parseSlides(raw) {
         title,
         alt,
         href: href.trim(),
+        characterStyle: buildLayerStyle({
+          "--ibomy-hero-char-right": row.character_right,
+          "--ibomy-hero-char-bottom": row.character_bottom,
+          "--ibomy-hero-char-height": row.character_height,
+        }),
+        copyStyle: buildLayerStyle({
+          "--ibomy-hero-copy-right": row.copy_right,
+          "--ibomy-hero-copy-bottom": row.copy_bottom,
+          "--ibomy-hero-copy-height": row.copy_height,
+        }),
       };
     })
     .filter(Boolean);
@@ -523,6 +560,7 @@ export default class IbomyHeroCarousel extends Component {
                   {{#if slide.character}}
                     <span
                       class="ibomy-hero-carousel__layer ibomy-hero-carousel__layer--character"
+                      style={{slide.characterStyle}}
                     >
                       <img
                         src={{slide.character}}
@@ -537,6 +575,7 @@ export default class IbomyHeroCarousel extends Component {
                   {{#if slide.copy}}
                     <span
                       class="ibomy-hero-carousel__layer ibomy-hero-carousel__layer--copy"
+                      style={{slide.copyStyle}}
                     >
                       <img
                         src={{slide.copy}}
