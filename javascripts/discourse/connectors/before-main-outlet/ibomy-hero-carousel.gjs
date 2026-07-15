@@ -4,6 +4,7 @@ import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { service } from "@ember/service";
 import { modifier } from "ember-modifier";
+import { cancel } from "@ember/runloop";
 import discourseLater from "discourse/lib/later";
 import bodyClass from "discourse/helpers/body-class";
 import dIcon from "discourse/helpers/d-icon";
@@ -132,6 +133,13 @@ export default class IbomyHeroCarousel extends Component {
 
   @tracked _routeEpoch = 0;
   @tracked activeIndex = 0;
+  @tracked panelTitle = "";
+  @tracked panelNumber = "";
+  @tracked panelAnimClass = "";
+
+  _panelReady = false;
+  _panelAnimToken = 0;
+  _panelAnimTimer = null;
 
   constructor() {
     super(...arguments);
@@ -141,6 +149,11 @@ export default class IbomyHeroCarousel extends Component {
   willDestroy() {
     super.willDestroy(...arguments);
     this.router?.off("routeDidChange", this, this.onHeroRouteDidChange);
+    this._panelAnimToken++;
+    if (this._panelAnimTimer) {
+      cancel(this._panelAnimTimer);
+      this._panelAnimTimer = null;
+    }
   }
 
   @bind
@@ -290,11 +303,73 @@ export default class IbomyHeroCarousel extends Component {
     return () => observer.disconnect();
   });
 
-  panelSwap = modifier((element, [key]) => {
-    void key;
-    element.classList.remove("ibomy-hero-carousel__panel-fade");
-    void element.offsetWidth;
-    element.classList.add("ibomy-hero-carousel__panel-fade");
+  waitMs(ms) {
+    return new Promise((resolve) => {
+      this._panelAnimTimer = discourseLater(() => {
+        this._panelAnimTimer = null;
+        resolve();
+      }, ms);
+    });
+  }
+
+  async runPanelSwap(slide) {
+    const token = ++this._panelAnimToken;
+    if (this._panelAnimTimer) {
+      cancel(this._panelAnimTimer);
+      this._panelAnimTimer = null;
+    }
+
+    const title = slide?.title || "";
+    const number = slide?.number || "";
+    const reducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (reducedMotion) {
+      this.panelAnimClass = "";
+      this.panelTitle = title;
+      this.panelNumber = number;
+      return;
+    }
+
+    this.panelAnimClass = "ibomy-hero-carousel__panel-fade-out";
+    await this.waitMs(200);
+    if (token !== this._panelAnimToken) {
+      return;
+    }
+
+    this.panelTitle = title;
+    this.panelNumber = number;
+    this.panelAnimClass = "ibomy-hero-carousel__panel-fade-in";
+    await this.waitMs(400);
+    if (token !== this._panelAnimToken) {
+      return;
+    }
+
+    this.panelAnimClass = "";
+  }
+
+  panelSwap = modifier((_element, [index]) => {
+    const slide = this.slides[index] || this.slides[0];
+    if (!slide) {
+      return;
+    }
+
+    if (!this._panelReady) {
+      this._panelReady = true;
+      this.panelTitle = slide.title || "";
+      this.panelNumber = slide.number || "";
+      return;
+    }
+
+    if (
+      slide.title === this.panelTitle &&
+      slide.number === this.panelNumber
+    ) {
+      return;
+    }
+
+    this.runPanelSwap(slide);
   });
 
   // 通知条内容整行上下滚动切换；每 3s 滚动一条，到末尾无动画跳回开头，鼠标悬停暂停
@@ -401,15 +476,15 @@ export default class IbomyHeroCarousel extends Component {
           >
             <div class="ibomy-hero-carousel__side">
               <div
-                class="ibomy-hero-carousel__panel"
+                class="ibomy-hero-carousel__panel {{this.panelAnimClass}}"
                 {{this.panelSwap this.activeIndex}}
               >
                 <span
                   class="ibomy-hero-carousel__panel-title"
-                >{{this.activeSlide.title}}</span>
+                >{{this.panelTitle}}</span>
                 <span
                   class="ibomy-hero-carousel__panel-number"
-                >{{this.activeSlide.number}}</span>
+                >{{this.panelNumber}}</span>
               </div>
             </div>
 
