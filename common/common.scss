@@ -31,6 +31,7 @@
     "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
   --font-family: var(--ibomy-font-family);
   --heading-font-family: var(--ibomy-font-family);
+  --scrolling-nav-offset-y: 14px;
   --tile-background: url('https://dev.gexing8.com/images/common/tile.png') left top repeat;
   /** 搜索*/
  
@@ -231,6 +232,18 @@ body {
     background-size: 10px 10px;
     padding: 0;
   }
+}
+
+// 分类管理按钮在桌面端和移动端都浮动显示，避免占据导航上方的布局高度
+.category-navigation {
+  position: relative;
+}
+
+.navigation-controls {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 5;
 }
 
 #main-outlet {
@@ -2043,7 +2056,6 @@ body.category {
 
   border-bottom: 5px solid #fcf905;
   border-radius: 0;
-  // margin: 0 auto 1em auto;
   padding: 4px;
   max-width: calc(var(--d-sidebar-width) + var(--d-max-width));
   position: relative;
@@ -2093,7 +2105,7 @@ body.category {
     min-width: 0;
     // 整体下移，叠在导航栏底部的黄线上；放在 .nav-container__scroll 外层平移，
     // 避免在内部横向滚动容器（overflow-x: auto）里被裁切
-    transform: translateY(14px);
+    transform: translateY(var(--scrolling-nav-offset-y));
   }
 
   .nav-container__scroll {
@@ -2261,6 +2273,24 @@ body.category {
       border-radius: 12px;
       font-weight: 500;
     }
+  }
+}
+
+// 保留导航压在白色区域上的视觉效果，只将区域内部内容下移，统一兼容轮播、置顶和普通卡片
+body:has(.scrolling-category-nav) #list-area {
+  position: relative;
+  padding-top: var(--scrolling-nav-offset-y);
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: var(--scrolling-nav-offset-y);
+    background: #ffffff url(https://dev.gexing8.com/images/common/tile.png) repeat left top;
+    background-size: 10px 10px;
+    pointer-events: none;
   }
 }
 
