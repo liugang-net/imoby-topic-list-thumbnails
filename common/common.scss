@@ -3633,6 +3633,9 @@ body.has-full-page-chat .d-header {
 .c-navbar__back-button {
   min-width: 16px;
 }
+body.has-full-page-chat .c-navbar__star-channel-button {
+  display: none;
+}
 .chat-message .chat-message-text {
   width: fit-content;
   border-radius: 5px;
