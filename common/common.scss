@@ -2182,8 +2182,12 @@ body.category {
   .nav-item {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5em;
     padding: 4px 10px;
+    box-sizing: border-box;
+    width: calc(4em + 22px);
+    flex-shrink: 0;
     background: #bb39fd;
     background-size: 120% auto;
     border: 1px solid #000000;
@@ -2194,7 +2198,7 @@ body.category {
     font-weight: 500;
     white-space: nowrap;
     transition: all 0.3s ease;
-    min-width: fit-content;
+    min-width: calc(4em + 22px);
     position: relative;
     transform: skewX(var(--scrolling-nav-skew));
     box-shadow: 4px 3px 0 rgba(0, 0, 0, 1);
@@ -2240,7 +2244,17 @@ body.category {
   .scrolling-category-nav__home-menu-trigger-inner {
     display: inline-flex;
     align-items: center;
+    min-width: 0;
+    max-width: 100%;
     transform: skewX(calc(-1 * var(--scrolling-nav-skew)));
+  }
+
+  .nav-item > .nav-item__unskew,
+  .scrolling-category-nav__home-menu-trigger-label {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
   }
 
   .nav-item[href^="/c/"] {

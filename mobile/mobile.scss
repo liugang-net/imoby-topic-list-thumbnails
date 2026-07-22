@@ -467,6 +467,8 @@ body.category.navigation-category {
     // border: none;
     // color: var(--primary-medium);
     padding: 0 8px;
+    width: 74px;
+    min-width: 74px;
     text-decoration: none;
     white-space: nowrap;
     transition: all 0.3s ease;
