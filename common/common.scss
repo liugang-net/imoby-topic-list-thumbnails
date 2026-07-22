@@ -2144,7 +2144,7 @@ body.category {
     // box-shadow: 4px 2px 0 rgba(0, 0, 0, 1) !important;
 
     &.active {
-      font-weight: 700;
+      font-weight: 500;
     }
   }
 
@@ -2221,7 +2221,7 @@ body.category {
     &.active {
       background: #fcf905;
       color: #000000;
-      font-weight: 700;
+      font-weight: 500;
       // // 添加蓝色下划线指示条
       // &::after {
       //   content: '';
@@ -2262,7 +2262,7 @@ body.category {
       background: transparent;
       color: var(--primary);
       border: none;
-      font-weight: 700;
+      font-weight: 500;
       transform: none;
       box-shadow: none;
 
@@ -2399,7 +2399,7 @@ body:has(.scrolling-category-nav) #list-area {
   .scrolling-category-nav__filter-link[data-filter-active="true"] {
     background: var(--ibomy-filter-active-bg) !important;
     color: var(--ibomy-filter-active-fg) !important;
-    font-weight: 700;
+    font-weight: 500;
 
     &:hover {
       background: var(--ibomy-filter-active-bg) !important;
