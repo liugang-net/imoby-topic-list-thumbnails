@@ -42,6 +42,7 @@ const HERO_CAROUSEL_EXCLUDED_PREFIXES = [
 const HERO_CAROUSEL_ALLOWED_PREFIXES = [
   "/",
   "/latest",
+  "/hot",
   "/c/",
   "/tags",
   "/tag/",

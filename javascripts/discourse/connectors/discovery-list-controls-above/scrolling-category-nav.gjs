@@ -11,8 +11,8 @@ import { bind } from "discourse/lib/decorators";
 import getURL, { withoutPrefix } from "discourse/lib/get-url";
 import { i18n } from "discourse-i18n";
 
-// 首页下拉：最新、最热、分类；链接固定为全站 / 、/hot 、/categories（不按当前分类适配）
-const HOME_DISCOVERY_FILTERS = ["latest", "hot", "categories"];
+// 首页下拉：最新、最热；链接固定为全站 /、/hot（不按当前分类适配）
+const HOME_DISCOVERY_FILTERS = ["latest", "hot"];
 
 // 仅允许在触发器上/下翻转，禁止 flip 到左侧或右侧（否则会在「最新」右边弹出）
 const FILTER_MENU_FALLBACK_PLACEMENTS = [
@@ -88,7 +88,6 @@ export default class ScrollingCategoryNav extends Component {
     const hrefByName = {
       latest: getURL("/"),
       hot: getURL("/hot"),
-      categories: getURL("/categories"),
     };
     return HOME_DISCOVERY_FILTERS.map((name) => ({
       name,
