@@ -479,26 +479,18 @@ export default class TopicListThumbnail extends Component {
     // 设置导航标志，防止重复点击
     this._isNavigating = true;
     
-    // 检测是否为移动端
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
-    if (isMobile) {
-      // 移动端直接跳转，避免SPA路由问题
-      window.location.href = this.url;
-    } else {
-      // 桌面端使用SPA路由
-      if (this.router && typeof this.router.transitionTo === 'function') {
-        try {
-          this.router.transitionTo('topic', this.topic.slug, this.topic.id);
-          return;
-        } catch (error) {
-          console.warn('Router transitionTo failed:', error);
-        }
+    // 所有端都使用 SPA 路由，保留 Discourse 的列表缓存和滚动历史。
+    if (this.router && typeof this.router.transitionTo === "function") {
+      try {
+        this.router.transitionTo("topic", this.topic.slug, this.topic.id);
+        return;
+      } catch (error) {
+        console.warn("Router transitionTo failed:", error);
       }
-      
-      // 回退到直接跳转
-      window.location.href = this.url;
     }
+
+    // 路由服务不可用时才回退到直接跳转。
+    window.location.href = this.url;
     
     // 延迟重置导航标志
     setTimeout(() => {
