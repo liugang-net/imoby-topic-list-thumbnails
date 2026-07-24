@@ -15,7 +15,6 @@ import DiscourseURL from "discourse/lib/url";
 import { isValidSearchTerm, searchForTerm } from "discourse/lib/search";
 import getURL from "discourse/lib/get-url";
 import { escapeExpression } from "discourse/lib/utilities";
-import closeOnClickOutside from "discourse/modifiers/close-on-click-outside";
 import { or } from "discourse/truth-helpers";
 
 const HISTORY_KEY = "ibomy_mobile_inline_search_history_v1";
@@ -283,6 +282,7 @@ export default class MobileInlineSearch extends Component {
       this,
       this.syncInlineSearchFromFullPageController
     );
+    document.addEventListener("click", this.handleDocumentClick, true);
     schedule("afterRender", () => {
       this.syncInlineSearchFromFullPageController();
     });
@@ -369,6 +369,7 @@ export default class MobileInlineSearch extends Component {
       this,
       this.syncInlineSearchFromFullPageController
     );
+    document.removeEventListener("click", this.handleDocumentClick, true);
     this._suggestRequest?.abort?.();
     if (this._suggestDebounceTimer != null) {
       cancel(this._suggestDebounceTimer);
@@ -429,6 +430,18 @@ export default class MobileInlineSearch extends Component {
   @action
   closeDropdown() {
     this.dropdownOpen = false;
+  }
+
+  @action
+  handleDocumentClick(event) {
+    if (
+      this.dropdownOpen &&
+      !event.target.closest?.(".ibomy-mobile-inline-search")
+    ) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.closeDropdown();
+    }
   }
 
   @action
@@ -658,10 +671,7 @@ export default class MobileInlineSearch extends Component {
   <template>
     {{#if this.shouldDisplay}}
       {{bodyClass "ibomy-mobile-inline-search--enabled"}}
-      <div
-        class="ibomy-mobile-inline-search"
-        {{closeOnClickOutside this.closeDropdown}}
-      >
+      <div class="ibomy-mobile-inline-search">
         <div class="ibomy-mobile-inline-search__pill">
           <DButton
             @icon="ibomy-search"
