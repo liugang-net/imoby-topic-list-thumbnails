@@ -210,7 +210,7 @@ export default class TopicListThumbnail extends Component {
     return this.user?.title;
   }
 
-  get userTrustLevelLabel() {
+  get userTrustLevelImageUrl() {
     const raw = this.user?.trust_level;
     const tl =
       typeof raw === "number"
@@ -218,10 +218,10 @@ export default class TopicListThumbnail extends Component {
         : typeof raw === "string"
           ? parseInt(raw, 10)
           : NaN;
-    if (!Number.isFinite(tl) || tl < 0) {
+    if (!Number.isFinite(tl) || tl < 1 || tl > 4) {
       return null;
     }
-    return `Lv.${tl}`;
+    return `https://cdn.ibomy.com/forum/images/lv${tl}.png`;
   }
 
   get postTime() {
@@ -750,8 +750,13 @@ export default class TopicListThumbnail extends Component {
               <div class="user-info">
                 <div class="user-name">
                   <span class="user-link">{{this.userName}}</span>
-                  {{#if this.userTrustLevelLabel}}
-                    <span class="user-trust-level" aria-hidden="true">{{this.userTrustLevelLabel}}</span>
+                  {{#if this.userTrustLevelImageUrl}}
+                    <img
+                      class="user-trust-level"
+                      src={{this.userTrustLevelImageUrl}}
+                      alt=""
+                      aria-hidden="true"
+                    />
                   {{/if}}
                 </div>
                 <div class="post-time">{{this.postTimeFormatted}}</div>

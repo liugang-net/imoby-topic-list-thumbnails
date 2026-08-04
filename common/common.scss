@@ -1487,7 +1487,7 @@ margin-bottom: 0;
       display: flex;
       flex-direction: row;
       flex-wrap: nowrap;
-      align-items: baseline;
+      align-items: center;
       gap: 0.35em;
       min-width: 0;
       line-height: 1.25;
@@ -1503,14 +1503,10 @@ margin-bottom: 0;
 
       .user-trust-level {
         flex: 0 0 auto;
-        font-size: var(--font-down-2);
-        font-weight: 400;
-        background-color: #d7f3ff;
-        color: #0048a6;
-        padding: 2px 4px;
-        border-radius: 2px;
-        font-style: italic;
-        display: inline-block;
+        display: block;
+        width: auto;
+        height: 16px;
+        object-fit: contain;
       }
     }
 
