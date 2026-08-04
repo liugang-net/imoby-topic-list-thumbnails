@@ -3645,9 +3645,7 @@ html.mobile-view body.ibomy-mobile-inline-search--enabled .ibomy-mobile-inline-s
         width: 24px;
         height: 24px;
         margin-left: 8px;
-        background-color: #fff;
-        -webkit-mask: url($chat-settings) center / contain no-repeat;
-        mask: url($chat-settings) center / contain no-repeat;
+        background: url($chat-settings) center / contain no-repeat;
       }
     }
 
@@ -3661,9 +3659,7 @@ html.mobile-view body.ibomy-mobile-inline-search--enabled .ibomy-mobile-inline-s
         display: block;
         width: 28px;
         height: 28px;
-        background-color: #fff;
-        -webkit-mask: url($chat-search-history) center / contain no-repeat;
-        mask: url($chat-search-history) center / contain no-repeat;
+        background: url($chat-search-history) center / contain no-repeat;
       }
     }
 
