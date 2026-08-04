@@ -3636,6 +3636,14 @@ body.has-full-page-chat .d-header {
 .c-navbar__star-channel-button {
   display: none;
 }
+
+.c-channel-settings {
+  .chat-form__section:has(a[href$="/info/members"]),
+  .chat-form__row:has(.c-channel-settings__threading-switch) {
+    display: none;
+  }
+}
+
 .chat-message .chat-message-text {
   width: fit-content;
   border-radius: 5px;
