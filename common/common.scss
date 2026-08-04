@@ -3644,6 +3644,10 @@ body.has-full-page-chat .d-header {
   }
 }
 
+.c-channel-info__nav li:has(a[href$="/info/members"]) {
+  display: none;
+}
+
 .chat-message .chat-message-text {
   width: fit-content;
   border-radius: 5px;
