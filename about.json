@@ -5,6 +5,10 @@
   "about_url": "https://meta.discourse.org/t/topic-list-thumbnails/150602",
   "license_url": null,
   "minimum_discourse_version": "2.5.0.beta4",
+  "assets": {
+    "chat-search-history": "assets/chat-search-history.svg",
+    "chat-settings": "assets/chat-settings.svg"
+  },
   "modifiers": {
     "topic_thumbnail_sizes": [
       [
