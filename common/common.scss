@@ -3710,7 +3710,14 @@ body.has-full-page-chat .d-header {
     }
   }
 
-  .c-channel-settings {
+  .c-channel-settings__notifications-selector .select-kit-body {
+    right: 0 !important;
+    left: auto !important;
+    transform: translateY(40px) !important;
+  }
+}
+
+.c-channel-settings {
     padding-bottom: 8px;
 
     .chat-form {
@@ -3859,10 +3866,9 @@ body.has-full-page-chat .d-header {
       }
 
       .select-kit-body {
-        right: 0 !important;
-        left: auto !important;
         width: 100px !important;
-        transform: translateY(40px) !important;
+        min-width: 100px !important;
+        max-width: 100px !important;
         border: 2px solid #000;
         box-sizing: border-box;
       }
@@ -3947,7 +3953,6 @@ body.has-full-page-chat .d-header {
         }
       }
     }
-  }
 }
 
 .c-channel-info__nav li:has(a[href$="/info/members"]) {
