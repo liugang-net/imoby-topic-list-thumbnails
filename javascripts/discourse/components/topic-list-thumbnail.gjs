@@ -13,6 +13,7 @@ import { getAbsoluteURL } from "discourse/lib/get-url";
 import { nativeShare } from "discourse/lib/pwa-utils";
 import ShareTopicModal from "discourse/components/modal/share-topic";
 import { i18n } from "discourse-i18n";
+import CategoryTopicSort from "./category-topic-sort";
 
 export default class TopicListThumbnail extends Component {
   @service topicThumbnails;
@@ -727,6 +728,7 @@ export default class TopicListThumbnail extends Component {
   <template>
     {{#if this.topicThumbnails.displayFeed}}
       {{! 信息流模式 - 完整的社交媒体风格布局 }}
+      <CategoryTopicSort />
       <a href={{this.url}} class="topic-feed-item">
         {{! 用户信息头部；头像+用户名跳转 /ibomy/u/:username（不可嵌套 a，故用 role=link + 点击） }}
         <div class="topic-user-header">
@@ -779,6 +781,7 @@ export default class TopicListThumbnail extends Component {
         <div class="topic-content">
           <div class="topic-title">
             <span class="title">{{this.topic.title}}</span>
+            {{dIcon "chevron-right" class="pinned-topic-arrow"}}
           </div>
           {{#if this.topic.excerpt}}
             <span class="topic-excerpt">{{this.topic.excerpt}}</span>

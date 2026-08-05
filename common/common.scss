@@ -1561,6 +1561,10 @@ margin-bottom: 0;
   .topic-content {
     margin-bottom: 0;
 
+    .pinned-topic-arrow {
+      display: none;
+    }
+
     .topic-title {
       font-family: "Alibaba PuHuiTi", "Source Han Sans CN", "PingFang SC",
         "Microsoft YaHei", sans-serif;
@@ -1762,6 +1766,58 @@ margin-bottom: 0;
 
 body.category {
   .topic-thumbnails-feed {
+    .category-topic-sort {
+      display: none;
+    }
+
+    .topic-list-body > .topic-list-item:first-child:not(.pinned),
+    .topic-list-body > .topic-list-item.pinned + .topic-list-item:not(.pinned) {
+      padding-top: 0;
+
+      .category-topic-sort {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 60px;
+        box-sizing: border-box;
+        margin: 0 calc(-1 * var(--ibomy-feed-inline-padding)) 2em;
+        padding: 0 20px;
+        background: #ececec url(https://dev.gexing8.com/images/common/tile.png) repeat left top;
+        background-size: 10px 10px;
+      }
+    }
+
+    .category-topic-sort__label {
+      color: #9da1a5;
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .category-topic-sort__options {
+      display: flex;
+      align-items: center;
+      padding: 3px;
+      border-radius: 20px;
+      background: #dfe1e3;
+    }
+
+    .category-topic-sort__option {
+      min-width: 48px;
+      padding: 7px 12px;
+      border-radius: 17px;
+      color: #a8abad;
+      font-size: 16px;
+      line-height: 1;
+      text-align: center;
+      text-decoration: none;
+
+      &.is-active {
+        background: #fff;
+        color: #222;
+        font-weight: 600;
+      }
+    }
+
     .topic-list-item {
       &.pinned[class*="category"] {
         padding: 0 1em;
@@ -1780,9 +1836,15 @@ body.category {
           }
 
           .topic-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
             margin-bottom: 0;
 
             .title {
+              flex: 1 1 auto;
+              min-width: 0;
+
               &::before {
                 content: "\7f6e\9876";
                 display: inline-block;
@@ -1795,6 +1857,13 @@ body.category {
                 margin-right: 8px;
                 white-space: nowrap;
               }
+            }
+
+            .pinned-topic-arrow {
+              display: block;
+              flex: 0 0 auto;
+              color: #b9bec3;
+              font-size: 1em;
             }
           }
 
@@ -1809,7 +1878,7 @@ body.category {
       }
 
       &.pinned:not(:has(+ .pinned)) {
-        margin-bottom: 0.5em;
+        padding-bottom: 0.5em;
       }
       &.pinned{
         .topic-line {

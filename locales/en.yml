@@ -1,4 +1,8 @@
 en:
+  topic_list_sort:
+    label: Topic sorting
+    latest: Latest
+    hot: Hot
   theme_metadata:
     description: 在话题列表中显示缩略图的主题组件，可全站启用或按分类启用。
     settings:

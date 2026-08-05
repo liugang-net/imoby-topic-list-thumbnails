@@ -113,6 +113,9 @@ export default class ScrollingCategoryNav extends Component {
 
   _filterFromPath(pathname) {
     const p = pathname || "/";
+    if (p.startsWith("/c/")) {
+      return "latest";
+    }
     if (p === "/categories") {
       return "categories";
     }
@@ -252,6 +255,9 @@ export default class ScrollingCategoryNav extends Component {
 
   isHomeActivePath(pathname) {
     const p = pathname || "/";
+    if (p.startsWith("/c/")) {
+      return false;
+    }
     if (p === "/") {
       return true;
     }

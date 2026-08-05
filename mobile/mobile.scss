@@ -172,6 +172,13 @@ body.category.navigation-category {
     padding: 1em var(--ibomy-feed-inline-padding);
   }
 
+  .topic-list-body > .topic-list-item:first-child:not(.pinned),
+  .topic-list-body > .topic-list-item.pinned + .topic-list-item:not(.pinned) {
+    .category-topic-sort {
+      margin-bottom: 1em;
+    }
+  }
+
   .topic-images {
     &.single-image {
       .image-container {

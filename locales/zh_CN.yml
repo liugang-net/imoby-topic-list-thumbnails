@@ -5,6 +5,10 @@
 # https://translate.discourse.org/
 
 zh_CN:
+  topic_list_sort:
+    label: 看帖排序
+    latest: 最新
+    hot: 热门
   topic_excerpt:
     full_text: "全文"
   theme_metadata:
