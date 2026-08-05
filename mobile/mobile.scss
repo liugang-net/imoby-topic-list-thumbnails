@@ -446,10 +446,10 @@ body.category.navigation-category {
 
   .nav-items {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     min-width: max-content;
-    // 固定行高（容纳选中态 30px + 1px 上下边框），避免选中/取消选中时
-    // .nav-item 高度动画（26px<->30px）撑大或缩小整条导航栏，引发下方内容抖动
+    // 固定行高（容纳选中态 31px + 1px 上下边框），避免选中/取消选中时
+    // .nav-item 高度动画（26px<->31px）撑大或缩小整条导航栏，引发下方内容抖动
     height: 34px;
     padding: 0 0.5rem;
   }
@@ -469,6 +469,13 @@ body.category.navigation-category {
     font-size: 14px;
     height: 26px;
     box-shadow: 1px 1px 0 rgba(0, 0, 0, 1);
+
+    &.active {
+      height: 31px;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+
     // 去掉移动端点击时的蓝色系统颜色
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;

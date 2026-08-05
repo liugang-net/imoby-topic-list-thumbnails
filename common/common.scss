@@ -2170,7 +2170,8 @@ body.category {
     display: flex;
     min-width: max-content;
     gap: 10px;
-    align-items: center;
+    align-items: flex-end;
+    height: 35px;
     // 为 box-shadow 留出一点内边距，避免旧浏览器在横向滚动容器里仍裁切底部
     padding: 4px 1rem;
   }
@@ -2180,8 +2181,9 @@ body.category {
     align-items: center;
     justify-content: center;
     gap: 0.5em;
-    padding: 4px 10px;
+    padding: 0 10px;
     box-sizing: border-box;
+    height: 30px;
     width: calc(4em + 22px);
     flex-shrink: 0;
     background: #bb39fd;
@@ -2218,6 +2220,7 @@ body.category {
       background: #fcf905;
       color: #000000;
       font-weight: 500;
+      height: 35px;
       // // 添加蓝色下划线指示条
       // &::after {
       //   content: '';
@@ -3295,6 +3298,10 @@ body.ibomy-mobile-inline-search--enabled .ibomy-mobile-inline-search {
     }
   }
 
+  .ibomy-mobile-inline-search__section--history {
+    padding-bottom: 1em;
+  }
+
   .ibomy-mobile-inline-search__section-head {
     display: flex;
     flex-direction: row;
@@ -3378,6 +3385,7 @@ body.ibomy-mobile-inline-search--enabled .ibomy-mobile-inline-search {
     display: flex;
     flex-wrap: wrap;
     gap: 0.4em 0.5em;
+    margin-top: 0.25em;
     box-sizing: border-box;
   }
 
@@ -3502,6 +3510,7 @@ body.ibomy-mobile-inline-search--enabled .ibomy-mobile-inline-search {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px 10px;
+    margin-top: 0.25em;
     padding-bottom: 0.25em;
   }
 
