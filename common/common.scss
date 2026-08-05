@@ -3854,10 +3854,14 @@ body.has-full-page-chat .d-header {
         border-color: #000 !important;
       }
 
+      &.is-expanded .select-kit-header {
+        background: #f1f1f1;
+      }
+
       .select-kit-body {
         right: 0 !important;
         left: auto !important;
-        width: 120px !important;
+        width: 100px !important;
         transform: translateY(40px) !important;
         border: 2px solid #000;
         box-sizing: border-box;
@@ -3870,10 +3874,11 @@ body.has-full-page-chat .d-header {
       .select-kit-row {
         position: relative;
         min-height: 38px;
-        padding: 0 12px;
+        padding: 0 8px;
         color: #000;
         font-size: 14px;
         font-weight: 600;
+        white-space: nowrap;
         background: #fff;
         border-bottom: 2px solid #000;
 
@@ -3882,14 +3887,14 @@ body.has-full-page-chat .d-header {
         }
 
         &.is-selected {
-          padding-right: 38px;
+          padding-right: 28px;
           background: #25d9dc;
 
           &::after {
             content: "";
             position: absolute;
             top: 50%;
-            right: 10px;
+            right: 4px;
             width: 20px;
             height: 20px;
             background: url($chat-check) center / contain no-repeat;
