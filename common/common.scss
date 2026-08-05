@@ -3792,7 +3792,7 @@ body.has-full-page-chat .d-header {
     }
 
     .d-toggle-switch__checkbox[aria-checked="true"] + .d-toggle-switch__checkbox-slider {
-      background: #ff2af4;
+      background: #ff2af4 !important;
 
       &::before {
         right: auto;
@@ -3801,17 +3801,31 @@ body.has-full-page-chat .d-header {
       }
 
       &::after {
-        content: "✓";
+        content: "";
         position: absolute;
-        top: 1px;
-        left: 9px;
-        width: auto;
-        height: auto;
-        color: #fff;
-        font-size: 20px;
-        font-weight: 700;
-        line-height: 28px;
+        top: 5px;
+        left: 6px;
+        width: 20px;
+        height: 20px;
+        background: url($chat-check) center / contain no-repeat;
+        filter: invert(1);
       }
+
+      .d-icon-check {
+        display: none;
+      }
+    }
+
+    .d-toggle-switch__label:hover
+      .d-toggle-switch__checkbox[aria-checked="true"]
+      + .d-toggle-switch__checkbox-slider,
+    .d-toggle-switch__checkbox[aria-checked="true"]:hover
+      + .d-toggle-switch__checkbox-slider,
+    .d-toggle-switch__checkbox[aria-checked="true"]:focus
+      + .d-toggle-switch__checkbox-slider,
+    .d-toggle-switch__checkbox[aria-checked="true"]:focus-visible
+      + .d-toggle-switch__checkbox-slider {
+      background: #ff2af4 !important;
     }
 
     .c-channel-settings__notifications-selector {
@@ -3872,11 +3886,13 @@ body.has-full-page-chat .d-header {
           background: #25d9dc;
 
           &::after {
-            content: "✓";
+            content: "";
             position: absolute;
             top: 50%;
             right: 10px;
-            font-size: 18px;
+            width: 20px;
+            height: 20px;
+            background: url($chat-check) center / contain no-repeat;
             transform: translateY(-50%);
           }
         }

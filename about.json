@@ -6,6 +6,7 @@
   "license_url": null,
   "minimum_discourse_version": "2.5.0.beta4",
   "assets": {
+    "chat-check": "assets/chat-check.svg",
     "chat-search-history": "assets/chat-search-history.svg",
     "chat-settings": "assets/chat-settings.svg"
   },
