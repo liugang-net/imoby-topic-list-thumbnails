@@ -3873,7 +3873,7 @@ body.has-full-page-chat .d-header {
 
       .select-kit-row {
         position: relative;
-        min-height: 38px;
+        min-height: 34px;
         padding: 0 8px;
         color: #000;
         font-size: 14px;
@@ -3888,7 +3888,7 @@ body.has-full-page-chat .d-header {
 
         &.is-selected {
           padding-right: 28px;
-          background: #25d9dc;
+          background: #25f2eb;
 
           &::after {
             content: "";
