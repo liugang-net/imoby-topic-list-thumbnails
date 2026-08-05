@@ -1778,10 +1778,10 @@ body.category {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        min-height: 60px;
+        min-height: 40px;
         box-sizing: border-box;
         margin: 0 calc(-1 * var(--ibomy-feed-inline-padding)) 2em;
-        padding: 0 20px;
+        padding: 0 16px;
         background: #ececec url(https://dev.gexing8.com/images/common/tile.png) repeat left top;
         background-size: 10px 10px;
       }
@@ -1789,24 +1789,24 @@ body.category {
 
     .category-topic-sort__label {
       color: #9da1a5;
-      font-size: 16px;
+      font-size: 14px;
       line-height: 1;
     }
 
     .category-topic-sort__options {
       display: flex;
       align-items: center;
-      padding: 3px;
-      border-radius: 20px;
+      padding: 2px;
+      border-radius: 16px;
       background: #dfe1e3;
     }
 
     .category-topic-sort__option {
-      min-width: 48px;
-      padding: 7px 12px;
-      border-radius: 17px;
+      min-width: 40px;
+      padding: 5px 10px;
+      border-radius: 14px;
       color: #a8abad;
-      font-size: 16px;
+      font-size: 14px;
       line-height: 1;
       text-align: center;
       text-decoration: none;
