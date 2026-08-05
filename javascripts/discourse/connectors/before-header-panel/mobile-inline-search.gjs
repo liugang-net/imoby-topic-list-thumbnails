@@ -1,23 +1,25 @@
 import Component from "@glimmer/component";
+import { tracked } from "@glimmer/tracking";
 import { fn } from "@ember/helper";
-import { getOwner } from "@ember/owner";
-import { htmlSafe } from "@ember/template";
-import { cancel, schedule } from "@ember/runloop";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
+import { getOwner } from "@ember/owner";
+import { cancel, schedule } from "@ember/runloop";
 import { service } from "@ember/service";
-import { tracked } from "@glimmer/tracking";
+import { htmlSafe } from "@ember/template";
 import DButton from "discourse/components/d-button";
 import { ALL_PAGES_EXCLUDED_ROUTES } from "discourse/components/welcome-banner";
 import bodyClass from "discourse/helpers/body-class";
 import discourseDebounce from "discourse/lib/debounce";
-import DiscourseURL from "discourse/lib/url";
-import { isValidSearchTerm, searchForTerm } from "discourse/lib/search";
 import getURL from "discourse/lib/get-url";
+import { isValidSearchTerm, searchForTerm } from "discourse/lib/search";
+import DiscourseURL from "discourse/lib/url";
 import { escapeExpression } from "discourse/lib/utilities";
 import { or } from "discourse/truth-helpers";
 
 const HISTORY_KEY = "ibomy_mobile_inline_search_history_v1";
+const DISCOVERY_VISIBILITY_KEY =
+  "ibomy_mobile_inline_search_discovery_visible_v1";
 const MAX_HISTORY = 10;
 const MAX_TOPIC_SUGGEST = 9;
 const SUGGEST_DEBOUNCE_MS = 280;
@@ -131,6 +133,41 @@ function parseHotItems(raw) {
     .filter(Boolean);
 }
 
+function parseDiscoveryItems(raw) {
+  if (!Array.isArray(raw) || raw.length === 0) {
+    return [];
+  }
+  return raw
+    .map((row) => {
+      if (!row || typeof row !== "object") {
+        return null;
+      }
+      const title = row.title != null ? String(row.title).trim() : "";
+      const linkUrl = row.link_url ?? row.href ?? row.link;
+      if (!title || linkUrl == null || String(linkUrl).trim() === "") {
+        return null;
+      }
+      return { title, href: String(linkUrl).trim() };
+    })
+    .filter(Boolean);
+}
+
+function readDiscoveryVisible() {
+  try {
+    return localStorage.getItem(DISCOVERY_VISIBILITY_KEY) !== "false";
+  } catch {
+    return true;
+  }
+}
+
+function writeDiscoveryVisible(visible) {
+  try {
+    localStorage.setItem(DISCOVERY_VISIBILITY_KEY, String(visible));
+  } catch {
+    // 浏览器禁用存储时仍允许当前页面切换。
+  }
+}
+
 function readHistory() {
   try {
     const raw = localStorage.getItem(HISTORY_KEY);
@@ -148,7 +185,10 @@ function readHistory() {
 }
 
 function writeHistory(terms) {
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(terms.slice(0, MAX_HISTORY)));
+  localStorage.setItem(
+    HISTORY_KEY,
+    JSON.stringify(terms.slice(0, MAX_HISTORY))
+  );
 }
 
 /** 写入历史时去掉分类筛选（与全页搜索 category:n / #slug 一致），只记关键词 */
@@ -264,6 +304,9 @@ export default class MobileInlineSearch extends Component {
   @tracked dropdownOpen = false;
   @tracked history = [];
   @tracked historyExpanded = true;
+  /** 搜索历史编辑态：显示单条删除入口与批量操作。 */
+  @tracked historyEditing = false;
+  @tracked discoveryVisible = readDiscoveryVisible();
   @tracked suggestRows = [];
   @tracked suggestLoading = false;
 
@@ -286,6 +329,26 @@ export default class MobileInlineSearch extends Component {
     schedule("afterRender", () => {
       this.syncInlineSearchFromFullPageController();
     });
+  }
+
+  willDestroy() {
+    super.willDestroy(...arguments);
+    this.router.off(
+      "routeDidChange",
+      this,
+      this.syncInlineSearchFromFullPageController
+    );
+    this.appEvents.off(
+      "full-page-search:trigger-search",
+      this,
+      this.syncInlineSearchFromFullPageController
+    );
+    document.removeEventListener("click", this.handleDocumentClick, true);
+    this._suggestRequest?.abort?.();
+    if (this._suggestDebounceTimer != null) {
+      cancel(this._suggestDebounceTimer);
+      this._suggestDebounceTimer = null;
+    }
   }
 
   get portalSearchUiEnabled() {
@@ -342,6 +405,12 @@ export default class MobileInlineSearch extends Component {
     return parseHotItems(settings.mobile_inline_search_hot_items || []);
   }
 
+  get discoveryItems() {
+    return parseDiscoveryItems(
+      settings.mobile_inline_search_discovery_items || []
+    );
+  }
+
   get showIdlePanel() {
     return !this.visibleTerm.trim();
   }
@@ -355,26 +424,6 @@ export default class MobileInlineSearch extends Component {
       fromInputHidden
     );
     return joinMobileSearchQuery(visibleOnly, mergedHidden);
-  }
-
-  willDestroy() {
-    super.willDestroy(...arguments);
-    this.router.off(
-      "routeDidChange",
-      this,
-      this.syncInlineSearchFromFullPageController
-    );
-    this.appEvents.off(
-      "full-page-search:trigger-search",
-      this,
-      this.syncInlineSearchFromFullPageController
-    );
-    document.removeEventListener("click", this.handleDocumentClick, true);
-    this._suggestRequest?.abort?.();
-    if (this._suggestDebounceTimer != null) {
-      cancel(this._suggestDebounceTimer);
-      this._suggestDebounceTimer = null;
-    }
   }
 
   @action
@@ -580,10 +629,7 @@ export default class MobileInlineSearch extends Component {
 
     const toStore = termForHistoryRecord(term);
     if (toStore) {
-      const next = [
-        toStore,
-        ...readHistory().filter((t) => t !== toStore),
-      ];
+      const next = [toStore, ...readHistory().filter((t) => t !== toStore)];
       writeHistory(next);
     }
 
@@ -612,14 +658,60 @@ export default class MobileInlineSearch extends Component {
   @action
   clearHistory(event) {
     event?.preventDefault?.();
+    event?.stopPropagation?.();
     localStorage.removeItem(HISTORY_KEY);
+    this.historyEditing = false;
     this.syncHistory();
+  }
+
+  @action
+  toggleHistoryEditing(event) {
+    event?.preventDefault?.();
+    event?.stopPropagation?.();
+    this.historyEditing = !this.historyEditing;
+    if (this.historyEditing) {
+      this.historyExpanded = true;
+    }
+  }
+
+  @action
+  removeHistoryTerm(event) {
+    event?.preventDefault?.();
+    event?.stopPropagation?.();
+    const term = event.currentTarget?.getAttribute?.("data-term");
+    if (term == null) {
+      return;
+    }
+    const next = readHistory().filter((item) => item !== term);
+    writeHistory(next);
+    this.syncHistory();
+    if (next.length === 0) {
+      this.historyEditing = false;
+    }
   }
 
   @action
   toggleHistoryExpanded(event) {
     event?.preventDefault?.();
     this.historyExpanded = !this.historyExpanded;
+  }
+
+  @action
+  toggleDiscoveryVisibility(event) {
+    event?.preventDefault?.();
+    event?.stopPropagation?.();
+    this.discoveryVisible = !this.discoveryVisible;
+    writeDiscoveryVisible(this.discoveryVisible);
+  }
+
+  @action
+  onDiscoveryRowClick(event) {
+    const href = event.currentTarget?.getAttribute?.("data-href");
+    if (href == null) {
+      return;
+    }
+    event.preventDefault();
+    window.location.assign(resolveNavHref(href));
   }
 
   @action
@@ -652,15 +744,8 @@ export default class MobileInlineSearch extends Component {
     }
     const term = this.fullSearchQuery.trim();
     const toStore = termForHistoryRecord(term);
-    if (
-      toStore &&
-      term &&
-      isValidSearchTerm(term, this.siteSettings)
-    ) {
-      const next = [
-        toStore,
-        ...readHistory().filter((t) => t !== toStore),
-      ];
+    if (toStore && term && isValidSearchTerm(term, this.siteSettings)) {
+      const next = [toStore, ...readHistory().filter((t) => t !== toStore)];
       writeHistory(next);
       this.syncHistory();
     }
@@ -691,6 +776,7 @@ export default class MobileInlineSearch extends Component {
               {{on "input" this.onInput}}
               {{on "keydown" this.onInputKeydown}}
               {{on "focus" this.openDropdown}}
+              {{on "click" this.openDropdown}}
             />
             {{#if (or this.visibleTerm this.hiddenCategoryTail)}}
               <button
@@ -706,7 +792,9 @@ export default class MobileInlineSearch extends Component {
                   {{#if this.hotItems.length}}
                     <div class="ibomy-mobile-inline-search__section">
                       <div class="ibomy-mobile-inline-search__section-head">
-                        <span class="ibomy-mobile-inline-search__section-title">Bomi热搜</span>
+                        <span
+                          class="ibomy-mobile-inline-search__section-title"
+                        >Bomi热搜</span>
                       </div>
                       <div class="ibomy-mobile-inline-search__hot-grid">
                         {{#each this.hotItems as |item|}}
@@ -716,7 +804,9 @@ export default class MobileInlineSearch extends Component {
                             data-href={{item.href}}
                             {{on "click" this.onHotRowClick}}
                           >
-                            <span class="ibomy-mobile-inline-search__hot-title">{{item.title}}</span>
+                            <span
+                              class="ibomy-mobile-inline-search__hot-title"
+                            >{{item.title}}</span>
                             {{#if item.badgeLabel}}
                               <span
                                 class="ibomy-mobile-inline-search__hot-badge ibomy-mobile-inline-search__hot-badge--{{item.badgeKind}}"
@@ -729,37 +819,139 @@ export default class MobileInlineSearch extends Component {
                     </div>
                   {{/if}}
                   {{#if this.history.length}}
-                    <div class="ibomy-mobile-inline-search__section ibomy-mobile-inline-search__section--history">
+                    <div
+                      class="ibomy-mobile-inline-search__section ibomy-mobile-inline-search__section--history"
+                    >
                       <div class="ibomy-mobile-inline-search__section-head">
-                        <span class="ibomy-mobile-inline-search__section-title">搜索历史</span>
-                        <div class="ibomy-mobile-inline-search__section-actions">
-                          <DButton
-                            @icon="trash-can"
-                            @title="清空搜索历史"
-                            class="btn-flat ibomy-mobile-inline-search__icon-action"
-                            @action={{this.clearHistory}}
-                          />
-                          <span
-                            class="ibomy-mobile-inline-search__section-actions-divider"
-                            aria-hidden="true"
-                          ></span>
-                          <DButton
-                            @icon={{if this.historyExpanded "angle-down" "angle-right"}}
-                            @title={{if this.historyExpanded "收起" "展开"}}
-                            class="btn-flat ibomy-mobile-inline-search__icon-action"
-                            @action={{this.toggleHistoryExpanded}}
-                          />
+                        <span
+                          class="ibomy-mobile-inline-search__section-title"
+                        >搜索历史</span>
+                        <div
+                          class="ibomy-mobile-inline-search__section-actions"
+                        >
+                          {{#if this.historyEditing}}
+                            <button
+                              type="button"
+                              class="btn-flat ibomy-mobile-inline-search__history-edit-action"
+                              {{on "click" this.clearHistory}}
+                            >全部删除</button>
+                            <span
+                              class="ibomy-mobile-inline-search__section-actions-divider"
+                              aria-hidden="true"
+                            ></span>
+                            <button
+                              type="button"
+                              class="btn-flat ibomy-mobile-inline-search__history-edit-action"
+                              {{on "click" this.toggleHistoryEditing}}
+                            >完成</button>
+                          {{else}}
+                            <DButton
+                              @icon="trash-can"
+                              @title="编辑搜索历史"
+                              class="btn-flat ibomy-mobile-inline-search__icon-action"
+                              @action={{this.toggleHistoryEditing}}
+                            />
+                            <span
+                              class="ibomy-mobile-inline-search__section-actions-divider"
+                              aria-hidden="true"
+                            ></span>
+                            <DButton
+                              @icon={{if
+                                this.historyExpanded
+                                "angle-down"
+                                "angle-right"
+                              }}
+                              @title={{if this.historyExpanded "收起" "展开"}}
+                              class="btn-flat ibomy-mobile-inline-search__icon-action"
+                              @action={{this.toggleHistoryExpanded}}
+                            />
+                          {{/if}}
                         </div>
                       </div>
                       {{#if this.historyExpanded}}
                         <div class="ibomy-mobile-inline-search__history-chips">
                           {{#each this.history as |term|}}
+                            {{#if this.historyEditing}}
+                              <div
+                                class="ibomy-mobile-inline-search__history-chip ibomy-mobile-inline-search__history-chip--editing"
+                              >
+                                <span
+                                  class="ibomy-mobile-inline-search__history-chip-label"
+                                >{{term}}</span>
+                                <button
+                                  type="button"
+                                  class="ibomy-mobile-inline-search__history-chip-delete"
+                                  data-term={{term}}
+                                  title="删除此条搜索历史"
+                                  aria-label="删除此条搜索历史"
+                                  {{on "click" this.removeHistoryTerm}}
+                                ></button>
+                              </div>
+                            {{else}}
+                              <button
+                                type="button"
+                                class="ibomy-mobile-inline-search__history-chip"
+                                data-term={{term}}
+                                {{on "click" this.onHistoryRowClick}}
+                              >{{term}}</button>
+                            {{/if}}
+                          {{/each}}
+                        </div>
+                      {{/if}}
+                    </div>
+                  {{/if}}
+                  {{#if this.discoveryItems.length}}
+                    <div
+                      class="ibomy-mobile-inline-search__section ibomy-mobile-inline-search__section--discovery"
+                    >
+                      <div class="ibomy-mobile-inline-search__section-head">
+                        <span
+                          class="ibomy-mobile-inline-search__section-title"
+                        >搜索发现</span>
+                        <div
+                          class="ibomy-mobile-inline-search__discovery-actions"
+                        >
+                          {{#unless this.discoveryVisible}}
+                            <span
+                              class="ibomy-mobile-inline-search__discovery-state"
+                            >已隐藏</span>
+                          {{/unless}}
+                          <button
+                            type="button"
+                            class="ibomy-mobile-inline-search__discovery-toggle
+                              {{if
+                                this.discoveryVisible
+                                'ibomy-mobile-inline-search__discovery-toggle--visible'
+                                'ibomy-mobile-inline-search__discovery-toggle--hidden'
+                              }}"
+                            title={{if
+                              this.discoveryVisible
+                              "隐藏搜索发现"
+                              "显示搜索发现"
+                            }}
+                            aria-label={{if
+                              this.discoveryVisible
+                              "隐藏搜索发现"
+                              "显示搜索发现"
+                            }}
+                            aria-pressed={{if
+                              this.discoveryVisible
+                              "false"
+                              "true"
+                            }}
+                            {{on "click" this.toggleDiscoveryVisibility}}
+                          ></button>
+                        </div>
+                      </div>
+                      {{#if this.discoveryVisible}}
+                        <div class="ibomy-mobile-inline-search__discovery-grid">
+                          {{#each this.discoveryItems as |item|}}
                             <button
                               type="button"
-                              class="ibomy-mobile-inline-search__history-chip"
-                              data-term={{term}}
-                              {{on "click" this.onHistoryRowClick}}
-                            >{{term}}</button>
+                              class="ibomy-mobile-inline-search__discovery-item"
+                              data-href={{item.href}}
+                              {{on "click" this.onDiscoveryRowClick}}
+                            >{{item.title}}</button>
                           {{/each}}
                         </div>
                       {{/if}}
@@ -768,7 +960,9 @@ export default class MobileInlineSearch extends Component {
                 {{else}}
                   <div class="ibomy-mobile-inline-search__suggest">
                     {{#if this.suggestLoading}}
-                      <div class="ibomy-mobile-inline-search__suggest-loading">搜索中…</div>
+                      <div
+                        class="ibomy-mobile-inline-search__suggest-loading"
+                      >搜索中…</div>
                     {{else}}
                       <ul class="ibomy-mobile-inline-search__suggest-list">
                         {{#each this.suggestRows as |row|}}
@@ -778,7 +972,9 @@ export default class MobileInlineSearch extends Component {
                               class="ibomy-mobile-inline-search__suggest-line"
                               {{on "click" (fn this.onSuggestRowClick row)}}
                             >
-                              <span class="ibomy-mobile-inline-search__suggest-line-inner">{{row.titleSafe}}</span>
+                              <span
+                                class="ibomy-mobile-inline-search__suggest-line-inner"
+                              >{{row.titleSafe}}</span>
                             </button>
                           </li>
                         {{/each}}

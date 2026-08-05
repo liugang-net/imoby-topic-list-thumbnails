@@ -228,3 +228,23 @@ mobile_inline_search_hot_items:
         type: string
       badge_bg_color:
         type: string
+
+mobile_inline_search_discovery_items:
+  type: objects
+  default:
+    - title: 小波健身
+      link_url: "/search?q=小波健身"
+    - title: 私藏
+      link_url: "/search?q=私藏"
+    - title: 交感神经和副交感神经
+      link_url: "/search?q=交感神经和副交感神经"
+    - title: 大手拉小手
+      link_url: "/search?q=大手拉小手"
+  client: true
+  schema:
+    name: discovery_item
+    properties:
+      title:
+        type: string
+      link_url:
+        type: string

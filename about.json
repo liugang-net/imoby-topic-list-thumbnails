@@ -8,7 +8,10 @@
   "assets": {
     "chat-check": "assets/chat-check.svg",
     "chat-search-history": "assets/chat-search-history.svg",
-    "chat-settings": "assets/chat-settings.svg"
+    "chat-settings": "assets/chat-settings.svg",
+    "search-discovery-hide": "assets/search-discovery-hide.svg",
+    "search-discovery-show": "assets/search-discovery-show.svg",
+    "search-history-delete": "assets/search-history-delete.svg"
   },
   "modifiers": {
     "topic_thumbnail_sizes": [

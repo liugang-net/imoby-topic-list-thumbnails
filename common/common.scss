@@ -3325,6 +3325,24 @@ body.ibomy-mobile-inline-search--enabled .ibomy-mobile-inline-search {
     background: #c6c9cc;
   }
 
+  .ibomy-mobile-inline-search__history-edit-action {
+    min-width: auto;
+    margin: 0 !important;
+    padding: 0.15em 0.2em !important;
+    color: #a9abad !important;
+    font: inherit;
+    font-size: var(--font-down-1);
+    line-height: 1.2;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--tertiary) !important;
+    }
+  }
+
   .ibomy-mobile-inline-search__icon-action {
     padding: 0.2em 0.35em !important;
     margin: 0 !important;
@@ -3384,9 +3402,133 @@ body.ibomy-mobile-inline-search--enabled .ibomy-mobile-inline-search {
     text-overflow: ellipsis;
     box-sizing: border-box;
 
+    &--editing {
+      position: relative;
+      gap: 0;
+      padding-right: 38px;
+      cursor: default;
+
+      &:hover,
+      &:focus-within {
+        background: #ffffff;
+      }
+    }
+
     &:hover,
     &:focus-visible {
       background: var(--primary-low);
+    }
+  }
+
+  .ibomy-mobile-inline-search__history-chip-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ibomy-mobile-inline-search__history-chip-delete {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 30px;
+    height: auto;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    background-color: #f1f1f1;
+    background-image: url($search-history-delete);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 13px 13px;
+    border: 0;
+    border-radius: 0 9999px 9999px 0;
+    opacity: 0.9;
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+      background-color: #e6e6e6;
+      opacity: 1;
+      outline: none;
+    }
+  }
+
+  .ibomy-mobile-inline-search__discovery-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #a5a5a5;
+  }
+
+  .ibomy-mobile-inline-search__discovery-state {
+    font-size: var(--font-down-1);
+    line-height: 1.2;
+  }
+
+  .ibomy-mobile-inline-search__discovery-toggle {
+    flex: 0 0 auto;
+    width: 26px;
+    height: 22px;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    border: 0;
+    opacity: 1;
+    cursor: pointer;
+
+    &--visible {
+      background-image: url($search-discovery-show);
+    }
+
+    &--hidden {
+      background-image: url($search-discovery-hide);
+      background-size: 22px 18px;
+    }
+
+    &:hover,
+    &:focus-visible {
+      opacity: 0.75;
+      outline: none;
+    }
+  }
+
+  .ibomy-mobile-inline-search__discovery-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 10px;
+    padding-bottom: 0.25em;
+  }
+
+  .ibomy-mobile-inline-search__discovery-item {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 0.35em 0.8em;
+    overflow: hidden;
+    color: var(--primary-high);
+    font: inherit;
+    font-size: var(--font-down-1);
+    line-height: 1.2;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    background: #ffffff;
+    border: 1px solid #000000;
+    border-radius: 9999px;
+    box-sizing: border-box;
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+      background: #f1f1f1;
+      outline: none;
     }
   }
 
@@ -4053,3 +4195,292 @@ body.has-full-page-chat .d-header {
     height: auto !important;
   }
 }}
+
+// 搜索结果页沿用首页的信息流视觉：导航、卡片、分割线与底部操作区保持一致。
+body.search-page.ibomy-portal-search-ui {
+  .ibomy-portal-search-category-nav {
+    --scrolling-nav-skew: -8deg;
+
+    display: flex;
+    align-items: center;
+    max-width: calc(var(--d-sidebar-width) + var(--d-max-width));
+    padding: 4px !important;
+    overflow: visible;
+    background: #ff3cf8 !important;
+    border-bottom: 5px solid #fcf905 !important;
+    border-radius: 0;
+
+    .nav-container {
+      display: flex;
+      flex: 1;
+      align-items: stretch;
+      gap: 0.35em;
+      min-width: 0;
+    }
+
+    .nav-container__scroll {
+      flex: 1;
+      min-width: 0;
+      overflow-x: auto;
+      overflow-y: visible;
+      overflow-clip-margin: 6px 10px 14px;
+      scrollbar-width: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+
+    .nav-items {
+      display: flex;
+      align-items: center;
+      min-width: max-content;
+      gap: 10px;
+      padding: 4px 1rem;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      width: calc(4em + 22px);
+      min-width: calc(4em + 22px);
+      padding: 4px 10px;
+      box-sizing: border-box;
+      color: #fff !important;
+      font-size: 1em;
+      font-weight: 500;
+      white-space: nowrap;
+      background: #bb39fd !important;
+      border: 1px solid #000;
+      border-radius: 0;
+      box-shadow: 4px 3px 0 #000;
+      text-shadow: none !important;
+      transform: skewX(var(--scrolling-nav-skew));
+
+      &.active {
+        color: #000 !important;
+        background: #fcf905 !important;
+      }
+    }
+
+    .nav-item > .nav-item__unskew {
+      display: inline-flex;
+      align-items: center;
+      min-width: 0;
+      max-width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+      text-shadow: none !important;
+      transform: skewX(calc(-1 * var(--scrolling-nav-skew)));
+    }
+  }
+
+  .search-results {
+    width: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+
+    > div,
+    > div > .fps-result-entries {
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      background: transparent !important;
+      border: 0 !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+    }
+  }
+
+  .fps-result-entries {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    background: transparent;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .fps-result {
+    --ibomy-feed-inline-padding: 32px;
+
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    min-width: 0;
+    margin: 0 0 10px;
+    padding: 2em var(--ibomy-feed-inline-padding);
+    background: #fff url(https://dev.gexing8.com/images/common/tile.png) repeat left top;
+    background-size: 10px 10px;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+
+    > .author,
+    .topic,
+    .blurb .date {
+      display: none;
+    }
+
+    .fps-topic {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .ibomy-portal-search-hit-head {
+      order: 1;
+      margin: 0;
+    }
+
+    .topic {
+      display: block;
+      order: 2;
+      margin: 0;
+    }
+
+    .search-category {
+      display: none;
+    }
+
+    .topic-line {
+      --topic-line-skew: -45deg;
+      --topic-line-solid: clamp(2.5rem, 12%, 7rem);
+      --topic-line-thick: 3px;
+
+      position: relative;
+      width: 100%;
+      height: 1px;
+      margin: 10px 0;
+      background: linear-gradient(#000, #000) 0 100% / 100% 1px no-repeat !important;
+
+      &::before {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: var(--topic-line-solid);
+        height: var(--topic-line-thick);
+        background: #000;
+        transform: skewX(var(--topic-line-skew));
+        transform-origin: left bottom;
+      }
+    }
+
+    .blurb.container {
+      order: 3;
+      display: -webkit-box;
+      max-width: 100%;
+      margin: 0 0 0.5em;
+      padding: 0;
+      overflow: hidden;
+      color: var(--title-color);
+      font-family: "Alibaba PuHuiTi", "Source Han Sans CN", "PingFang SC",
+        "Microsoft YaHei", sans-serif;
+      font-size: var(--font-down-1);
+      font-weight: 400;
+      line-height: 1.5;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+      background: transparent !important;
+    }
+
+    .search-link {
+      order: 2;
+      display: -webkit-box;
+      margin: 0 0 0.5em;
+      overflow: hidden;
+      color: var(--title-color);
+      font-family: "Alibaba PuHuiTi", "Source Han Sans CN", "PingFang SC",
+        "Microsoft YaHei", sans-serif;
+      font-size: 1em;
+      font-weight: 700;
+      line-height: 1.4;
+      text-decoration: none;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+    }
+
+    .search-highlight {
+      color: #ff3cf8;
+      font-weight: inherit;
+    }
+
+    .topic-footer {
+      order: 4;
+      justify-content: space-between;
+      gap: normal;
+      margin-top: 10px;
+
+      .topic-stats {
+        gap: 2.25em;
+        margin-left: auto;
+        color: #979b9e;
+
+        .stat-share {
+          min-height: 0 !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          color: #979b9e !important;
+          background: none !important;
+          border: 0 !important;
+          border-radius: 0 !important;
+          box-shadow: none !important;
+
+          .d-icon,
+          .stat-share__label {
+            color: #82878c !important;
+          }
+        }
+      }
+    }
+  }
+}
+
+html.mobile-view body.search-page.ibomy-portal-search-ui {
+  .ibomy-portal-search-category-nav {
+    position: sticky;
+    top: 3.66em;
+    z-index: 100;
+    margin: 0;
+    padding: 0 !important;
+    border-bottom-width: 5px !important;
+
+    .nav-container {
+      gap: 0.25em;
+    }
+
+    .nav-items {
+      height: 34px;
+      padding: 0 0.5rem;
+    }
+
+    .nav-item {
+      width: 74px;
+      min-width: 74px;
+      height: 26px;
+      padding: 0 8px;
+      font-size: 14px;
+      box-shadow: 1px 1px 0 #000;
+    }
+  }
+
+  .fps-result {
+    --ibomy-feed-inline-padding: 16px;
+
+    padding: 1em var(--ibomy-feed-inline-padding);
+  }
+}
